@@ -18,8 +18,7 @@ return new class extends Migration
                 $table->string('first_name')->nullable();
                 $table->string('last_name')->nullable();
                 $table->string('email')->unique();
-                $table->timestamp('email_verified_at')->nullable();
-                $table->string('password')->nullable();
+                $table->string('password');
                 $table->enum('role', ['admin', 'unverified_member', 'professional', 'partner']);
                 $table->enum('status', ['active', 'suspended', 'frozen'])->default('active');
                 $table->boolean('is_verified')->default(false);
@@ -33,7 +32,6 @@ return new class extends Migration
                 $table->string('mfa_secret')->nullable();
                 $table->json('mfa_recovery_codes')->nullable();
                 $table->timestamp('self_frozen_at')->nullable();
-                $table->json('metadata')->nullable();
                 $table->timestamps();
             });
         }
