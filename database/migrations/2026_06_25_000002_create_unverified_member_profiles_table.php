@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -23,8 +22,8 @@ return new class extends Migration
                 $table->json('expertise_tags')->nullable();
                 $table->json('searchable_keywords')->nullable();
                 $table->boolean('is_discoverable')->default(true);
-                $table->json('privacy_settings')->default(new Expression("'{}'::json"));
-                $table->json('notification_preferences')->default(new Expression("'{}'::json"));
+                $table->json('privacy_settings')->default('{}');
+                $table->json('notification_preferences')->default('{}');
                 $table->string('linkedin_url')->nullable();
                 $table->enum('job_availability', ['open', 'not_looking', 'open_to_opportunities'])->nullable();
                 $table->boolean('verification_intent')->default(false);

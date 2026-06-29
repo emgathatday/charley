@@ -17,7 +17,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminFallbackSeeder::class,
             IamSeeder::class,
+            PlantTypeSeeder::class,
             ProfileSeeder::class,
+            PartnerProfileSeeder::class,
+            SubscriptionSeeder::class,
         ]);
     }
 }
+

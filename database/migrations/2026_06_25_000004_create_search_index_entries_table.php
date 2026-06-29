@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -21,7 +22,11 @@ return new class extends Migration
 
                 $table->index(['indexable_type', 'indexable_id']);
                 $table->index(['search_context', 'is_discoverable']);
-                $table->fullText('searchable_text');
+                if (DB::connection()->getDriverName() !== 'sqlite') {
+                    if (DB::connection()->getDriverName() !== 'sqlite') {
+                    $table->fullText('searchable_text');
+                }
+                }
             });
         }
     }

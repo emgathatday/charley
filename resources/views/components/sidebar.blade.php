@@ -12,6 +12,8 @@
                 <li class="nav-item"><a href="{{ route('admin.dashboard.iam.users') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') ? 'active' : '' }}"><i class="nav-icon bi bi-people"></i><p>Users</p></a></li>
                 <li class="nav-item"><a href="{{ route('admin.dashboard.iam.verification-queue') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.verification-queue') ? 'active' : '' }}"><i class="nav-icon bi bi-person-check"></i><p>Verification Queue<span class="badge text-bg-warning ms-2">36</span></p></a></li>
                 <li class="nav-item"><a href="{{ route('admin.dashboard.iam.user-security') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.user-security') ? 'active' : '' }}"><i class="nav-icon bi bi-shield-lock"></i><p>User Security</p></a></li>
+                <li class="nav-header">SHARED SERVICES</li>
+                <li class="nav-item"><a href="{{ route('admin.dashboard.media-files.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.media-files.*') ? 'active' : '' }}"><i class="nav-icon bi bi-folder2-open"></i><p>Media Files</p></a></li>
             </ul>
         </nav>
     </div>

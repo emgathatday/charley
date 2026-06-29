@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -31,8 +30,8 @@ return new class extends Migration
                 $table->json('reputation_breakdown')->nullable();
                 $table->integer('ai_usage_count')->default(0);
                 $table->boolean('is_discoverable')->default(true);
-                $table->json('privacy_settings')->default(new Expression("'{}'::json"));
-                $table->json('notification_preferences')->default(new Expression("'{}'::json"));
+                $table->json('privacy_settings')->default('{}');
+                $table->json('notification_preferences')->default('{}');
                 $table->foreignId('verification_document_media_id')->nullable();
                 $table->timestamp('verification_renewed_at')->nullable();
                 $table->timestamp('renewal_reminder_sent_at')->nullable();
