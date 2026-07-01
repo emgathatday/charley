@@ -24,6 +24,8 @@ class MemberSubscriptionPlanController extends Controller
 
     public function store(MemberSubscriptionPlanRequest $request): MemberSubscriptionPlanResource
     {
+        $this->authorizeAdmin($request);
+
         $plan = MemberSubscriptionPlan::create($request->validated());
 
         return new MemberSubscriptionPlanResource($plan);
@@ -36,15 +38,24 @@ class MemberSubscriptionPlanController extends Controller
 
     public function update(MemberSubscriptionPlanRequest $request, MemberSubscriptionPlan $memberSubscriptionPlan): MemberSubscriptionPlanResource
     {
+        $this->authorizeAdmin($request);
+
         $memberSubscriptionPlan->update($request->validated());
 
         return new MemberSubscriptionPlanResource($memberSubscriptionPlan);
     }
 
-    public function destroy(MemberSubscriptionPlan $memberSubscriptionPlan): MemberSubscriptionPlanResource
+    public function destroy(Request $request, MemberSubscriptionPlan $memberSubscriptionPlan): MemberSubscriptionPlanResource
     {
+        $this->authorizeAdmin($request);
+
         $memberSubscriptionPlan->delete();
 
         return new MemberSubscriptionPlanResource($memberSubscriptionPlan);
+    }
+
+    private function authorizeAdmin(Request $request): void
+    {
+        abort_unless($request->user()?->role === 'admin', 403);
     }
 }

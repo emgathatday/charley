@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\IamVerificationController;
 use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\PlantTypeController;
 use App\Http\Controllers\Admin\PartnerProfileController;
+use App\Http\Controllers\Admin\SubscriptionAdminController;
 use App\Http\Controllers\AdminAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,14 +37,29 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::post('plant-types', [PlantTypeController::class, 'store'])->name('plant-types.store');
     Route::get('plant-types/{plantType}/edit', [PlantTypeController::class, 'edit'])->name('plant-types.edit');
     Route::put('plant-types/{plantType}', [PlantTypeController::class, 'update'])->name('plant-types.update');
+    Route::delete('plant-types/{plantType}', [PlantTypeController::class, 'destroy'])->name('plant-types.destroy');
     Route::get('partner-profiles', [PartnerProfileController::class, 'index'])->name('partner-profiles.index');
     Route::get('partner-profiles/create', [PartnerProfileController::class, 'create'])->name('partner-profiles.create');
     Route::post('partner-profiles', [PartnerProfileController::class, 'store'])->name('partner-profiles.store');
     Route::get('partner-profiles/{partnerProfile}', [PartnerProfileController::class, 'show'])->name('partner-profiles.show');
     Route::get('partner-profiles/{partnerProfile}/edit', [PartnerProfileController::class, 'edit'])->name('partner-profiles.edit');
     Route::put('partner-profiles/{partnerProfile}', [PartnerProfileController::class, 'update'])->name('partner-profiles.update');
+    Route::delete('partner-profiles/{partnerProfile}', [PartnerProfileController::class, 'destroy'])->name('partner-profiles.destroy');
     Route::post('partner-profiles/{partnerProfile}/approve', [PartnerProfileController::class, 'approve'])->name('partner-profiles.approve');
     Route::post('partner-profiles/{partnerProfile}/reject', [PartnerProfileController::class, 'reject'])->name('partner-profiles.reject');
+    Route::get('subscriptions', [SubscriptionAdminController::class, 'index'])->name('subscriptions.index');
+    Route::get('subscriptions/tiers/create', [SubscriptionAdminController::class, 'createTier'])->name('subscriptions.tiers.create');
+    Route::post('subscriptions/tiers', [SubscriptionAdminController::class, 'storeTier'])->name('subscriptions.tiers.store');
+    Route::get('subscriptions/tiers/{subscriptionTier}/edit', [SubscriptionAdminController::class, 'editTier'])->name('subscriptions.tiers.edit');
+    Route::put('subscriptions/tiers/{subscriptionTier}', [SubscriptionAdminController::class, 'updateTier'])->name('subscriptions.tiers.update');
+    Route::get('subscriptions/member-plans/create', [SubscriptionAdminController::class, 'createMemberPlan'])->name('subscriptions.member-plans.create');
+    Route::post('subscriptions/member-plans', [SubscriptionAdminController::class, 'storeMemberPlan'])->name('subscriptions.member-plans.store');
+    Route::get('subscriptions/member-plans/{memberSubscriptionPlan}/edit', [SubscriptionAdminController::class, 'editMemberPlan'])->name('subscriptions.member-plans.edit');
+    Route::put('subscriptions/member-plans/{memberSubscriptionPlan}', [SubscriptionAdminController::class, 'updateMemberPlan'])->name('subscriptions.member-plans.update');
+    Route::post('subscriptions/partner-subscriptions/{partnerSubscription}/approve', [SubscriptionAdminController::class, 'approvePartnerSubscription'])->name('subscriptions.partner-subscriptions.approve');
+    Route::post('subscriptions/partner-subscriptions/{partnerSubscription}/cancel', [SubscriptionAdminController::class, 'cancelPartnerSubscription'])->name('subscriptions.partner-subscriptions.cancel');
+    Route::post('subscriptions/payments/{subscriptionPayment}/approve', [SubscriptionAdminController::class, 'approvePayment'])->name('subscriptions.payments.approve');
+    Route::post('subscriptions/payments/{subscriptionPayment}/reject', [SubscriptionAdminController::class, 'rejectPayment'])->name('subscriptions.payments.reject');
 });
 
 

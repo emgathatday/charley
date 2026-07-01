@@ -24,6 +24,8 @@ class SubscriptionTierController extends Controller
 
     public function store(SubscriptionTierRequest $request): SubscriptionTierResource
     {
+        $this->authorizeAdmin($request);
+
         $tier = SubscriptionTier::create($request->validated());
 
         return new SubscriptionTierResource($tier);
@@ -36,15 +38,24 @@ class SubscriptionTierController extends Controller
 
     public function update(SubscriptionTierRequest $request, SubscriptionTier $subscriptionTier): SubscriptionTierResource
     {
+        $this->authorizeAdmin($request);
+
         $subscriptionTier->update($request->validated());
 
         return new SubscriptionTierResource($subscriptionTier);
     }
 
-    public function destroy(SubscriptionTier $subscriptionTier): SubscriptionTierResource
+    public function destroy(Request $request, SubscriptionTier $subscriptionTier): SubscriptionTierResource
     {
+        $this->authorizeAdmin($request);
+
         $subscriptionTier->delete();
 
         return new SubscriptionTierResource($subscriptionTier);
+    }
+
+    private function authorizeAdmin(Request $request): void
+    {
+        abort_unless($request->user()?->role === 'admin', 403);
     }
 }

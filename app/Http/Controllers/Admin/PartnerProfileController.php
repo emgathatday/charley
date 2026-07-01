@@ -57,7 +57,7 @@ class PartnerProfileController extends Controller
     {
         return view('admin.partner-profiles.edit', [
             'partnerProfile' => $partnerProfile,
-            ...$this->formOptions(),
+            ...$this->formOptions($partnerProfile),
         ]);
     }
 
@@ -97,10 +97,22 @@ class PartnerProfileController extends Controller
             ->with('status', 'Partner profile rejected.');
     }
 
-    private function formOptions(): array
+    private function formOptions(?PartnerProfile $partnerProfile = null): array
     {
         return [
-            'users' => User::query()->orderBy('name')->get(['id', 'name', 'email']),
+            'users' => User::query()
+                ->when(
+                    $partnerProfile === null,
+                    fn ($query) => $query->whereNotIn('id', PartnerProfile::query()->select('user_id')),
+                    fn ($query) => $query->where(function ($query) use ($partnerProfile): void {
+                        $query->where('id', $partnerProfile->user_id)
+                            ->orWhereNotIn('id', PartnerProfile::query()->select('user_id'));
+                    })
+                )
+                ->orderBy('first_name')
+                ->orderBy('last_name')
+                ->orderBy('email')
+                ->get(['id', 'username', 'first_name', 'last_name', 'email']),
             'plantTypes' => PlantType::query()->sorted()->get(['id', 'name']),
             'mediaFiles' => MediaFile::query()->latest()->limit(50)->get(['id', 'original_name']),
         ];
@@ -108,7 +120,7 @@ class PartnerProfileController extends Controller
 
     private function validatedPartnerProfile(Request $request, ?PartnerProfile $partnerProfile = null): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'user_id' => ['required', 'integer', 'exists:users,id', Rule::unique('partner_profiles', 'user_id')->ignore($partnerProfile?->id)],
             'company_name' => ['required', 'string', 'max:255'],
             'logo_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
@@ -123,5 +135,11 @@ class PartnerProfileController extends Controller
             'feed_highlight_enabled' => ['required', 'boolean'],
             'approval_status' => ['required', 'in:pending,approved,rejected,suspended'],
         ]);
+
+        $validated['verified_at'] = $validated['approval_status'] === 'approved'
+            ? ($partnerProfile?->verified_at ?? now())
+            : null;
+
+        return $validated;
     }
 }

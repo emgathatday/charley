@@ -47,6 +47,15 @@ class PlantTypeController extends Controller
             ->with('status', 'Plant type updated.');
     }
 
+    public function destroy(PlantType $plantType): RedirectResponse
+    {
+        $plantType->delete();
+
+        return redirect()
+            ->route('admin.dashboard.plant-types.index')
+            ->with('status', 'Plant type deleted.');
+    }
+
     /**
      * @return array<string, mixed>
      */

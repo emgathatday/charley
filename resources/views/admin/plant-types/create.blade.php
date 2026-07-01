@@ -1,66 +1,55 @@
-﻿@extends('templates.layouts.admin')
+﻿@extends('layouts.master')
+
+@section('title', 'Create Plant Type')
+
+@section('content_header')
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <h1 class="mb-0">Create Plant Type</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.plant-types.index') }}">Plant Types</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Create</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
 
 @section('content')
-    <div class="container-fluid">
-        @include('templates.components.alert-session')
+    <div class="app-content">
+        <div class="container-fluid">
+            @include('templates.components.alert-session')
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h1 class="h3 mb-0">Create Plant Type</h1>
-                <p class="text-muted mb-0">Add a shared plant category.</p>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <p class="text-body-secondary mb-0">Add a shared plant category for content, partners, and tools.</p>
+                <a href="{{ route('admin.dashboard.plant-types.index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Back
+                </a>
             </div>
-            <a href="{{ route('admin.dashboard.plant-types.index') }}" class="btn btn-outline-secondary">
-                Back
-            </a>
-        </div>
 
-        <div class="card">
-            <form method="POST" action="{{ route('admin.dashboard.plant-types.store') }}">
-                @csrf
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" placeholder="Ammonia">
-                        @error('name')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
+            <div class="card card-outline card-primary">
+                <form method="POST" action="{{ route('admin.dashboard.plant-types.store') }}">
+                    @csrf
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">Plant Type Details</h3>
                     </div>
-                    <div class="form-group">
-                        <label for="slug">Slug</label>
-                        <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug" name="slug" value="{{ old('slug') }}" placeholder="ammonia-plant">
-                        @error('slug')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
+                    @include('admin.plant-types._form')
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                        <a href="{{ route('admin.dashboard.plant-types.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check2 me-1"></i>
+                            Save
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4">{{ old('description') }}</textarea>
-                        @error('description')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="is_active">Status</label>
-                        <select class="form-control @error('is_active') is-invalid @enderror" id="is_active" name="is_active">
-                            <option value="1" @selected(old('is_active', '1') === '1')>Active</option>
-                            <option value="0" @selected(old('is_active') === '0')>Inactive</option>
-                        </select>
-                        @error('is_active')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-0">
-                        <label for="sort_order">Sort Order</label>
-                        <input type="number" class="form-control @error('sort_order') is-invalid @enderror" id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
-                        @error('sort_order')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 @endsection
