@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             PartnerProfileSeeder::class,
             SubscriptionSeeder::class,
             DemoPartnerDashboardSeeder::class,
+            TaxonomySeeder::class,
         ]);
     }
 }

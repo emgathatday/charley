@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\PlantTypeController;
 use App\Http\Controllers\Admin\PartnerProfileController;
 use App\Http\Controllers\Admin\SubscriptionAdminController;
+use App\Http\Controllers\Admin\TaxonomyController;
 use App\Http\Controllers\AdminAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,17 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::get('plant-types/{plantType}/edit', [PlantTypeController::class, 'edit'])->name('plant-types.edit');
     Route::put('plant-types/{plantType}', [PlantTypeController::class, 'update'])->name('plant-types.update');
     Route::delete('plant-types/{plantType}', [PlantTypeController::class, 'destroy'])->name('plant-types.destroy');
+    Route::get('taxonomy', [TaxonomyController::class, 'index'])->name('taxonomy.index');
+
+    Route::get('taxonomy/create', [TaxonomyController::class, 'create'])->name('taxonomy.create');
+
+    Route::post('taxonomy', [TaxonomyController::class, 'store'])->name('taxonomy.store');
+
+    Route::get('taxonomy/{tag}/edit', [TaxonomyController::class, 'edit'])->name('taxonomy.edit');
+
+    Route::put('taxonomy/{tag}', [TaxonomyController::class, 'update'])->name('taxonomy.update');
+
+    Route::delete('taxonomy/{tag}', [TaxonomyController::class, 'destroy'])->name('taxonomy.destroy');
     Route::get('partner-profiles', [PartnerProfileController::class, 'index'])->name('partner-profiles.index');
     Route::get('partner-profiles/create', [PartnerProfileController::class, 'create'])->name('partner-profiles.create');
     Route::post('partner-profiles', [PartnerProfileController::class, 'store'])->name('partner-profiles.store');

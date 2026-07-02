@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\SocialAccountController;
 use App\Http\Controllers\Api\V1\SubscriptionPaymentController;
 use App\Http\Controllers\Api\V1\SubscriptionTierController;
+use App\Http\Controllers\Api\V1\TaxonomyController;
 use App\Http\Controllers\Api\V1\VerificationRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +74,21 @@ Route::prefix('v1')->group(function (): void {
         Route::get('plant-types/{plantType}', [PlantTypeController::class, 'show']);
         Route::put('plant-types/{plantType}', [PlantTypeController::class, 'update']);
         Route::delete('plant-types/{plantType}', [PlantTypeController::class, 'destroy']);
+
+
+        Route::get('taxonomy/tags', [TaxonomyController::class, 'index']);
+
+        Route::get('taxonomy/tags/search', [TaxonomyController::class, 'search']);
+
+        Route::post('taxonomy/tags', [TaxonomyController::class, 'store']);
+
+        Route::get('taxonomy/tags/{tag}', [TaxonomyController::class, 'show']);
+
+        Route::put('taxonomy/tags/{tag}', [TaxonomyController::class, 'update']);
+
+        Route::delete('taxonomy/tags/{tag}', [TaxonomyController::class, 'destroy']);
+
+        Route::post('taxonomy/tags/sync', [TaxonomyController::class, 'sync']);
 
         Route::get('subscription-tiers', [SubscriptionTierController::class, 'index']);
         Route::post('subscription-tiers', [SubscriptionTierController::class, 'store']);
