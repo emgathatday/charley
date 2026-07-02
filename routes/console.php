@@ -1,6 +1,9 @@
 <?php
 
 use App\Jobs\DispatchVerificationReminderNotifications;
+use App\Jobs\ExpireStaleFeedCacheJob;
+use App\Jobs\RebuildPersonalizedFeedCachesJob;
+use App\Jobs\RefreshHomepageFeedPriorityEffectsJob;
 use App\Jobs\RebuildProfileSearchIndexJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -31,3 +34,37 @@ Schedule::call(function (): void {
         ]);
     }
 })->daily()->name('profile-search-index-rebuild')->withoutOverlapping();
+
+// Rebuild personalized homepage feed caches through queued per-user jobs.
+Schedule::call(function (): void {
+    try {
+        RebuildPersonalizedFeedCachesJob::dispatch('scheduled')->onQueue('feed-cms');
+    } catch (Throwable $exception) {
+        Log::error('Unable to dispatch personalized feed cache rebuild schedule.', [
+            'message' => $exception->getMessage(),
+        ]);
+    }
+})->everyThirtyMinutes()->name('feed-cache-rebuild')->withoutOverlapping();
+
+// Expire stale feed cache rows so homepage feed queries stay bounded.
+Schedule::call(function (): void {
+    try {
+        ExpireStaleFeedCacheJob::dispatch()->onQueue('feed-cms');
+    } catch (Throwable $exception) {
+        Log::error('Unable to dispatch stale feed cache expiry schedule.', [
+            'message' => $exception->getMessage(),
+        ]);
+    }
+})->hourly()->name('feed-cache-expire-stale')->withoutOverlapping();
+
+// Refresh priority-weight effects by rebuilding feed caches after admin priority changes.
+Schedule::call(function (): void {
+    try {
+        RefreshHomepageFeedPriorityEffectsJob::dispatch(null, 'scheduled')->onQueue('feed-cms');
+    } catch (Throwable $exception) {
+        Log::error('Unable to dispatch homepage feed priority refresh schedule.', [
+            'message' => $exception->getMessage(),
+        ]);
+    }
+})->daily()->name('feed-priority-effects-refresh')->withoutOverlapping();
+

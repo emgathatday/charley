@@ -21,8 +21,13 @@ class DatabaseSeeder extends Seeder
             ProfileSeeder::class,
             PartnerProfileSeeder::class,
             SubscriptionSeeder::class,
-            DemoPartnerDashboardSeeder::class,
+            AdminOperationsSeeder::class,
             TaxonomySeeder::class,
+            FeedCmsSeeder::class,
+            DemoPartnerDashboardSeeder::class,
         ]);
     }
 }
+
+
+

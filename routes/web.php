@@ -3,17 +3,21 @@
 use App\Http\Controllers\Admin\IamSecurityController;
 use App\Http\Controllers\Admin\IamUserController;
 use App\Http\Controllers\Admin\IamVerificationController;
+use App\Http\Controllers\Admin\AdminOperationsController;
+use App\Http\Controllers\Admin\FeedCmsController;
 use App\Http\Controllers\Admin\MediaFileController;
 use App\Http\Controllers\Admin\PlantTypeController;
 use App\Http\Controllers\Admin\PartnerProfileController;
 use App\Http\Controllers\Admin\SubscriptionAdminController;
 use App\Http\Controllers\Admin\TaxonomyController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('feed', [PageController::class, 'feed'])->name('feed.index');
+Route::get('pages', [PageController::class, 'index'])->name('pages.index');
+Route::get('pages/{slug}', [PageController::class, 'show'])->name('pages.show');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [AdminAuthController::class, 'showLogin'])->name('login');
@@ -40,15 +44,10 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::put('plant-types/{plantType}', [PlantTypeController::class, 'update'])->name('plant-types.update');
     Route::delete('plant-types/{plantType}', [PlantTypeController::class, 'destroy'])->name('plant-types.destroy');
     Route::get('taxonomy', [TaxonomyController::class, 'index'])->name('taxonomy.index');
-
     Route::get('taxonomy/create', [TaxonomyController::class, 'create'])->name('taxonomy.create');
-
     Route::post('taxonomy', [TaxonomyController::class, 'store'])->name('taxonomy.store');
-
     Route::get('taxonomy/{tag}/edit', [TaxonomyController::class, 'edit'])->name('taxonomy.edit');
-
     Route::put('taxonomy/{tag}', [TaxonomyController::class, 'update'])->name('taxonomy.update');
-
     Route::delete('taxonomy/{tag}', [TaxonomyController::class, 'destroy'])->name('taxonomy.destroy');
     Route::get('partner-profiles', [PartnerProfileController::class, 'index'])->name('partner-profiles.index');
     Route::get('partner-profiles/create', [PartnerProfileController::class, 'create'])->name('partner-profiles.create');
@@ -72,6 +71,31 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::post('subscriptions/partner-subscriptions/{partnerSubscription}/cancel', [SubscriptionAdminController::class, 'cancelPartnerSubscription'])->name('subscriptions.partner-subscriptions.cancel');
     Route::post('subscriptions/payments/{subscriptionPayment}/approve', [SubscriptionAdminController::class, 'approvePayment'])->name('subscriptions.payments.approve');
     Route::post('subscriptions/payments/{subscriptionPayment}/reject', [SubscriptionAdminController::class, 'rejectPayment'])->name('subscriptions.payments.reject');
+    Route::get('admin-operations', [AdminOperationsController::class, 'index'])->name('admin-operations.index');
+    Route::get('admin-operations/support-tickets/create', [AdminOperationsController::class, 'createTicket'])->name('admin-operations.support-tickets.create');
+    Route::post('admin-operations/support-tickets', [AdminOperationsController::class, 'storeTicket'])->name('admin-operations.support-tickets.store');
+    Route::post('admin-operations/support-tickets/{supportTicket}/replies', [AdminOperationsController::class, 'replyTicket'])->name('admin-operations.support-tickets.replies.store');
+    Route::post('admin-operations/support-tickets/{supportTicket}/resolve', [AdminOperationsController::class, 'resolveTicket'])->name('admin-operations.support-tickets.resolve');
+    Route::get('admin-operations/account-penalties/create', [AdminOperationsController::class, 'createPenalty'])->name('admin-operations.account-penalties.create');
+    Route::post('admin-operations/account-penalties', [AdminOperationsController::class, 'storePenalty'])->name('admin-operations.account-penalties.store');
+    Route::get('admin-operations/platform-settings/edit/{platformSetting?}', [AdminOperationsController::class, 'editSetting'])->name('admin-operations.platform-settings.edit');
+    Route::post('admin-operations/platform-settings', [AdminOperationsController::class, 'storeSetting'])->name('admin-operations.platform-settings.store');
+    Route::get('admin-operations/admin-integrations/create', [AdminOperationsController::class, 'createIntegration'])->name('admin-operations.admin-integrations.create');
+    Route::post('admin-operations/admin-integrations', [AdminOperationsController::class, 'storeIntegration'])->name('admin-operations.admin-integrations.store');
+    Route::post('admin-operations/content-approvals/{contentApprovalQueue}/assign', [AdminOperationsController::class, 'assignContent'])->name('admin-operations.content-approvals.assign');
+    Route::post('admin-operations/content-approvals/{contentApprovalQueue}/approve', [AdminOperationsController::class, 'approveContent'])->name('admin-operations.content-approvals.approve');
+    Route::get('feed-cms', [FeedCmsController::class, 'index'])->name('feed-cms.index');
+    Route::get('feed-cms/pages/create', [FeedCmsController::class, 'create'])->name('feed-cms.pages.create');
+    Route::post('feed-cms/pages', [FeedCmsController::class, 'store'])->name('feed-cms.pages.store');
+    Route::get('feed-cms/pages/{page}/edit', [FeedCmsController::class, 'edit'])->name('feed-cms.pages.edit');
+    Route::put('feed-cms/pages/{page}', [FeedCmsController::class, 'update'])->name('feed-cms.pages.update');
+    Route::post('feed-cms/pages/{page}/publish', [FeedCmsController::class, 'publish'])->name('feed-cms.pages.publish');
+    Route::post('feed-cms/pages/{page}/archive', [FeedCmsController::class, 'archive'])->name('feed-cms.pages.archive');
+    Route::post('feed-cms/pages/{page}/revisions/{pageRevision}/rollback', [FeedCmsController::class, 'rollback'])->name('feed-cms.pages.revisions.rollback');
+    Route::put('feed-cms/priorities/{contentType}', [FeedCmsController::class, 'updatePriority'])->name('feed-cms.priorities.update');
 });
+
+
+
 
 

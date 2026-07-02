@@ -1,14 +1,22 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AccountSecurityController;
+use App\Http\Controllers\Api\V1\AccountPenaltyController;
+use App\Http\Controllers\Api\V1\AdminIntegrationController;
+use App\Http\Controllers\Api\V1\ContentApprovalQueueController;
 use App\Http\Controllers\Api\V1\AnnouncementQuotaController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ConnectionController;
 use App\Http\Controllers\Api\V1\ExpertDirectoryController;
+use App\Http\Controllers\Api\V1\PageRevisionController;
+use App\Http\Controllers\Api\V1\FeedPriorityController;
+use App\Http\Controllers\Api\V1\FeedController;
+use App\Http\Controllers\Api\V1\FeedCmsPageController;
 use App\Http\Controllers\Api\V1\MediaFileController;
 use App\Http\Controllers\Api\V1\MemberSubscriptionController;
 use App\Http\Controllers\Api\V1\MemberSubscriptionPlanController;
 use App\Http\Controllers\Api\V1\PlantTypeController;
+use App\Http\Controllers\Api\V1\PlatformSettingController;
 use App\Http\Controllers\Api\V1\PartnerProfileController;
 use App\Http\Controllers\Api\V1\PartnerProductController;
 use App\Http\Controllers\Api\V1\PartnerPresentationController;
@@ -17,6 +25,7 @@ use App\Http\Controllers\Api\V1\PartnerSubscriptionController;
 use App\Http\Controllers\Api\V1\ProfileActivityController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\SocialAccountController;
+use App\Http\Controllers\Api\V1\SupportTicketController;
 use App\Http\Controllers\Api\V1\SubscriptionPaymentController;
 use App\Http\Controllers\Api\V1\SubscriptionTierController;
 use App\Http\Controllers\Api\V1\TaxonomyController;
@@ -29,6 +38,8 @@ Route::prefix('v1')->group(function (): void {
     Route::post('auth/login-tokens', [AuthController::class, 'issueLoginToken']);
     Route::post('auth/login-tokens/consume', [AuthController::class, 'consumeLoginToken']);
 
+    Route::get('feed-cms/pages', [FeedCmsPageController::class, 'publicIndex']);
+    Route::get('feed-cms/pages/{slug}', [FeedCmsPageController::class, 'publicShow']);
     Route::middleware('auth')->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
@@ -63,6 +74,18 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('expert-directory', [ExpertDirectoryController::class, 'index']);
 
+        Route::get('feed-cms/feed', [FeedController::class, 'index']);
+        Route::post('feed-cms/feed-cache/{userFeedCache}/seen', [FeedController::class, 'markSeen']);
+        Route::get('feed-cms/feed-priorities', [FeedPriorityController::class, 'index']);
+        Route::put('feed-cms/feed-priorities', [FeedPriorityController::class, 'update']);
+        Route::get('feed-cms/admin/pages', [FeedCmsPageController::class, 'index']);
+        Route::post('feed-cms/admin/pages', [FeedCmsPageController::class, 'store']);
+        Route::get('feed-cms/admin/pages/{page}', [FeedCmsPageController::class, 'show']);
+        Route::put('feed-cms/admin/pages/{page}', [FeedCmsPageController::class, 'update']);
+        Route::post('feed-cms/admin/pages/{page}/publish', [FeedCmsPageController::class, 'publish']);
+        Route::post('feed-cms/admin/pages/{page}/archive', [FeedCmsPageController::class, 'archive']);
+        Route::get('feed-cms/admin/pages/{page}/revisions', [PageRevisionController::class, 'index']);
+        Route::post('feed-cms/admin/pages/{page}/revisions/{pageRevision}/rollback', [PageRevisionController::class, 'rollback']);
         Route::get('media-files', [MediaFileController::class, 'index']);
         Route::post('media-files', [MediaFileController::class, 'store']);
         Route::get('media-files/{mediaFile}', [MediaFileController::class, 'show']);
@@ -75,21 +98,13 @@ Route::prefix('v1')->group(function (): void {
         Route::put('plant-types/{plantType}', [PlantTypeController::class, 'update']);
         Route::delete('plant-types/{plantType}', [PlantTypeController::class, 'destroy']);
 
-
         Route::get('taxonomy/tags', [TaxonomyController::class, 'index']);
-
         Route::get('taxonomy/tags/search', [TaxonomyController::class, 'search']);
-
         Route::post('taxonomy/tags', [TaxonomyController::class, 'store']);
-
         Route::get('taxonomy/tags/{tag}', [TaxonomyController::class, 'show']);
-
         Route::put('taxonomy/tags/{tag}', [TaxonomyController::class, 'update']);
-
         Route::delete('taxonomy/tags/{tag}', [TaxonomyController::class, 'destroy']);
-
         Route::post('taxonomy/tags/sync', [TaxonomyController::class, 'sync']);
-
         Route::get('subscription-tiers', [SubscriptionTierController::class, 'index']);
         Route::post('subscription-tiers', [SubscriptionTierController::class, 'store']);
         Route::get('subscription-tiers/{subscriptionTier}', [SubscriptionTierController::class, 'show']);
@@ -126,6 +141,34 @@ Route::prefix('v1')->group(function (): void {
         Route::get('announcement-quotas/{announcementQuota}', [AnnouncementQuotaController::class, 'show']);
         Route::put('announcement-quotas/{announcementQuota}', [AnnouncementQuotaController::class, 'update']);
         Route::post('announcement-quotas/{announcementQuota}/consume', [AnnouncementQuotaController::class, 'consume']);
+        Route::get('account-penalties', [AccountPenaltyController::class, 'index']);
+        Route::post('account-penalties', [AccountPenaltyController::class, 'store']);
+        Route::get('account-penalties/{accountPenalty}', [AccountPenaltyController::class, 'show']);
+        Route::post('account-penalties/{accountPenalty}/end', [AccountPenaltyController::class, 'end']);
+
+        Route::get('support-tickets', [SupportTicketController::class, 'index']);
+        Route::post('support-tickets', [SupportTicketController::class, 'store']);
+        Route::get('support-tickets/{supportTicket}', [SupportTicketController::class, 'show']);
+        Route::post('support-tickets/{supportTicket}/assign', [SupportTicketController::class, 'assign']);
+        Route::post('support-tickets/{supportTicket}/replies', [SupportTicketController::class, 'reply']);
+        Route::post('support-tickets/{supportTicket}/resolve', [SupportTicketController::class, 'resolve']);
+
+        Route::get('platform-settings', [PlatformSettingController::class, 'index']);
+        Route::post('platform-settings', [PlatformSettingController::class, 'store']);
+        Route::get('platform-settings/{platformSetting}', [PlatformSettingController::class, 'show']);
+        Route::put('platform-settings/{platformSetting}', [PlatformSettingController::class, 'update']);
+
+        Route::get('admin-integrations', [AdminIntegrationController::class, 'index']);
+        Route::post('admin-integrations', [AdminIntegrationController::class, 'store']);
+        Route::get('admin-integrations/{adminIntegration}', [AdminIntegrationController::class, 'show']);
+        Route::delete('admin-integrations/{adminIntegration}', [AdminIntegrationController::class, 'destroy']);
+
+        Route::get('content-approvals', [ContentApprovalQueueController::class, 'index']);
+        Route::get('content-approvals/{contentApprovalQueue}', [ContentApprovalQueueController::class, 'show']);
+        Route::post('content-approvals/{contentApprovalQueue}/assign', [ContentApprovalQueueController::class, 'assign']);
+        Route::post('content-approvals/{contentApprovalQueue}/approve', [ContentApprovalQueueController::class, 'approve']);
+        Route::post('content-approvals/{contentApprovalQueue}/reject', [ContentApprovalQueueController::class, 'reject']);
+
         Route::get('partner-profiles', [PartnerProfileController::class, 'index']);
         Route::post('partner-profiles', [PartnerProfileController::class, 'store']);
         Route::get('partner-profiles/{partnerProfile}', [PartnerProfileController::class, 'show']);
@@ -152,6 +195,8 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('partner-profiles/{partnerProfile}/members/{partnerMember}', [PartnerMemberController::class, 'destroy']);
     });
 });
+
+
 
 
 

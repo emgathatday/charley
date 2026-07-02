@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class SupportTicket extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'subject',
+        'category',
+        'priority',
+        'status',
+        'description',
+        'assigned_to',
+        'resolved_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'resolved_at' => 'datetime',
+        ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(SupportTicketReply::class, 'ticket_id');
+    }
+
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $query->where('status', 'open');
+    }
+
+    public function scopeResolved(Builder $query): Builder
+    {
+        return $query->where('status', 'resolved');
+    }
+
+    public function scopePriority(Builder $query, string $priority): Builder
+    {
+        return $query->where('priority', $priority);
+    }
+}

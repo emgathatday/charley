@@ -57,6 +57,26 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.taxonomy.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-tags"></i>
+                        <p>Taxonomy<i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.taxonomy.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.index') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>All Tags</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.taxonomy.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.create') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Create Tag</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-header">PARTNERS</li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.partner-profiles.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.partner-profiles.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.partner-profiles.*') ? 'active' : '' }}">
@@ -84,8 +104,29 @@
                         </li>
                     </ul>
                 </li>
-
-                <li class="nav-header">SUBSCRIPTIONS</li>
+                <li class="nav-header">ADMIN OPERATIONS</li>
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.admin-operations.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-kanban"></i>
+                        <p>Operations<i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Overview</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.support-tickets.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.support-tickets.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Ticket</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.account-penalties.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.account-penalties.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Penalty</p></a></li>
+                    </ul>
+                </li>
+                <li class="nav-header">FEED & CMS</li>
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-newspaper"></i>
+                        <p>Feed CMS<i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Pages & Priorities</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.feed-cms.pages.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.pages.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Page</p></a></li>
+                    </ul>
+                </li>                <li class="nav-header">SUBSCRIPTIONS</li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-credit-card"></i>
@@ -134,3 +175,6 @@
         </nav>
     </div>
 </aside>
+
+
+

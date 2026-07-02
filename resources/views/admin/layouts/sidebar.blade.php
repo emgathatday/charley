@@ -41,6 +41,33 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.taxonomy.index') }}"
+                       class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tags"></i>
+                        <p>
+                            Taxonomy
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.taxonomy.index') }}"
+                               class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Tags</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.taxonomy.create') }}"
+                               class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Create Tag</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.subscriptions.index') }}"
                        class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'active' : '' }}">
@@ -70,6 +97,40 @@
                                class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.*') && request()->has('quota_period') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Quotas</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.admin-operations.index') }}"
+                       class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tools"></i>
+                        <p>
+                            Admin Operations
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.admin-operations.index') }}"
+                               class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Overview</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.admin-operations.support-tickets.create') }}"
+                               class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.support-tickets.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Create Ticket</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.admin-operations.account-penalties.create') }}"
+                               class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.account-penalties.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Create Penalty</p>
                             </a>
                         </li>
                     </ul>
