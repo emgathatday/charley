@@ -24,10 +24,12 @@ class DatabaseSeeder extends Seeder
             AdminOperationsSeeder::class,
             TaxonomySeeder::class,
             FeedCmsSeeder::class,
+            LibrarySeeder::class,
             DemoPartnerDashboardSeeder::class,
         ]);
     }
 }
+
 
 
 

@@ -1,23 +1,33 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminOperationsController;
+use App\Http\Controllers\Admin\FeedCmsController;
 use App\Http\Controllers\Admin\IamSecurityController;
 use App\Http\Controllers\Admin\IamUserController;
 use App\Http\Controllers\Admin\IamVerificationController;
-use App\Http\Controllers\Admin\AdminOperationsController;
-use App\Http\Controllers\Admin\FeedCmsController;
+use App\Http\Controllers\Admin\LibraryController;
 use App\Http\Controllers\Admin\MediaFileController;
-use App\Http\Controllers\Admin\PlantTypeController;
 use App\Http\Controllers\Admin\PartnerProfileController;
+use App\Http\Controllers\Admin\PlantTypeController;
 use App\Http\Controllers\Admin\SubscriptionAdminController;
 use App\Http\Controllers\Admin\TaxonomyController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\LibraryPageController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('feed', [PageController::class, 'feed'])->name('feed.index');
 Route::get('pages', [PageController::class, 'index'])->name('pages.index');
 Route::get('pages/{slug}', [PageController::class, 'show'])->name('pages.show');
+
+Route::get('library', [LibraryPageController::class, 'index'])->name('library.index');
+Route::get('library/categories/{category}', [LibraryPageController::class, 'category'])->name('library.categories.show');
+Route::get('library/items/{libraryItem}', [LibraryPageController::class, 'show'])->name('library.items.show');
+Route::get('library/items/{libraryItem}/preview', [LibraryPageController::class, 'preview'])->name('library.items.preview');
+Route::middleware('auth')->group(function (): void {
+    Route::post('library/items/{libraryItem}/view', [LibraryPageController::class, 'recordView'])->name('library.items.record-view');
+    Route::post('library/items/{libraryItem}/download', [LibraryPageController::class, 'download'])->name('library.items.download');
+});
 
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [AdminAuthController::class, 'showLogin'])->name('login');
@@ -84,6 +94,13 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::post('admin-operations/admin-integrations', [AdminOperationsController::class, 'storeIntegration'])->name('admin-operations.admin-integrations.store');
     Route::post('admin-operations/content-approvals/{contentApprovalQueue}/assign', [AdminOperationsController::class, 'assignContent'])->name('admin-operations.content-approvals.assign');
     Route::post('admin-operations/content-approvals/{contentApprovalQueue}/approve', [AdminOperationsController::class, 'approveContent'])->name('admin-operations.content-approvals.approve');
+    Route::get('library', [LibraryController::class, 'index'])->name('library.index');
+    Route::get('library/categories', [LibraryController::class, 'categories'])->name('library.categories');
+    Route::get('library/items', [LibraryController::class, 'items'])->name('library.items');
+    Route::get('library/approvals', [LibraryController::class, 'approvals'])->name('library.approvals');
+    Route::get('library/access-rules', [LibraryController::class, 'accessRules'])->name('library.access-rules');
+    Route::get('library/access-logs', [LibraryController::class, 'accessLogs'])->name('library.access-logs');
+    Route::get('library/upload-metadata', [LibraryController::class, 'uploadMetadata'])->name('library.upload-metadata');
     Route::get('feed-cms', [FeedCmsController::class, 'index'])->name('feed-cms.index');
     Route::get('feed-cms/pages/create', [FeedCmsController::class, 'create'])->name('feed-cms.pages.create');
     Route::post('feed-cms/pages', [FeedCmsController::class, 'store'])->name('feed-cms.pages.store');
@@ -94,8 +111,3 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::post('feed-cms/pages/{page}/revisions/{pageRevision}/rollback', [FeedCmsController::class, 'rollback'])->name('feed-cms.pages.revisions.rollback');
     Route::put('feed-cms/priorities/{contentType}', [FeedCmsController::class, 'updatePriority'])->name('feed-cms.priorities.update');
 });
-
-
-
-
-
