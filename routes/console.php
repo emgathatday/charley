@@ -5,6 +5,7 @@ use App\Jobs\ExpireStaleFeedCacheJob;
 use App\Jobs\RebuildPersonalizedFeedCachesJob;
 use App\Jobs\RefreshHomepageFeedPriorityEffectsJob;
 use App\Jobs\RebuildProfileSearchIndexJob;
+use App\Jobs\SyncHandbookArticleVectors;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -67,4 +68,13 @@ Schedule::call(function (): void {
         ]);
     }
 })->daily()->name('feed-priority-effects-refresh')->withoutOverlapping();
-
+// Retry failed handbook metadata vector sync hooks for published AI-trainable articles.
+Schedule::call(function (): void {
+    try {
+        SyncHandbookArticleVectors::dispatch(null, true)->onQueue('handbook');
+    } catch (Throwable $exception) {
+        Log::error('Unable to dispatch handbook vector sync retry schedule.', [
+            'message' => $exception->getMessage(),
+        ]);
+    }
+})->everyThirtyMinutes()->name('handbook-vector-sync-retry')->withoutOverlapping();

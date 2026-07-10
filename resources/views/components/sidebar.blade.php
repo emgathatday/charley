@@ -130,8 +130,12 @@
                         <li class="nav-item"><a href="{{ route('admin.dashboard.library.access-rules') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.access-rules') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Access Rules</p></a></li>
                         <li class="nav-item"><a href="{{ route('admin.dashboard.library.access-logs') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.access-logs') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Access Logs</p></a></li>
                         <li class="nav-item"><a href="{{ route('admin.dashboard.library.upload-metadata') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.upload-metadata') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Upload Metadata</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.quizzes.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.quizzes.*') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Quizzes</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.expertise-ranks.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.expertise-ranks.*') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Expertise Ranks</p></a></li>
                     </ul>
-                </li>                <li class="nav-header">FEED & CMS</li>
+                </li>
+                @include('admin.partials.sidebar')
+                <li class="nav-header">FEED & CMS</li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-newspaper"></i>

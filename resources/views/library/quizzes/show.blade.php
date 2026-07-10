@@ -1,0 +1,14 @@
+@extends('layouts.master')
+
+@section('title', $quiz->title)
+
+@section('content_header')
+    <div class="app-content-header"><div class="container-fluid"><div class="row align-items-center"><div class="col-sm-6"><h1 class="mb-0">{{ $quiz->title }}</h1></div><div class="col-sm-6"><ol class="breadcrumb float-sm-end mb-0"><li class="breadcrumb-item"><a href="{{ route('library.quizzes.index') }}">Quizzes</a></li><li class="breadcrumb-item active">Attempt</li></ol></div></div></div></div>
+@endsection
+
+@section('content')
+    <div class="app-content"><div class="container-fluid">
+        @if ($errors->any())<div class="alert alert-danger">{{ $errors->first() }}</div>@endif
+        <div class="row g-3"><div class="col-lg-8"><div class="card card-outline card-primary"><div class="card-header"><h3 class="card-title mb-0">{{ $quiz->knowledgeDomain?->name ?? 'Knowledge Check' }}</h3></div><form method="POST" action="{{ route('library.quizzes.submit', $quiz) }}">@csrf<div class="card-body">@foreach ($quiz->questions as $question)<div class="mb-4"><h2 class="h6">{{ $loop->iteration }}. {{ $question->question_text }}</h2>@foreach ($question->options ?? [] as $index => $option)<div class="form-check"><input class="form-check-input" type="{{ $question->question_type === 'multiple_choice' ? 'checkbox' : 'radio' }}" name="answers[{{ $question->id }}]{{ $question->question_type === 'multiple_choice' ? '[]' : '' }}" id="q{{ $question->id }}_{{ $index }}" value="{{ $index }}" {{ $loop->first && $question->question_type !== 'multiple_choice' ? 'required' : '' }}><label class="form-check-label" for="q{{ $question->id }}_{{ $index }}">{{ $option }}</label></div>@endforeach</div>@endforeach</div><div class="card-footer d-flex justify-content-between align-items-center"><span class="text-body-secondary">{{ $quiz->time_limit_minutes ? $quiz->time_limit_minutes.' minute limit' : 'No time limit' }}</span>@auth<button class="btn btn-primary" type="submit"><i class="bi bi-send-check me-1"></i>Submit</button>@else<a class="btn btn-primary" href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right me-1"></i>Sign in</a>@endauth</div></form></div></div><div class="col-lg-4"><div class="card card-outline card-info"><div class="card-body"><h2 class="h5">Domain Rank</h2>@if ($domainPoint)<div class="display-6">{{ $domainPoint->total_points }}</div><span class="badge text-bg-success">{{ $domainPoint->currentRankTier?->name ?? 'Rank pending' }}</span>@else<p class="text-body-secondary mb-0">Complete this quiz to start earning domain points.</p>@endif<div class="small text-body-secondary mt-3">Attempts used: {{ $attemptsUsed }}{{ $quiz->max_attempts_per_user ? ' / '.$quiz->max_attempts_per_user : '' }}</div></div></div></div></div>
+    </div></div>
+@endsection
