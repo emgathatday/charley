@@ -116,7 +116,6 @@
                         <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.account-penalties.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.account-penalties.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Penalty</p></a></li>
                     </ul>
                 </li>
-                @include('admin.partials.sidebar')
                 <li class="nav-header">FEED & CMS</li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'active' : '' }}">
