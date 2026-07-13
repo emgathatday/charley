@@ -24,10 +24,6 @@ class DatabaseSeeder extends Seeder
             AdminOperationsSeeder::class,
             TaxonomySeeder::class,
             FeedCmsSeeder::class,
-            KnowledgeDomainSeeder::class,
-            DomainRankTierSeeder::class,
-            QuizDomainSeeder::class,
-            HandbookSeeder::class,
             DemoPartnerDashboardSeeder::class,
         ]);
     }
