@@ -17,4 +17,5 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::post('admin-operations/admin-integrations', [AdminOperationsController::class, 'storeIntegration'])->name('admin-operations.admin-integrations.store');
     Route::post('admin-operations/content-approvals/{contentApprovalQueue}/assign', [AdminOperationsController::class, 'assignContent'])->name('admin-operations.content-approvals.assign');
     Route::post('admin-operations/content-approvals/{contentApprovalQueue}/approve', [AdminOperationsController::class, 'approveContent'])->name('admin-operations.content-approvals.approve');
+    Route::post('admin-operations/content-approvals/{contentApprovalQueue}/reject', [AdminOperationsController::class, 'rejectContent'])->name('admin-operations.content-approvals.reject');
 });

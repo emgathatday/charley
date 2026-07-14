@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,12 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LibraryAccessRule extends Model
 {
     use HasFactory;
-
-    public const PARTNER_TIERS = [
-        'gold',
-        'diamond',
-        'platinum',
-    ];
 
     protected $fillable = [
         'partner_tier',
@@ -36,23 +29,8 @@ class LibraryAccessRule extends Model
         'max_downloads_per_month' => 'integer',
     ];
 
-    public function updater(): BelongsTo
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
-    }
-
-    public function scopeForTier(Builder $query, string $partnerTier): Builder
-    {
-        return $query->where('partner_tier', $partnerTier);
-    }
-
-    public function allowsDownload(): bool
-    {
-        return $this->can_view && $this->can_download;
-    }
-
-    public function allowsCopyPaste(): bool
-    {
-        return $this->can_view && $this->can_copy_paste;
     }
 }

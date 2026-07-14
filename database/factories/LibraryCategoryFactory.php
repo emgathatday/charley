@@ -2,16 +2,16 @@
 
 namespace Database\Factories;
 
+use App\Models\LibraryCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
- * @extends Factory<Model>
+ * @extends Factory<LibraryCategory>
  */
 class LibraryCategoryFactory extends Factory
 {
-    protected $model = LibraryCategoryFactoryModel::class;
+    protected $model = LibraryCategory::class;
 
     public function definition(): array
     {
@@ -24,11 +24,11 @@ class LibraryCategoryFactory extends Factory
             'sort_order' => fake()->numberBetween(0, 100),
         ];
     }
-}
 
-class LibraryCategoryFactoryModel extends Model
-{
-    protected $table = 'library_categories';
-
-    protected $guarded = [];
+    public function childOf(LibraryCategory $category): static
+    {
+        return $this->state(fn (): array => [
+            'parent_id' => $category->id,
+        ]);
+    }
 }

@@ -31,12 +31,13 @@ class LibraryItemResource extends JsonResource
             'item_type' => $this->item_type,
             'view_count' => $this->view_count,
             'approved_by' => $this->approved_by,
-            'approved_at' => $this->approved_at?->toISOString(),
+            'approved_at' => $this->approved_at,
             'year' => $this->year,
             'file_media_id' => $this->file_media_id,
-            'category' => new LibraryCategoryResource($this->whenLoaded('category')),
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'category' => LibraryCategoryResource::make($this->whenLoaded('category')),
+            'file_media' => MediaFileResource::make($this->whenLoaded('fileMedia')),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

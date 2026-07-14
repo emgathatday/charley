@@ -57,6 +57,32 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.library.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.library.items.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.*') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-journal-richtext"></i>
+                        <p>Library<i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.library.items.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.items.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Library Items</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.library.knowledge-domains.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.knowledge-domains.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Knowledge Domains</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.library.rank-tiers.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.rank-tiers.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Ranks Tiers</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.taxonomy.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-tags"></i>
@@ -116,22 +142,7 @@
                         <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.account-penalties.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.account-penalties.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Penalty</p></a></li>
                     </ul>
                 </li>
-                <li class="nav-header">LIBRARY</li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.library.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.library.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-journal-richtext"></i>
-                        <p>Technical Library<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Overview</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.categories') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.categories') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Categories</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.items') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.items') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Items</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.approvals') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.approvals') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Approvals</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.access-rules') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.access-rules') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Access Rules</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.access-logs') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.access-logs') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Access Logs</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.library.upload-metadata') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.upload-metadata') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Upload Metadata</p></a></li>
-                    </ul>
-                </li>                <li class="nav-header">FEED & CMS</li>
+                <li class="nav-header">FEED & CMS</li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-newspaper"></i>

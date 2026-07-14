@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\LibraryItem;
 use App\Models\User;
-use App\Services\Library\LibraryAccessService;
 use Illuminate\Auth\Access\Response;
 
 class LibraryItemPolicy
@@ -21,51 +20,23 @@ class LibraryItemPolicy
 
     public function view(?User $user, LibraryItem $libraryItem): Response
     {
-        if (! $this->isPublishedAndApproved($libraryItem)) {
-            return Response::deny('Library item is not available.');
-        }
-
-        return app(LibraryAccessService::class)->canView($libraryItem, $user, $this->partnerTier())
+        return $libraryItem->status === 'published'
             ? Response::allow()
-            : Response::deny('You are not allowed to view this library item.');
+            : Response::deny('Library item is not published.');
     }
 
-    public function download(User $user, LibraryItem $libraryItem): Response
+    public function create(User $user): Response
     {
-        return app(LibraryAccessService::class)->canDownload($libraryItem, $user, $this->partnerTier())
-            ? Response::allow()
-            : Response::deny('You are not allowed to download this library item.');
+        return Response::deny('Only admins can create library items.');
     }
 
-    public function copyPaste(User $user, LibraryItem $libraryItem): Response
+    public function update(User $user, LibraryItem $libraryItem): Response
     {
-        return app(LibraryAccessService::class)->canCopyPaste($libraryItem, $user, $this->partnerTier())
-            ? Response::allow()
-            : Response::deny('You are not allowed to copy this library item.');
+        return Response::deny('Only admins can update library items.');
     }
 
-    public function manage(User $user): Response
+    public function delete(User $user, LibraryItem $libraryItem): Response
     {
-        return Response::deny('Only admins can manage library items.');
-    }
-
-    public function approve(User $user, LibraryItem $libraryItem): Response
-    {
-        return Response::deny('Only admins can approve library items.');
-    }
-
-    public function archive(User $user, LibraryItem $libraryItem): Response
-    {
-        return Response::deny('Only admins can archive library items.');
-    }
-
-    private function isPublishedAndApproved(LibraryItem $libraryItem): bool
-    {
-        return $libraryItem->status === LibraryItem::STATUS_PUBLISHED && $libraryItem->approved_at !== null;
-    }
-
-    private function partnerTier(): ?string
-    {
-        return request()->input('partner_tier');
+        return Response::deny('Only admins can delete library items.');
     }
 }

@@ -19,8 +19,8 @@ class LibraryAccessRuleResource extends JsonResource
             'max_downloads_per_month' => $this->max_downloads_per_month,
             'notes' => $this->notes,
             'updated_by' => $this->updated_by,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

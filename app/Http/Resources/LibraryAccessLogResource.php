@@ -15,7 +15,7 @@ class LibraryAccessLogResource extends JsonResource
             'user_id' => $this->user_id,
             'action' => $this->action,
             'ip_address' => $this->ip_address,
-            'created_at' => $this->created_at?->toISOString(),
+            'created_at' => $this->created_at,
         ];
     }
 }

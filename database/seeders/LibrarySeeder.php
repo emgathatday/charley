@@ -2,168 +2,437 @@
 
 namespace Database\Seeders;
 
+use App\Models\ExpertiseRankTier;
+use App\Models\KnowledgeDomain;
+use App\Models\LibraryAccessRule;
+use App\Models\LibraryCategory;
+use App\Models\LibraryItem;
+use App\Models\MandatoryQuizDomain;
+use App\Models\PlantType;
+use App\Models\QuizQuestion;
+use App\Models\QuizQuestionChoice;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class LibrarySeeder extends Seeder
 {
     public function run(): void
     {
-        $adminUserId = DB::table('users')->where('role', 'admin')->value('id')
-            ?? DB::table('users')->value('id');
-        $sampleUserId = DB::table('users')->orderBy('id')->value('id');
-        $plantTypeId = DB::table('plant_types')->where('is_active', true)->orderBy('sort_order')->value('id')
-            ?? DB::table('plant_types')->value('id');
-        $mediaFileId = DB::table('media_files')->where('file_category', 'document')->value('id')
-            ?? DB::table('media_files')->value('id');
+        $user = $this->libraryUser();
+        $plantTypes = PlantType::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit(3)
+            ->get();
 
-        $categoryModel = new LibraryCategorySeedModel();
-        $categories = collect($this->categories())->mapWithKeys(function (array $category) use ($categoryModel) {
-            $record = $categoryModel->newQuery()->firstOrCreate(
-                ['slug' => $category['slug']],
-                $category,
-            );
-
-            return [$category['slug'] => $record];
-        });
-
-        $itemModel = new LibraryItemSeedModel();
-        foreach ($this->items($categories, $adminUserId, $sampleUserId, $plantTypeId, $mediaFileId) as $item) {
-            $itemModel->newQuery()->firstOrCreate(
-                ['slug' => $item['slug']],
-                $item,
-            );
+        if ($plantTypes->isEmpty()) {
+            $plantTypes = collect([
+                PlantType::query()->firstOrCreate(
+                    ['slug' => 'library-demo-plant'],
+                    [
+                        'name' => 'Library Demo Plant',
+                        'description' => 'Demo plant type used by library seed data.',
+                        'is_active' => true,
+                        'sort_order' => 999,
+                    ]
+                ),
+            ]);
         }
 
-        $ruleModel = new LibraryAccessRuleSeedModel();
-        foreach ($this->accessRules($adminUserId) as $rule) {
-            $ruleModel->newQuery()->firstOrCreate(
+        $categories = $this->seedCategories();
+        $this->seedAccessRules($user);
+        $domains = $this->seedKnowledgeDomains($plantTypes, $user);
+        $this->seedLibraryItems($categories, $domains, $user);
+        $this->seedQuizQuestions($domains, $user);
+        $this->seedExpertiseRankTiers();
+        $this->seedMandatoryQuizDomains($plantTypes, $domains);
+    }
+
+    private function libraryUser(): User
+    {
+        return User::query()->firstOrCreate(
+            ['email' => 'library.admin@example.test'],
+            [
+                'username' => 'library_admin',
+                'first_name' => 'Library',
+                'last_name' => 'Admin',
+                'password' => bcrypt(Str::random(32)),
+                'role' => 'admin',
+                'status' => 'active',
+                'is_verified' => true,
+                'verified_at' => now(),
+            ]
+        );
+    }
+
+    private function seedCategories(): array
+    {
+        $records = [
+            [
+                'title' => 'Operating Procedures',
+                'slug' => 'operating-procedures',
+                'sort_order' => 10,
+                'children' => [
+                    ['title' => 'Startup and Shutdown', 'slug' => 'startup-and-shutdown', 'sort_order' => 11],
+                    ['title' => 'Troubleshooting Guides', 'slug' => 'troubleshooting-guides', 'sort_order' => 12],
+                ],
+            ],
+            [
+                'title' => 'Process Safety',
+                'slug' => 'process-safety',
+                'sort_order' => 20,
+                'children' => [
+                    ['title' => 'Hazard Reviews', 'slug' => 'hazard-reviews', 'sort_order' => 21],
+                ],
+            ],
+            [
+                'title' => 'Equipment Reliability',
+                'slug' => 'equipment-reliability',
+                'sort_order' => 30,
+                'children' => [],
+            ],
+        ];
+
+        $categories = [];
+
+        foreach ($records as $record) {
+            $parent = LibraryCategory::query()->firstOrCreate(
+                ['slug' => $record['slug']],
+                [
+                    'title' => $record['title'],
+                    'parent_id' => null,
+                    'sort_order' => $record['sort_order'],
+                ]
+            );
+
+            $categories[] = $parent;
+
+            foreach ($record['children'] as $child) {
+                $categories[] = LibraryCategory::query()->firstOrCreate(
+                    ['slug' => $child['slug']],
+                    [
+                        'title' => $child['title'],
+                        'parent_id' => $parent->id,
+                        'sort_order' => $child['sort_order'],
+                    ]
+                );
+            }
+        }
+
+        return $categories;
+    }
+
+    private function seedAccessRules(User $user): void
+    {
+        $rules = [
+            [
+                'partner_tier' => 'gold',
+                'can_download' => false,
+                'can_copy_paste' => false,
+                'requires_watermark' => true,
+                'max_downloads_per_month' => 5,
+            ],
+            [
+                'partner_tier' => 'diamond',
+                'can_download' => true,
+                'can_copy_paste' => false,
+                'requires_watermark' => true,
+                'max_downloads_per_month' => 20,
+            ],
+            [
+                'partner_tier' => 'platinum',
+                'can_download' => true,
+                'can_copy_paste' => true,
+                'requires_watermark' => false,
+                'max_downloads_per_month' => null,
+            ],
+        ];
+
+        foreach ($rules as $rule) {
+            LibraryAccessRule::query()->firstOrCreate(
                 ['partner_tier' => $rule['partner_tier']],
-                $rule,
+                [
+                    'can_view' => true,
+                    'can_download' => $rule['can_download'],
+                    'can_copy_paste' => $rule['can_copy_paste'],
+                    'requires_watermark' => $rule['requires_watermark'],
+                    'max_downloads_per_month' => $rule['max_downloads_per_month'],
+                    'notes' => Str::headline($rule['partner_tier']).' partner library access baseline.',
+                    'updated_by' => $user->id,
+                ]
+            );
+        }
+    }
+
+    private function seedKnowledgeDomains($plantTypes, User $user): array
+    {
+        $records = [
+            [
+                'name' => 'Process Safety Fundamentals',
+                'slug' => 'process-safety-fundamentals',
+                'description' => 'Core safety concepts for technical library readers.',
+                'icon' => 'shield-check',
+                'sort_order' => 10,
+            ],
+            [
+                'name' => 'Operations Troubleshooting',
+                'slug' => 'operations-troubleshooting',
+                'description' => 'Operational diagnosis and response patterns.',
+                'icon' => 'activity',
+                'sort_order' => 20,
+            ],
+            [
+                'name' => 'Equipment Reliability',
+                'slug' => 'equipment-reliability',
+                'description' => 'Reliability and maintenance practices for critical equipment.',
+                'icon' => 'settings',
+                'sort_order' => 30,
+            ],
+        ];
+
+        $domains = [];
+
+        foreach ($records as $index => $record) {
+            $plantType = $plantTypes->values()->get($index % $plantTypes->count());
+
+            $domains[] = KnowledgeDomain::query()->firstOrCreate(
+                ['slug' => $record['slug']],
+                [
+                    'name' => $record['name'],
+                    'description' => $record['description'],
+                    'status' => 'active',
+                    'created_by' => $user->id,
+                    'plant_type_id' => $plantType?->id,
+                    'icon' => $record['icon'],
+                    'total_question_count' => 2,
+                    'is_active' => true,
+                    'sort_order' => $record['sort_order'],
+                ]
             );
         }
 
-        $firstItemId = DB::table('library_items')->orderBy('id')->value('id');
-        if ($firstItemId && $sampleUserId) {
-            $logModel = new LibraryAccessLogSeedModel();
-            foreach (['view', 'download'] as $action) {
-                $logModel->newQuery()->firstOrCreate(
+        return $domains;
+    }
+
+    private function seedLibraryItems(array $categories, array $domains, User $user): void
+    {
+        foreach ($domains as $index => $domain) {
+            $category = $categories[$index % count($categories)];
+
+            LibraryItem::query()->firstOrCreate(
+                ['slug' => $domain->slug.'-field-guide'],
+                [
+                    'category_id' => $category->id,
+                    'user_id' => $user->id,
+                    'title' => $domain->name.' Field Guide',
+                    'summary' => 'Demo technical guide for visual library checks.',
+                    'content' => 'Approved demo content for browsing, search, and quiz context checks.',
+                    'plant_type_id' => $domain->plant_type_id,
+                    'author' => 'Charley Technical Team',
+                    'source' => 'Internal demo dataset',
+                    'published_year' => now()->year,
+                    'access_level' => 'professional_only',
+                    'download_allowed' => false,
+                    'copy_paste_disabled' => true,
+                    'download_count' => 0,
+                    'status' => 'published',
+                    'is_ai_trainable' => true,
+                    'content_type' => 'article',
+                    'item_type' => 'handbook',
+                    'view_count' => 0,
+                    'approved_by' => $user->id,
+                    'approved_at' => now(),
+                    'year' => now()->year,
+                    'file_media_id' => null,
+                ]
+            );
+        }
+    }
+
+    private function seedQuizQuestions(array $domains, User $user): void
+    {
+        foreach ($domains as $domain) {
+            $quizId = $this->quizIdForDomain($domain, $user);
+
+            $question = QuizQuestion::query()->firstOrCreate(
+                [
+                    'knowledge_domain_id' => $domain->id,
+                    'question_text' => 'What is the first review step for '.$domain->name.'?',
+                ],
+                [
+                    'quiz_id' => $quizId,
+                    'question_type' => 'single_choice',
+                    'options' => ['Confirm source approval', 'Skip document control', 'Download unrestricted files'],
+                    'correct_answer' => ['Confirm source approval'],
+                    'points' => 1,
+                    'explanation' => 'Approved source review keeps library and AI training data trustworthy.',
+                    'sort_order' => 1,
+                    'question_image_media_id' => null,
+                    'difficulty_level' => 'medium',
+                    'status' => 'active',
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id,
+                ]
+            );
+
+            foreach ([
+                ['choice_text' => 'Confirm source approval', 'is_correct' => true, 'sort_order' => 1],
+                ['choice_text' => 'Skip document control', 'is_correct' => false, 'sort_order' => 2],
+                ['choice_text' => 'Download unrestricted files', 'is_correct' => false, 'sort_order' => 3],
+            ] as $choice) {
+                QuizQuestionChoice::query()->firstOrCreate(
                     [
-                        'library_item_id' => $firstItemId,
-                        'user_id' => $sampleUserId,
-                        'action' => $action,
+                        'question_id' => $question->id,
+                        'choice_text' => $choice['choice_text'],
                     ],
                     [
-                        'ip_address' => '127.0.0.1',
-                        'created_at' => now()->subMinutes($action === 'view' ? 30 : 10),
-                    ],
+                        'is_correct' => $choice['is_correct'],
+                        'explanation' => $choice['is_correct']
+                            ? 'Correct: approval is required before public display or AI use.'
+                            : 'Incorrect: the library workflow must preserve governance controls.',
+                        'sort_order' => $choice['sort_order'],
+                    ]
                 );
             }
         }
     }
 
-    private function categories(): array
+    private function quizIdForDomain(KnowledgeDomain $domain, User $user): ?int
     {
-        return [
-            ['title' => 'Process Safety', 'slug' => 'process-safety', 'parent_id' => null, 'sort_order' => 10],
-            ['title' => 'Operations Handbook', 'slug' => 'operations-handbook', 'parent_id' => null, 'sort_order' => 20],
-            ['title' => 'Case Studies', 'slug' => 'case-studies', 'parent_id' => null, 'sort_order' => 30],
-        ];
+        if (! Schema::hasTable('quizzes')) {
+            return null;
+        }
+
+        $quiz = new class extends Model
+        {
+            protected $table = 'quizzes';
+
+            protected $fillable = [
+                'knowledge_domain_id',
+                'title',
+                'slug',
+                'description',
+                'time_limit_minutes',
+                'max_attempts_per_user',
+                'status',
+                'created_by',
+            ];
+        };
+
+        return $quiz->newQuery()->firstOrCreate(
+            ['slug' => $domain->slug.'-baseline-check'],
+            [
+                'knowledge_domain_id' => $domain->id,
+                'title' => $domain->name.' Baseline Check',
+                'description' => 'Demo quiz for library UI validation.',
+                'time_limit_minutes' => 20,
+                'max_attempts_per_user' => 3,
+                'status' => 'published',
+                'created_by' => $user->id,
+            ]
+        )->id;
     }
 
-    private function items($categories, ?int $adminUserId, ?int $sampleUserId, ?int $plantTypeId, ?int $mediaFileId): array
+    private function seedExpertiseRankTiers(): void
     {
-        return [
+        $records = [
             [
-                'category_id' => $categories['process-safety']->id,
-                'user_id' => $sampleUserId,
-                'title' => 'Safe Start-up Checklist for Process Units',
-                'slug' => 'safe-start-up-checklist-process-units',
-                'summary' => 'Demo technical checklist for reviewing start-up readiness, interlocks, permits and operating limits.',
-                'content' => 'This safe demo item outlines readiness checks, shift handover notes and verification steps for process unit start-up. Replace with approved technical content before production use.',
-                'plant_type_id' => $plantTypeId,
-                'author' => 'Charley Technical Team',
-                'source' => 'Demo Library',
-                'published_year' => 2026,
-                'access_level' => 'professional_only',
-                'download_allowed' => true,
-                'copy_paste_disabled' => true,
-                'download_count' => 0,
-                'status' => 'published',
-                'is_ai_trainable' => true,
-                'content_type' => 'document',
-                'item_type' => 'handbook',
-                'view_count' => 12,
-                'approved_by' => $adminUserId,
-                'approved_at' => now(),
-                'year' => 2026,
-                'file_media_id' => $mediaFileId,
+                'name' => 'Unverified user',
+                'slug' => 'unverified-user',
+                'min_years_experience' => null,
+                'default_cap_percentage' => 0,
+                'rank_order' => 0,
+                'required_quiz_count' => 0,
+                'required_mandatory_quiz_count' => 0,
             ],
             [
-                'category_id' => $categories['operations-handbook']->id,
-                'user_id' => $sampleUserId,
-                'title' => 'Operator Shift Handover Template',
-                'slug' => 'operator-shift-handover-template',
-                'summary' => 'Demo operations template for consistent shift handover notes and open action tracking.',
-                'content' => 'This approved demo content captures equipment status, process deviations, safety notes and pending maintenance actions.',
-                'plant_type_id' => $plantTypeId,
-                'author' => 'Charley Operations Team',
-                'source' => 'Demo Library',
-                'published_year' => 2026,
-                'access_level' => 'member',
-                'download_allowed' => false,
-                'copy_paste_disabled' => false,
-                'download_count' => 0,
-                'status' => 'published',
-                'is_ai_trainable' => true,
-                'content_type' => 'article',
-                'item_type' => 'article',
-                'view_count' => 8,
-                'approved_by' => $adminUserId,
-                'approved_at' => now(),
-                'year' => 2026,
-                'file_media_id' => null,
+                'name' => 'Industry Professional',
+                'slug' => 'industry-professional',
+                'min_years_experience' => 0,
+                'default_cap_percentage' => 30,
+                'rank_order' => 10,
+                'required_quiz_count' => 10,
+                'required_mandatory_quiz_count' => 3,
+            ],
+            [
+                'name' => 'Experienced Professional',
+                'slug' => 'experienced-professional',
+                'min_years_experience' => 8,
+                'default_cap_percentage' => 50,
+                'rank_order' => 20,
+                'required_quiz_count' => 10,
+                'required_mandatory_quiz_count' => 3,
+            ],
+            [
+                'name' => 'Senior Industry Expert',
+                'slug' => 'senior-industry-expert',
+                'min_years_experience' => 15,
+                'default_cap_percentage' => 70,
+                'rank_order' => 30,
+                'required_quiz_count' => 10,
+                'required_mandatory_quiz_count' => 3,
             ],
         ];
+
+        $baselineSlugs = collect($records)->pluck('slug')->all();
+
+        ExpertiseRankTier::query()
+            ->whereNotIn('slug', $baselineSlugs)
+            ->get()
+            ->each(function (ExpertiseRankTier $tier): void {
+                $tier->forceFill([
+                    'rank_order' => 10000 + $tier->id,
+                    'status' => 'deleted',
+                    'is_active' => false,
+                ])->save();
+            });
+
+        foreach ($records as $tier) {
+            $baseline = [
+                'name' => $tier['name'],
+                'min_years_experience' => $tier['min_years_experience'],
+                'default_cap_percentage' => $tier['default_cap_percentage'],
+                'rank_order' => $tier['rank_order'],
+                'required_quiz_count' => $tier['required_quiz_count'],
+                'required_mandatory_quiz_count' => $tier['required_mandatory_quiz_count'],
+                'status' => 'active',
+                'is_active' => true,
+            ];
+
+            $record = ExpertiseRankTier::query()->firstOrCreate(
+                ['slug' => $tier['slug']],
+                $baseline
+            );
+
+            $record->fill([
+                'name' => $tier['name'],
+                'min_years_experience' => $tier['min_years_experience'],
+                'default_cap_percentage' => $tier['default_cap_percentage'],
+                'rank_order' => $tier['rank_order'],
+                'required_quiz_count' => $tier['required_quiz_count'],
+                'required_mandatory_quiz_count' => $tier['required_mandatory_quiz_count'],
+                'status' => 'active',
+                'is_active' => true,
+            ])->save();
+        }
     }
 
-    private function accessRules(?int $adminUserId): array
+    private function seedMandatoryQuizDomains($plantTypes, array $domains): void
     {
-        return [
-            ['partner_tier' => 'gold', 'can_view' => true, 'can_download' => false, 'can_copy_paste' => false, 'requires_watermark' => true, 'max_downloads_per_month' => 10, 'notes' => 'Gold tier can view approved professional library content.', 'updated_by' => $adminUserId],
-            ['partner_tier' => 'diamond', 'can_view' => true, 'can_download' => true, 'can_copy_paste' => false, 'requires_watermark' => true, 'max_downloads_per_month' => 40, 'notes' => 'Diamond tier can download watermarked approved documents.', 'updated_by' => $adminUserId],
-            ['partner_tier' => 'platinum', 'can_view' => true, 'can_download' => true, 'can_copy_paste' => true, 'requires_watermark' => false, 'max_downloads_per_month' => null, 'notes' => 'Platinum tier has expanded access subject to approval rules.', 'updated_by' => $adminUserId],
-        ];
+        foreach ($plantTypes as $index => $plantType) {
+            $domain = $domains[$index % count($domains)];
+
+            MandatoryQuizDomain::query()->firstOrCreate(
+                [
+                    'plant_type_id' => $plantType->id,
+                    'knowledge_domain_id' => $domain->id,
+                ],
+                ['is_active' => true]
+            );
+        }
     }
-}
-
-class LibraryCategorySeedModel extends Model
-{
-    protected $table = 'library_categories';
-
-    protected $guarded = [];
-}
-
-class LibraryItemSeedModel extends Model
-{
-    protected $table = 'library_items';
-
-    protected $guarded = [];
-}
-
-class LibraryAccessRuleSeedModel extends Model
-{
-    protected $table = 'library_access_rules';
-
-    protected $guarded = [];
-}
-
-class LibraryAccessLogSeedModel extends Model
-{
-    public $timestamps = false;
-
-    protected $table = 'library_access_logs';
-
-    protected $guarded = [];
 }

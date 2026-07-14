@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,13 +37,8 @@ class LibraryCategory extends Model
         return $this->hasMany(LibraryItem::class, 'category_id');
     }
 
-    public function scopeRoot(Builder $query): Builder
+    public function scopeRoot($query)
     {
         return $query->whereNull('parent_id');
-    }
-
-    public function scopeOrdered(Builder $query): Builder
-    {
-        return $query->orderBy('sort_order')->orderBy('title');
     }
 }

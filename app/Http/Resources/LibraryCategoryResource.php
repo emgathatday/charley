@@ -15,9 +15,9 @@ class LibraryCategoryResource extends JsonResource
             'slug' => $this->slug,
             'parent_id' => $this->parent_id,
             'sort_order' => $this->sort_order,
-            'items_count' => $this->whenCounted('items'),
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'children' => self::collection($this->whenLoaded('children')),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

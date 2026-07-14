@@ -2,34 +2,28 @@
 
 namespace Database\Factories;
 
+use App\Models\LibraryAccessRule;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
 
 /**
- * @extends Factory<Model>
+ * @extends Factory<LibraryAccessRule>
  */
 class LibraryAccessRuleFactory extends Factory
 {
-    protected $model = LibraryAccessRuleFactoryModel::class;
+    protected $model = LibraryAccessRule::class;
 
     public function definition(): array
     {
         return [
             'partner_tier' => fake()->unique()->randomElement(['gold', 'diamond', 'platinum']),
             'can_view' => true,
-            'can_download' => fake()->boolean(60),
-            'can_copy_paste' => fake()->boolean(40),
-            'requires_watermark' => fake()->boolean(75),
-            'max_downloads_per_month' => fake()->optional()->numberBetween(5, 100),
-            'notes' => fake()->optional()->sentence(),
-            'updated_by' => null,
+            'can_download' => fake()->boolean(),
+            'can_copy_paste' => fake()->boolean(),
+            'requires_watermark' => fake()->boolean(),
+            'max_downloads_per_month' => fake()->optional()->numberBetween(1, 100),
+            'notes' => null,
+            'updated_by' => User::query()->inRandomOrder()->value('id'),
         ];
     }
-}
-
-class LibraryAccessRuleFactoryModel extends Model
-{
-    protected $table = 'library_access_rules';
-
-    protected $guarded = [];
 }
