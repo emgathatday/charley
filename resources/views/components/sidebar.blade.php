@@ -57,6 +57,32 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.library.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.library.items.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.*') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-journal-richtext"></i>
+                        <p>Library<i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.library.items.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.items.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Library Items</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.library.knowledge-domains.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.knowledge-domains.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Knowledge Domains</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.library.rank-tiers.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.rank-tiers.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Ranks Tiers</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.taxonomy.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-tags"></i>
