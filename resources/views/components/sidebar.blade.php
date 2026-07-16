@@ -130,6 +130,24 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-header">QA</li>
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.qa.*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.qa.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.*') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-question-circle"></i>
+                        <p>QA<i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Dashboard</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.answers') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.answers') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Answer Review</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.weekly-themes') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.weekly-themes') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Weekly Themes</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.reputation') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.reputation') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Reputation Adjustment</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.leaderboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.leaderboard') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Leaderboard Settings</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.leaderboard-report') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.leaderboard-report') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Leaderboard Report</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.flagged') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.flagged') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Flagged Content</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.moderation-rules') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.moderation-rules') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Moderation Rules</p></a></li>
+                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.warnings') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.warnings') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Warning Review</p></a></li>
+                    </ul>
+                </li>
                 <li class="nav-header">ADMIN OPERATIONS</li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.admin-operations.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'active' : '' }}">
@@ -152,7 +170,8 @@
                         <li class="nav-item"><a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Pages & Priorities</p></a></li>
                         <li class="nav-item"><a href="{{ route('admin.dashboard.feed-cms.pages.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.pages.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Page</p></a></li>
                     </ul>
-                </li>                <li class="nav-header">SUBSCRIPTIONS</li>
+                </li>
+                <li class="nav-header">SUBSCRIPTIONS</li>
                 <li class="nav-item {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'menu-open' : '' }}">
                     <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-credit-card"></i>
