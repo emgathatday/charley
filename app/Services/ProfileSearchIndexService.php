@@ -69,6 +69,9 @@ class ProfileSearchIndexService
 
     private function structuredData(EngineerProfile|UnverifiedMemberProfile $profile): array
     {
+        $plantTypes = $profile->relationLoaded('plantTypes') ? $profile->plantTypes : collect();
+        $primaryPlantType = $plantTypes->first(fn ($plantType): bool => (bool) $plantType->pivot?->is_primary);
+
         return [
             'profile_type' => $profile::class,
             'user_id' => $profile->user_id,
@@ -77,6 +80,8 @@ class ProfileSearchIndexService
             'searchable_keywords' => $profile->searchable_keywords,
             'job_availability' => $profile->job_availability,
             'is_discoverable' => $profile->is_discoverable,
+            'plant_type_ids' => $plantTypes->pluck('id')->values()->all(),
+            'primary_plant_type_id' => $primaryPlantType?->id,
         ];
     }
 }

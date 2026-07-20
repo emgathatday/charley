@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class ProfileUpsertRequest extends FormRequest
 {
@@ -44,6 +45,40 @@ class ProfileUpsertRequest extends FormRequest
             'verification_renewed_at' => ['nullable', 'date'],
             'renewal_reminder_sent_at' => ['nullable', 'date'],
             'verification_intent' => ['nullable', 'boolean'],
+            'plant_type_ids' => ['nullable', 'array'],
+            'plant_type_ids.*' => [
+                'integer',
+                'distinct',
+                Rule::exists('plant_types', 'id')->where(fn ($query) => $query->where('is_active', true)),
+            ],
+            'primary_plant_type_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('plant_types', 'id')->where(fn ($query) => $query->where('is_active', true)),
+            ],
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $primaryPlantTypeId = $this->input('primary_plant_type_id');
+
+                if ($primaryPlantTypeId === null || ! $this->has('plant_type_ids')) {
+                    return;
+                }
+
+                $plantTypeIds = collect($this->input('plant_type_ids', []))
+                    ->map(fn ($plantTypeId): int => (int) $plantTypeId);
+
+                if (! $plantTypeIds->contains((int) $primaryPlantTypeId)) {
+                    $validator->errors()->add(
+                        'primary_plant_type_id',
+                        'The primary plant type must be included in plant_type_ids.'
+                    );
+                }
+            },
         ];
     }
 }

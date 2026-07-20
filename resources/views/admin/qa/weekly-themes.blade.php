@@ -73,7 +73,7 @@
                                     <label class="form-label" for="question_id">Question</label>
                                     <select id="question_id" name="question_id" class="form-select">
                                         @foreach ($assignableQuestions as $question)
-                                            <option value="{{ $question['id'] }}">#{{ $question['id'] }} · {{ $question['title'] }}</option>
+                                            <option value="{{ $question['id'] }}">#{{ $question['id'] }} - {{ $question['title'] }}</option>
                                         @endforeach
                                     </select>
                                 </div>

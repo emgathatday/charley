@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dashboard')->name('admin.dashboard.')->group(function (): void {
     Route::get('iam/users', [IamUserController::class, 'index'])->name('iam.users');
+    Route::get('iam/users/{user}', [IamUserController::class, 'show'])->name('iam.users.show');
     Route::get('iam/verification-queue', [IamVerificationController::class, 'index'])->name('iam.verification-queue');
     Route::post('iam/verification-queue/{verificationRequest}/approve', [IamVerificationController::class, 'approve'])->name('iam.verification-queue.approve');
     Route::post('iam/verification-queue/{verificationRequest}/reject', [IamVerificationController::class, 'reject'])->name('iam.verification-queue.reject');

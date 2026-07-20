@@ -30,6 +30,8 @@ class ProfileService
                 $this->filterEngineerData($data)
             );
 
+            $this->syncProfilePlantTypes($profile, $data);
+            $profile->load('plantTypes');
             $this->searchIndexService->refresh($profile);
 
             return $profile;
@@ -50,6 +52,8 @@ class ProfileService
                 $this->filterUnverifiedData($data)
             );
 
+            $this->syncProfilePlantTypes($profile, $data);
+            $profile->load('plantTypes');
             $this->searchIndexService->refresh($profile);
 
             return $profile;
@@ -77,7 +81,7 @@ class ProfileService
 
     public function visibleEngineerProfiles(?User $viewer = null)
     {
-        $query = EngineerProfile::query()->discoverable()->with('user');
+        $query = EngineerProfile::query()->discoverable()->with(['user', 'plantTypes']);
 
         if ($viewer?->role !== 'admin') {
             $query->where('is_discoverable', true);
@@ -91,6 +95,35 @@ class ProfileService
         if ($user->status !== 'active') {
             throw new RuntimeException('Only active users can manage profiles.');
         }
+    }
+
+    private function syncProfilePlantTypes(EngineerProfile|UnverifiedMemberProfile $profile, array $data): void
+    {
+        if (! array_key_exists('plant_type_ids', $data) && ! array_key_exists('primary_plant_type_id', $data)) {
+            return;
+        }
+
+        $plantTypeIds = array_values(array_unique(array_map(
+            static fn ($plantTypeId): int => (int) $plantTypeId,
+            $data['plant_type_ids'] ?? []
+        )));
+
+        $primaryPlantTypeId = isset($data['primary_plant_type_id']) ? (int) $data['primary_plant_type_id'] : null;
+
+        if ($primaryPlantTypeId !== null && ! in_array($primaryPlantTypeId, $plantTypeIds, true)) {
+            $plantTypeIds[] = $primaryPlantTypeId;
+        }
+
+        $syncPayload = [];
+
+        foreach ($plantTypeIds as $sortOrder => $plantTypeId) {
+            $syncPayload[$plantTypeId] = [
+                'is_primary' => $primaryPlantTypeId !== null && $plantTypeId === $primaryPlantTypeId,
+                'sort_order' => $sortOrder,
+            ];
+        }
+
+        $profile->plantTypes()->sync($syncPayload);
     }
 
     private function filterEngineerData(array $data): array

@@ -35,7 +35,7 @@
                                 <div class="text-body-secondary small mb-1">Question</div>
                                 <h3 class="card-title mb-0">{{ $question['title'] }}</h3>
                             </div>
-                            <span class="badge text-bg-{{ $question['status_color'] }} mt-1">{{ Str::headline($question['status']) }}</span>
+                            <span class="badge text-bg-{{ $question['status_color'] }} mt-1">{{ $question['status_label'] ?? Str::headline($question['status']) }}</span>
                         </div>
                         <div class="card-body">
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
@@ -118,7 +118,7 @@
                                 <div class="col-12">
                                     <div class="form-label">Moderation state</div>
                                     <div class="btn-group w-100" role="group" aria-label="Question status segmented controls">
-                                        @foreach (['active' => 'Active', 'draft' => 'Draft', 'unactive' => 'Unactive'] as $status => $label)
+                                        @foreach (['active' => 'Active', 'draft' => 'Draft', 'unactive' => 'Inactive'] as $status => $label)
                                             <input type="radio" class="btn-check" name="status" id="question_status_{{ $status }}" value="{{ $status }}" autocomplete="off" @checked($question['status'] === $status)>
                                             <label class="btn btn-outline-primary" for="question_status_{{ $status }}">{{ $label }}</label>
                                         @endforeach

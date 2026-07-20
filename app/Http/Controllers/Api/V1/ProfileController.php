@@ -20,7 +20,10 @@ class ProfileController extends Controller
 
     public function myEngineerProfile(Request $request): EngineerProfileResource
     {
-        $profile = EngineerProfile::query()->with('user')->where('user_id', $request->user()->id)->firstOrFail();
+        $profile = EngineerProfile::query()
+            ->with(['user', 'plantTypes'])
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
 
         return new EngineerProfileResource($profile);
     }
@@ -28,7 +31,7 @@ class ProfileController extends Controller
     public function upsertEngineerProfile(ProfileUpsertRequest $request): EngineerProfileResource
     {
         return new EngineerProfileResource(
-            $this->profileService->upsertEngineerProfile($request->user(), $request->validated())->load('user')
+            $this->profileService->upsertEngineerProfile($request->user(), $request->validated())->load(['user', 'plantTypes'])
         );
     }
 
@@ -38,12 +41,15 @@ class ProfileController extends Controller
             throw new AuthorizationException('This profile is not visible.');
         }
 
-        return new EngineerProfileResource($engineerProfile->load('user'));
+        return new EngineerProfileResource($engineerProfile->load(['user', 'plantTypes']));
     }
 
     public function myUnverifiedProfile(Request $request): UnverifiedMemberProfileResource
     {
-        $profile = UnverifiedMemberProfile::query()->with('user')->where('user_id', $request->user()->id)->firstOrFail();
+        $profile = UnverifiedMemberProfile::query()
+            ->with(['user', 'plantTypes'])
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
 
         return new UnverifiedMemberProfileResource($profile);
     }
@@ -51,7 +57,7 @@ class ProfileController extends Controller
     public function upsertUnverifiedProfile(ProfileUpsertRequest $request): UnverifiedMemberProfileResource
     {
         return new UnverifiedMemberProfileResource(
-            $this->profileService->upsertUnverifiedMemberProfile($request->user(), $request->validated())->load('user')
+            $this->profileService->upsertUnverifiedMemberProfile($request->user(), $request->validated())->load(['user', 'plantTypes'])
         );
     }
 
@@ -61,6 +67,6 @@ class ProfileController extends Controller
             throw new AuthorizationException('This profile is not visible.');
         }
 
-        return new UnverifiedMemberProfileResource($unverifiedMemberProfile->load('user'));
+        return new UnverifiedMemberProfileResource($unverifiedMemberProfile->load(['user', 'plantTypes']));
     }
 }

@@ -9,24 +9,32 @@
     <div class="sidebar-wrapper">
         <nav class="mt-2" aria-label="Main navigation">
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false">
-                <li class="nav-header">IDENTITY ACCESS</li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.dashboard.iam.users') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') ? 'active' : '' }}">
+                <li class="nav-header">IAM</li>
+                <li class="nav-item {{ request()->routeIs('admin.dashboard.iam.users*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('admin.dashboard.iam.users') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-people"></i>
-                        <p>Users</p>
+                        <p>Member Management<i class="nav-arrow bi bi-chevron-right"></i></p>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.dashboard.iam.verification-queue') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.verification-queue') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-person-check"></i>
-                        <p>Verification Queue</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.dashboard.iam.user-security') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.user-security') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-shield-lock"></i>
-                        <p>User Security</p>
-                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.iam.users') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') && ! in_array(request('role'), ['partner', 'admin'], true) ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Engineers</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.iam.users', ['role' => 'partner']) }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') && request('role') === 'partner' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Partners</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard.iam.users', ['role' => 'admin']) }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') && request('role') === 'admin' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Administrators</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-header">SHARED SERVICES</li>
