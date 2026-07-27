@@ -18,8 +18,8 @@ class ConnectionFactory extends Factory
         $status = $this->faker->randomElement(['pending', 'accepted', 'declined', 'blocked']);
 
         return [
-            'requester_id' => User::factory(),
-            'receiver_id' => User::factory(),
+            'requester_id' => User::factory()->professional(),
+            'receiver_id' => User::factory()->professional(),
             'status' => $status,
             'initiated_context' => $this->faker->randomElement([
                 'engineer_to_engineer',
@@ -31,6 +31,24 @@ class ConnectionFactory extends Factory
             'blocked_at' => $status === 'blocked' ? $this->faker->dateTimeBetween('-3 months') : null,
             'blocked_by' => null,
         ];
+    }
+
+    public function engineerToEngineer(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'requester_id' => User::factory()->professional(),
+            'receiver_id' => User::factory()->professional(),
+            'initiated_context' => 'engineer_to_engineer',
+        ]);
+    }
+
+    public function partnerToEngineer(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'requester_id' => User::factory()->state(['role' => 'partner', 'status' => 'active']),
+            'receiver_id' => User::factory()->professional(),
+            'initiated_context' => 'partner_to_engineer',
+        ]);
     }
 
     public function pending(): static

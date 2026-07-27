@@ -10,18 +10,12 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ExpertDirectoryController extends Controller
 {
-    public function __construct(private readonly ProfileSearchIndexService $searchIndexService)
-    {
-    }
+    public function __construct(private readonly ProfileSearchIndexService $searchIndexService) {}
 
     public function index(ExpertDirectorySearchRequest $request): AnonymousResourceCollection
     {
         $data = $request->validated();
-        $query = $this->searchIndexService->expertDirectoryQuery($data['q'] ?? null);
-
-        if (isset($data['search_context'])) {
-            $query->where('search_context', $data['search_context']);
-        }
+        $query = $this->searchIndexService->expertDirectoryQuery($data['q'] ?? null, $data);
 
         if (array_key_exists('is_discoverable', $data)) {
             $query->where('is_discoverable', $data['is_discoverable']);

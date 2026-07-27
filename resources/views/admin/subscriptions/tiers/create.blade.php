@@ -1,15 +1,35 @@
-@extends('layouts.master')
+@extends('layouts.app')
 
 @section('title', 'Create Subscription Tier')
 
-@section('content_header')
-    <div class="app-content-header"><div class="container-fluid"><div class="row align-items-center"><div class="col-sm-6"><h1 class="mb-0">Create Subscription Tier</h1></div><div class="col-sm-6"><ol class="breadcrumb float-sm-end mb-0"><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.subscriptions.index') }}">Subscriptions</a></li><li class="breadcrumb-item active" aria-current="page">Create Tier</li></ol></div></div></div></div>
+@section('content')
+    <div class="subscription-form-page">
+        <div class="page-head">
+            <div>
+                <h1>Create Subscription Tier</h1>
+                <p>Configure a dynamic partner package without fixed Gold, Diamond, or Platinum enums.</p>
+            </div>
+            <div class="page-head-actions">
+                <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-button-class-btn-btn-ghost-style-flex-1-onclick-"></use></svg>Back</a>
+            </div>
+        </div>
+
+        @include('templates.components.alert-session')
+
+        <div class="form-card">
+            <form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.store') }}">
+                @csrf
+                <div class="form-card-head"><h2>Tier details</h2><span>Partner subscription catalog</span></div>
+                @include('admin.subscriptions.tiers._form', ['subscriptionTier' => null])
+                <div class="form-actions">
+                    <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}">Cancel</a>
+                    <button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-5-this-month-svg-viewbox-0"></use></svg>Save Tier</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
-@section('content')
-    <div class="app-content"><div class="container-fluid">
-        @include('templates.components.alert-session')
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3"><p class="text-body-secondary mb-0">Configure partner package limits and entitlements.</p><a href="{{ route('admin.dashboard.subscriptions.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a></div>
-        <div class="card card-outline card-primary"><form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.store') }}">@csrf<div class="card-header"><h3 class="card-title mb-0">Tier Details</h3></div>@include('admin.subscriptions.tiers._form', ['subscriptionTier' => null])<div class="card-footer d-flex justify-content-end gap-2"><a href="{{ route('admin.dashboard.subscriptions.index') }}" class="btn btn-outline-secondary">Cancel</a><button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Save Tier</button></div></form></div>
-    </div></div>
-@endsection
+@push('styles')
+@include('admin.subscriptions._form-styles')
+@endpush

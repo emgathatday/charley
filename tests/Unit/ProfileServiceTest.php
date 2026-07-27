@@ -3,7 +3,6 @@
 namespace Tests\Unit;
 
 use App\Models\EngineerProfile;
-use App\Models\UnverifiedMemberProfile;
 use App\Models\User;
 use App\Services\ProfileSearchIndexService;
 use App\Services\ProfileService;
@@ -38,7 +37,7 @@ class ProfileServiceTest extends TestCase
         $viewer = new User(['role' => 'admin']);
         $viewer->id = 20;
 
-        $profile = new UnverifiedMemberProfile(['is_discoverable' => false]);
+        $profile = new EngineerProfile(['is_discoverable' => false]);
         $profile->user_id = 10;
 
         $this->assertTrue($this->service->canViewProfile($viewer, $profile), 'Admins should be able to view hidden profiles.');
@@ -74,7 +73,7 @@ class ProfileServiceTest extends TestCase
         $viewer = new User(['role' => 'professional']);
         $viewer->id = 20;
 
-        $profile = new UnverifiedMemberProfile([
+        $profile = new EngineerProfile([
             'is_discoverable' => true,
             'privacy_settings' => null,
         ]);
@@ -91,8 +90,7 @@ class ProfileServiceTest extends TestCase
         $viewer = new User(['role' => 'professional']);
         $viewer->id = 20;
 
-        $this->service->canViewProfile($viewer, new class extends Model {
-        });
+        $this->service->canViewProfile($viewer, new class extends Model {});
     }
 
     public function test_upsert_engineer_profile_rejects_inactive_user_before_database_work(): void

@@ -16,11 +16,13 @@ class EngineerProfileFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'user_id' => User::factory()->professional(),
             'photo_media_id' => null,
             'bio' => null,
             'current_company' => null,
+            'current_institution' => null,
             'position' => null,
+            'field_of_study' => null,
             'plant_name' => null,
             'experience_years' => null,
             'education' => null,
@@ -45,6 +47,7 @@ class EngineerProfileFactory extends Factory
                 'directory_mentions' => $this->faker->boolean(70),
                 'verification_reminders' => true,
             ],
+            'verification_intent' => false,
             'verification_document_media_id' => null,
             'verification_renewed_at' => null,
             'renewal_reminder_sent_at' => null,
@@ -72,12 +75,37 @@ class EngineerProfileFactory extends Factory
         ]);
     }
 
+    public function forUnverifiedMember(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'user_id' => User::factory()->unverified(),
+            'bio' => $this->faker->paragraph(),
+            'current_company' => null,
+            'current_institution' => $this->faker->company().' Academy',
+            'position' => null,
+            'field_of_study' => $this->faker->randomElement(['Chemical Engineering', 'Mechanical Engineering', 'Process Safety']),
+            'plant_name' => null,
+            'experience_years' => $this->faker->numberBetween(0, 3),
+            'education' => $this->faker->sentence(),
+            'expertise_tags' => $this->faker->randomElements(['training', 'plant operations', 'process safety', 'graduate engineer'], 2),
+            'industry_specialization' => null,
+            'searchable_keywords' => $this->faker->randomElements(['entry level', 'internship', 'training', 'graduate engineer'], 2),
+            'references' => [
+                ['name' => $this->faker->name(), 'context' => 'Academic or internship reference'],
+            ],
+            'phone' => null,
+            'verification_intent' => $this->faker->boolean(60),
+        ]);
+    }
+
     public function withProfessionalDetails(): static
     {
         return $this->state(fn (array $attributes): array => [
             'bio' => $this->faker->paragraph(),
             'current_company' => $this->faker->company(),
+            'current_institution' => null,
             'position' => $this->faker->jobTitle(),
+            'field_of_study' => null,
             'plant_name' => $this->faker->company().' Plant',
             'experience_years' => $this->faker->numberBetween(1, 35),
             'education' => $this->faker->sentence(),

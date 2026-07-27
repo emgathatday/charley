@@ -7,15 +7,18 @@ use App\Http\Requests\PartnerPresentationRequest;
 use App\Http\Resources\PartnerPresentationResource;
 use App\Models\PartnerPresentation;
 use App\Models\PartnerProfile;
+use App\Services\PartnerProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class PartnerPresentationController extends Controller
 {
+    public function __construct(private readonly PartnerProfileService $partnerProfileService) {}
+
     public function index(Request $request, PartnerProfile $partnerProfile): AnonymousResourceCollection
     {
-        $query = $partnerProfile->presentations()->latest();
+        $query = $partnerProfile->presentations()->with(['plantType', 'fileMedia', 'approver'])->latest();
 
         if ($request->user()->role !== 'admin') {
             $query->approved();
@@ -26,23 +29,25 @@ class PartnerPresentationController extends Controller
 
     public function store(PartnerPresentationRequest $request, PartnerProfile $partnerProfile): PartnerPresentationResource
     {
-        return PartnerPresentationResource::make($partnerProfile->presentations()->create($request->validated()));
+        return PartnerPresentationResource::make(
+            $this->partnerProfileService->createPresentation($partnerProfile, $request->validated())
+        );
     }
 
     public function show(PartnerProfile $partnerProfile, PartnerPresentation $partnerPresentation): PartnerPresentationResource
     {
         $this->ensureBelongsToPartner($partnerProfile, $partnerPresentation);
 
-        return PartnerPresentationResource::make($partnerPresentation);
+        return PartnerPresentationResource::make($partnerPresentation->load(['plantType', 'fileMedia', 'approver']));
     }
 
     public function update(PartnerPresentationRequest $request, PartnerProfile $partnerProfile, PartnerPresentation $partnerPresentation): PartnerPresentationResource
     {
         $this->ensureBelongsToPartner($partnerProfile, $partnerPresentation);
-        $partnerPresentation->fill($request->validated());
-        $partnerPresentation->save();
 
-        return PartnerPresentationResource::make($partnerPresentation);
+        return PartnerPresentationResource::make(
+            $this->partnerProfileService->updatePresentation($partnerPresentation, $request->validated())
+        );
     }
 
     public function destroy(Request $request, PartnerProfile $partnerProfile, PartnerPresentation $partnerPresentation): Response

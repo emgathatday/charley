@@ -16,13 +16,13 @@ class ProfileUpsertRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'photo_media_id' => ['nullable', 'integer', 'min:1'],
+            'photo_media_id' => ['nullable', 'integer', Rule::exists('media_files', 'id')],
             'bio' => ['nullable', 'string'],
             'current_company' => ['nullable', 'string', 'max:255'],
-            'position' => ['nullable', 'string', 'max:255'],
-            'plant_name' => ['nullable', 'string', 'max:255'],
             'current_institution' => ['nullable', 'string', 'max:255'],
+            'position' => ['nullable', 'string', 'max:255'],
             'field_of_study' => ['nullable', 'string', 'max:255'],
+            'plant_name' => ['nullable', 'string', 'max:255'],
             'experience_years' => ['nullable', 'integer', 'min:0', 'max:80'],
             'education' => ['nullable', 'string'],
             'expertise_tags' => ['nullable', 'array'],
@@ -41,10 +41,10 @@ class ProfileUpsertRequest extends FormRequest
             'is_discoverable' => ['nullable', 'boolean'],
             'privacy_settings' => ['nullable', 'array'],
             'notification_preferences' => ['nullable', 'array'],
-            'verification_document_media_id' => ['nullable', 'integer', 'min:1'],
+            'verification_intent' => ['nullable', 'boolean'],
+            'verification_document_media_id' => ['nullable', 'integer', Rule::exists('media_files', 'id')],
             'verification_renewed_at' => ['nullable', 'date'],
             'renewal_reminder_sent_at' => ['nullable', 'date'],
-            'verification_intent' => ['nullable', 'boolean'],
             'plant_type_ids' => ['nullable', 'array'],
             'plant_type_ids.*' => [
                 'integer',

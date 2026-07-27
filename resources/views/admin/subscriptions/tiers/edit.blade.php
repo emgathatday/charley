@@ -1,15 +1,36 @@
-@extends('layouts.master')
+@extends('layouts.app')
 
 @section('title', 'Edit Subscription Tier')
 
-@section('content_header')
-    <div class="app-content-header"><div class="container-fluid"><div class="row align-items-center"><div class="col-sm-6"><h1 class="mb-0">Edit Subscription Tier</h1></div><div class="col-sm-6"><ol class="breadcrumb float-sm-end mb-0"><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.subscriptions.index') }}">Subscriptions</a></li><li class="breadcrumb-item active" aria-current="page">{{ ucfirst($subscriptionTier->name) }}</li></ol></div></div></div></div>
+@section('content')
+    <div class="subscription-form-page">
+        <div class="page-head">
+            <div>
+                <h1>Edit Subscription Tier</h1>
+                <p>Update {{ $subscriptionTier->display_name ?: $subscriptionTier->name }} while preserving dynamic permissions and partner bindings.</p>
+            </div>
+            <div class="page-head-actions">
+                <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-button-class-btn-btn-ghost-style-flex-1-onclick-"></use></svg>Back</a>
+            </div>
+        </div>
+
+        @include('templates.components.alert-session')
+
+        <div class="form-card">
+            <form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.update', $subscriptionTier) }}">
+                @csrf
+                @method('PUT')
+                <div class="form-card-head"><h2>{{ $subscriptionTier->display_name ?: $subscriptionTier->name }}</h2><span>Tier #{{ $subscriptionTier->id }}</span></div>
+                @include('admin.subscriptions.tiers._form', ['subscriptionTier' => $subscriptionTier])
+                <div class="form-actions">
+                    <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}">Cancel</a>
+                    <button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-5-this-month-svg-viewbox-0"></use></svg>Save Tier</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
-@section('content')
-    <div class="app-content"><div class="container-fluid">
-        @include('templates.components.alert-session')
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3"><p class="text-body-secondary mb-0">Update partner tier #{{ $subscriptionTier->id }}.</p><a href="{{ route('admin.dashboard.subscriptions.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a></div>
-        <div class="card card-outline card-primary"><form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.update', $subscriptionTier) }}">@csrf @method('PUT')<div class="card-header"><h3 class="card-title mb-0">{{ ucfirst($subscriptionTier->name) }}</h3></div>@include('admin.subscriptions.tiers._form', ['subscriptionTier' => $subscriptionTier])<div class="card-footer d-flex justify-content-end gap-2"><a href="{{ route('admin.dashboard.subscriptions.index') }}" class="btn btn-outline-secondary">Cancel</a><button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Save Tier</button></div></form></div>
-    </div></div>
-@endsection
+@push('styles')
+@include('admin.subscriptions._form-styles')
+@endpush

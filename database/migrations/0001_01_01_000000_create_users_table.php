@@ -19,7 +19,7 @@ return new class extends Migration
                 $table->string('last_name')->nullable();
                 $table->string('email')->unique();
                 $table->string('password');
-                $table->enum('role', ['admin', 'unverified_member', 'professional', 'partner']);
+                $table->enum('role', ['admin', 'moderator', 'unverified_member', 'professional', 'partner']);
                 $table->enum('status', ['active', 'suspended', 'frozen'])->default('active');
                 $table->boolean('is_verified')->default(false);
                 $table->timestamp('verified_at')->nullable();
@@ -45,3 +45,4 @@ return new class extends Migration
         Schema::dropIfExists('users');
     }
 };
+

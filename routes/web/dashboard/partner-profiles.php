@@ -8,6 +8,7 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::get('partner-profiles/create', [PartnerProfileController::class, 'create'])->name('partner-profiles.create');
     Route::post('partner-profiles', [PartnerProfileController::class, 'store'])->name('partner-profiles.store');
     Route::get('partner-profiles/{partnerProfile}', [PartnerProfileController::class, 'show'])->name('partner-profiles.show');
+    Route::get('partner-profiles/{partnerProfile}/verification', [PartnerProfileController::class, 'verification'])->name('partner-profiles.verification');
     Route::get('partner-profiles/{partnerProfile}/edit', [PartnerProfileController::class, 'edit'])->name('partner-profiles.edit');
     Route::put('partner-profiles/{partnerProfile}', [PartnerProfileController::class, 'update'])->name('partner-profiles.update');
     Route::delete('partner-profiles/{partnerProfile}', [PartnerProfileController::class, 'destroy'])->name('partner-profiles.destroy');

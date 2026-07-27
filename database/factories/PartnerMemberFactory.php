@@ -29,4 +29,9 @@ class PartnerMemberFactory extends Factory
     {
         return $this->state(fn (): array => ['member_role' => 'manager']);
     }
+
+    public function active(): static
+    {
+        return $this->state(fn (): array => ['status' => 'active']);
+    }
 }

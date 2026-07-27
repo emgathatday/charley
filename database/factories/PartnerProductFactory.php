@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\MediaFile;
 use App\Models\PartnerProduct;
 use App\Models\PartnerProfile;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -31,5 +32,15 @@ class PartnerProductFactory extends Factory
     public function service(): static
     {
         return $this->state(fn (): array => ['item_type' => 'service']);
+    }
+
+    public function withImage(MediaFile $mediaFile): static
+    {
+        return $this->state(fn (): array => ['image_media_id' => $mediaFile->id]);
+    }
+
+    public function withDatasheet(MediaFile $mediaFile): static
+    {
+        return $this->state(fn (): array => ['datasheet_media_id' => $mediaFile->id]);
     }
 }

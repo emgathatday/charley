@@ -32,14 +32,6 @@ class PlantType extends Model
             ->orderByPivot('sort_order');
     }
 
-    public function unverifiedMemberProfiles(): BelongsToMany
-    {
-        return $this->belongsToMany(UnverifiedMemberProfile::class, 'unverified_member_profile_plant_type')
-            ->withPivot(['is_primary', 'sort_order'])
-            ->withTimestamps()
-            ->orderByPivot('sort_order');
-    }
-
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);

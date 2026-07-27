@@ -1,0 +1,56 @@
+@use 'sass:meta';
+@use 'vars';
+
+:root {
+  @each $group, $value in vars.$colors {
+    @if meta.type-of($value) == 'map' {
+      @each $tone, $color in $value {
+        @if $tone == default {
+          --color-#{"" + $group}: #{$color};
+        } @else {
+          --color-#{"" + $group}-#{"" + $tone}: #{$color};
+        }
+      }
+    } @else {
+      --color-#{"" + $group}: #{$value};
+    }
+  }
+
+  --sidebar: var(--color-sidebar);
+  --sidebar-hover: var(--color-sidebar-hover);
+  --sidebar-border: var(--color-sidebar-border);
+  --accent-blue: var(--color-accent-blue);
+  --accent-indigo: var(--color-accent-indigo);
+  --accent-cyan: var(--color-accent-cyan);
+  --accent-emerald: var(--color-accent-emerald);
+  --bg: var(--color-bg);
+  --card: var(--color-card);
+  --ink: var(--color-ink);
+  --ink-soft: var(--color-ink-soft);
+  --ink-faint: var(--color-ink-faint);
+  --border: var(--color-border);
+  --border-soft: var(--color-border-soft);
+  --red: var(--color-red);
+  --red-soft: var(--color-red-soft);
+  --red-border: var(--color-red-border);
+  --orange: var(--color-orange);
+  --orange-soft: var(--color-orange-soft);
+  --orange-border: var(--color-orange-border);
+  --amber: var(--color-amber);
+  --amber-soft: var(--color-amber-soft);
+  --amber-border: var(--color-amber-border);
+  --diamond-a: var(--color-accent-sky2);
+  --diamond-b: var(--color-accent-indigo);
+  --gold-a: var(--color-amber);
+  --gold-b: var(--color-amber-dark);
+  --platinum-a: var(--color-ink-faint);
+  --platinum-b: var(--color-ink-soft);
+
+  @each $name, $value in vars.$radii {
+    --radius-#{$name}: #{$value};
+  }
+
+  @each $name, $value in vars.$shadows {
+    --shadow-#{$name}: #{$value};
+  }
+}

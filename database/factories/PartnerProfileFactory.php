@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\PartnerProfile;
-use App\Models\PlantType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,8 +20,9 @@ class PartnerProfileFactory extends Factory
             'company_name' => fake()->unique()->company(),
             'logo_media_id' => null,
             'overview' => fake()->paragraph(),
-            'partner_tier' => fake()->randomElement(['gold', 'diamond', 'platinum']),
-            'plant_type_id' => PlantType::query()->inRandomOrder()->value('id'),
+            'company_type' => fake()->optional()->randomElement(['Licensor', 'Vendor', 'Catalyst supplier', 'Service provider']),
+            'active_partner_subscription_id' => null,
+            'plant_type_id' => null,
             'keywords' => fake()->randomElements(['licensor', 'vendor', 'catalyst', 'technology', 'services'], 3),
             'references' => [
                 ['project' => fake()->company(), 'year' => fake()->numberBetween(2015, 2026)],
@@ -48,6 +48,14 @@ class PartnerProfileFactory extends Factory
         return $this->state(fn (): array => [
             'approval_status' => 'approved',
             'verified_at' => now(),
+        ]);
+    }
+
+    public function activeSubscription(): static
+    {
+        return $this->state(fn (): array => [
+            'subscription_status' => 'active',
+            'subscription_expires_at' => now()->addMonth(),
         ]);
     }
 }

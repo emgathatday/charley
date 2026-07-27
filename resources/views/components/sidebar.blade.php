@@ -1,234 +1,129 @@
-<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-    <div class="sidebar-brand">
-        <a href="{{ route('admin.dashboard.iam.users') }}" class="brand-link">
-            <i class="brand-image bi bi-shield-lock opacity-75 shadow"></i>
-            <span class="brand-text fw-light">Charley Admin</span>
+<aside class="sidebar" id="appSidebar">
+    <div class="brand">
+        <a href="{{ route('admin.dashboard.iam.users.engineers') }}" class="brand-mark" aria-label="Charley Admin">
+            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-charley-admin-console-svg-viewbox-0"></use></svg>
         </a>
+        <div>
+            <a href="{{ route('admin.dashboard.iam.users.engineers') }}" class="brand-name">Charley</a>
+            <div class="brand-sub">Admin Console</div>
+        </div>
     </div>
 
-    <div class="sidebar-wrapper">
-        <nav class="mt-2" aria-label="Main navigation">
-            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" data-accordion="false">
-                <li class="nav-header">IAM</li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.iam.users*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.iam.users') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-people"></i>
-                        <p>Member Management<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.iam.users') }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') && ! in_array(request('role'), ['partner', 'admin'], true) ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Engineers</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.iam.users', ['role' => 'partner']) }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') && request('role') === 'partner' ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Partners</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.iam.users', ['role' => 'admin']) }}" class="nav-link {{ request()->routeIs('admin.dashboard.iam.users') && request('role') === 'admin' ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Administrators</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+    <div class="sidebar-search">
+        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg>
+        <input type="text" placeholder="Search platform..." aria-label="Search platform">
+        <span class="kbd">/</span>
+    </div>
 
-                <li class="nav-header">SHARED SERVICES</li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.dashboard.media-files.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.media-files.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-folder2-open"></i>
-                        <p>Media Files</p>
-                    </a>
-                </li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.plant-types.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.plant-types.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.plant-types.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-diagram-3"></i>
-                        <p>Plant Types<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.plant-types.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.plant-types.index') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>All Plant Types</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.plant-types.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.plant-types.create') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Create Plant Type</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+    <nav class="nav-scroll" aria-label="Main navigation">
+        <div class="nav-group">
+            <div class="nav-label">Overview</div>
+            <a href="#" class="nav-item">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-dashboard-path-d-m14-5-17h9-5a2-2"></use></svg>
+                Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-support-inbox-5-users-and"></use></svg>
+                Support Inbox
+                <span class="nav-badge urgent">5</span>
+            </a>
+        </div>
 
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.library.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.library.items.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-journal-richtext"></i>
-                        <p>Library<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.library.items.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.items.*') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Library Items</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.library.knowledge-domains.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.knowledge-domains.*') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Knowledge Domains</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.library.rank-tiers.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.library.rank-tiers.*') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Ranks Tiers</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.taxonomy.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-tags"></i>
-                        <p>Taxonomy<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.taxonomy.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.index') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>All Tags</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.taxonomy.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.taxonomy.create') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Create Tag</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-header">PARTNERS</li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.partner-profiles.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.partner-profiles.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.partner-profiles.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-buildings"></i>
-                        <p>Partner Profiles<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.partner-profiles.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.partner-profiles.index') && ! request()->has('approval_status') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>All Profiles</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.partner-profiles.index', ['approval_status' => 'pending']) }}" class="nav-link {{ request()->routeIs('admin.dashboard.partner-profiles.index') && request('approval_status') === 'pending' ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Pending Approval</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.partner-profiles.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.partner-profiles.create') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Create Profile</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-header">QA</li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.qa.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.qa.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-question-circle"></i>
-                        <p>QA<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Dashboard</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.answers') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.answers') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Answer Review</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.weekly-themes') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.weekly-themes') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Weekly Themes</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.reputation') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.reputation') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Reputation Adjustment</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.leaderboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.leaderboard') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Leaderboard Settings</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.leaderboard-report') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.leaderboard-report') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Leaderboard Report</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.flagged') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.flagged') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Flagged Content</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.moderation-rules') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.moderation-rules') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Moderation Rules</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.qa.warnings') }}" class="nav-link {{ request()->routeIs('admin.dashboard.qa.warnings') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Warning Review</p></a></li>
-                    </ul>
-                </li>
-                <li class="nav-header">ADMIN OPERATIONS</li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.admin-operations.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-kanban"></i>
-                        <p>Operations<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Overview</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.support-tickets.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.support-tickets.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Ticket</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.admin-operations.account-penalties.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.admin-operations.account-penalties.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Penalty</p></a></li>
-                    </ul>
-                </li>
-                <li class="nav-header">FEED & CMS</li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-newspaper"></i>
-                        <p>Feed CMS<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.index') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Pages & Priorities</p></a></li>
-                        <li class="nav-item"><a href="{{ route('admin.dashboard.feed-cms.pages.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.feed-cms.pages.create') ? 'active' : '' }}"><i class="nav-icon bi bi-circle"></i><p>Create Page</p></a></li>
-                    </ul>
-                </li>
-                <li class="nav-header">SUBSCRIPTIONS</li>
-                <li class="nav-item {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'menu-open' : '' }}">
-                    <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-credit-card"></i>
-                        <p>Subscriptions<i class="nav-arrow bi bi-chevron-right"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.index') && ! request()->hasAny(['subscription_status', 'payment_status', 'quota_period']) ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Overview</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.subscriptions.index', ['subscription_status' => 'pending_approval']) }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.index') && request('subscription_status') === 'pending_approval' ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Pending Subscriptions</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.subscriptions.index', ['payment_status' => 'pending']) }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.index') && request('payment_status') === 'pending' ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Payments</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.subscriptions.index', ['quota_period' => now()->format('Y-m')]) }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.index') && request()->has('quota_period') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Quotas</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.subscriptions.tiers.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.tiers.create') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Create Tier</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard.subscriptions.member-plans.create') }}" class="nav-link {{ request()->routeIs('admin.dashboard.subscriptions.member-plans.create') ? 'active' : '' }}">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Create Member Plan</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
+        <div class="nav-group">
+            <div class="nav-label">Member Management</div>
+            <a href="{{ route('admin.dashboard.iam.users.engineers') }}" class="nav-item {{ request()->routeIs('admin.dashboard.iam.users.engineers') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-user-management-12-svg-viewbox-0"></use></svg>
+                Engineers
+                <span class="nav-badge urgent">12</span>
+            </a>
+            <a href="{{ route('admin.dashboard.iam.users.partners') }}" class="nav-item {{ request()->routeIs('admin.dashboard.iam.users.partners') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-partner-management-path-d-m9-12"></use></svg>
+                Partners
+            </a>            <a href="{{ route('admin.dashboard.iam.users', ['member_view' => 'administrators']) }}" class="nav-item {{ request()->fullUrlIs('*member_view=administrators*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-internal-admin-notes-not-visible"></use></svg>
+                Administrators
+            </a>
+            <a href="{{ route('admin.dashboard.iam.verification-queue') }}" class="nav-item {{ request()->routeIs('admin.dashboard.iam.verification-queue') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>
+                Profile Verification Queue
+                <span class="nav-badge urgent">5</span>
+            </a>
+            <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-subscription-and-billing"></use></svg>
+                Subscription &amp; Billing
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-monthly-expert-recognition-svg-viewbox-0"></use></svg>
+                Monthly Expert Recognition
+            </a>
+            <a href="{{ route('admin.dashboard.iam.user-security') }}" class="nav-item {{ request()->routeIs('admin.dashboard.iam.user-security') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>
+                Account Penalty &amp; Freeze
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Shared Services</div>
+            <a href="{{ route('admin.dashboard.media-files.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.media-files.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-2-files-svg-viewbox-0-0"></use></svg>
+                Media Files
+            </a>
+            <a href="{{ route('admin.dashboard.plant-types.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.plant-types.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-plant-focus-hydrogen-svg-viewbox-0"></use></svg>
+                Plant Types
+            </a>
+            <a href="{{ route('admin.dashboard.taxonomy.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.taxonomy.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library-and-pfd-content-path"></use></svg>
+                Taxonomy
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Technical Q&amp;A</div>
+            <a href="{{ route('admin.dashboard.qa.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.qa.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-qanda-management-rect-x-3-y-4"></use></svg>
+                Q&amp;A Management
+            </a>
+            <a href="{{ route('admin.dashboard.qa.weekly-themes') }}" class="nav-item {{ request()->routeIs('admin.dashboard.qa.weekly-themes') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-weekly-theme-management-path-d-m3"></use></svg>
+                Weekly Theme Management
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Charley Library</div>
+            <a href="{{ route('admin.dashboard.library.items.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.library.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library-and-pfd-content-path"></use></svg>
+                Library &amp; PFD Content
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Platform</div>
+            <a href="{{ route('admin.dashboard.admin-operations.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.admin-operations.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-dashboard-path-d-m14-5-17h9-5a2-2"></use></svg>
+                Admin Operations
+            </a>
+            <a href="{{ route('admin.dashboard.feed-cms.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.feed-cms.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-announcement-management-charley-library-svg"></use></svg>
+                Feed &amp; CMS
+            </a>
+            <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.subscriptions.*') ? 'active' : '' }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-subscription-and-billing"></use></svg>
+                Subscription &amp; Billing
+            </a>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="ai-status-pill">
+            <span class="pulse-dot"></span>
+            <div class="ai-status-text">
+                AI Assistant - Operational
+                <span>Backend console ready</span>
+            </div>
+        </div>
     </div>
 </aside>
-
-
-
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 

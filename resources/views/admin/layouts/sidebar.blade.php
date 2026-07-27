@@ -1,1 +1,1 @@
-@include('components.sidebar')
+@include('components.sidebar', ['activeMenu' => 'subscriptions'])

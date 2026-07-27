@@ -20,6 +20,8 @@ class PartnerProductResource extends JsonResource
             'datasheet_media_id' => $this->datasheet_media_id,
             'keywords' => $this->keywords,
             'is_active' => $this->is_active,
+            'image_media' => MediaFileResource::make($this->whenLoaded('imageMedia')),
+            'datasheet_media' => MediaFileResource::make($this->whenLoaded('datasheetMedia')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

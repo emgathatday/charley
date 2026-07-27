@@ -11,6 +11,7 @@ Route::prefix('v1')->middleware('auth')->group(function (): void {
     Route::put('profile/metas', [ProfileActivityController::class, 'upsertMeta']);
     Route::get('profile/engineer', [ProfileController::class, 'myEngineerProfile']);
     Route::put('profile/engineer', [ProfileController::class, 'upsertEngineerProfile']);
+    Route::put('profile/verification-intent', [ProfileController::class, 'requestVerification']);
     Route::get('profile/unverified', [ProfileController::class, 'myUnverifiedProfile']);
     Route::put('profile/unverified', [ProfileController::class, 'upsertUnverifiedProfile']);
     Route::get('profiles/engineers/{engineerProfile}', [ProfileController::class, 'showEngineerProfile']);

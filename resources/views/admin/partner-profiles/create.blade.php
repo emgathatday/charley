@@ -1,57 +1,26 @@
-@extends('layouts.master')
+@extends('layouts.app')
 
 @section('title', 'Create Partner Profile')
 
 @section('content_header')
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-sm-6">
-                    <h1 class="mb-0">Create Partner Profile</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.partner-profiles.index') }}">Partner Profiles</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Create</li>
-                    </ol>
-                </div>
-            </div>
+    <div class="page-header">
+        <div>
+            <div class="page-title">Create New Partner</div>
+            <div class="page-subtitle">Register a company, assign a tier, and prepare approval workflow data.</div>
         </div>
+        <div class="page-actions"><a href="{{ route('admin.dashboard.partner-profiles.index') }}" class="btn"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to Partners</a></div>
     </div>
 @endsection
 
 @section('content')
-    <div class="app-content">
-        <div class="container-fluid">
-            @include('templates.components.alert-session')
+    @include('templates.components.alert-session')
 
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-                <p class="text-body-secondary mb-0">Create a company profile for partner directory and approval workflows.</p>
-                <a href="{{ route('admin.dashboard.partner-profiles.index') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-1"></i>
-                    Back
-                </a>
-            </div>
-
-            <div class="card card-outline card-primary">
-                <form method="POST" action="{{ route('admin.dashboard.partner-profiles.store') }}">
-                    @csrf
-                    <div class="card-header">
-                        <h3 class="card-title mb-0">Partner Details</h3>
-                    </div>
-                    <div class="card-body">
-                        @include('admin.partner-profiles.partials.form', ['partnerProfile' => null])
-                    </div>
-                    <div class="card-footer d-flex justify-content-end gap-2">
-                        <a href="{{ route('admin.dashboard.partner-profiles.index') }}" class="btn btn-outline-secondary">Cancel</a>
-                        <button class="btn btn-primary" type="submit">
-                            <i class="bi bi-check2 me-1"></i>
-                            Save
-                        </button>
-                    </div>
-                </form>
-            </div>
+    <form method="POST" action="{{ route('admin.dashboard.partner-profiles.store') }}">
+        @csrf
+        @include('admin.partner-profiles.partials.form', ['partnerProfile' => null])
+        <div class="page-actions" style="justify-content:flex-end;margin-top:18px;">
+            <a href="{{ route('admin.dashboard.partner-profiles.index') }}" class="btn">Cancel</a>
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2" aria-hidden="true"></i>Save Partner</button>
         </div>
-    </div>
+    </form>
 @endsection

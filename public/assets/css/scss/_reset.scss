@@ -1,0 +1,90 @@
+@use 'vars';
+@use 'mixin';
+@use 'animation';
+
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html {
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;
+  min-height:100vh;
+}
+
+body {
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;
+  min-height:100vh;
+}
+
+a {
+  text-decoration:none;
+  color:inherit;
+}
+
+button {
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  background:none;
+}
+
+textarea {
+  font-family:inherit;
+
+  &.field-input {
+    resize:vertical;
+    min-height:230px;
+    line-height:1.6;
+  }
+
+  &.note-box {
+    width:100%;
+    min-height:88px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:11px 13px;
+    font-family:inherit;
+    font-size:12.6px;
+    color:var(--ink);
+    resize:vertical;
+    outline:none;
+    transition:.15s ease;
+
+    &:focus {
+      border-color:var(--accent-blue);
+    }
+
+    ::placeholder {
+      color:var(--ink-faint);
+    }
+  }
+
+  &.modal-textarea {
+    width:100%;
+    min-height:230px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 15px;
+    font-family:inherit;
+    font-size:13px;
+    color:var(--ink);
+    line-height:1.65;
+    resize:vertical;
+    outline:none;
+    transition:.15s ease;
+
+    &:focus {
+      border-color:var(--accent-blue);
+    }
+  }
+}

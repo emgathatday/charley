@@ -32,6 +32,10 @@ class PartnerPresentation extends Model
     protected function casts(): array
     {
         return [
+            'partner_id' => 'integer',
+            'plant_type_id' => 'integer',
+            'approved_by' => 'integer',
+            'file_media_id' => 'integer',
             'page_count' => 'integer',
             'download_allowed' => 'boolean',
             'view_count' => 'integer',
