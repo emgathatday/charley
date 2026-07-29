@@ -115,6 +115,47 @@ table {
     width:100%;
     border-collapse:collapse;
     min-width:920px;
+
+    th {
+      padding:10px 14px;
+      background:var(--color-bg);
+    }
+
+    td {
+      padding:13px 14px;
+      vertical-align:top;
+      color:var(--ink-soft);
+    }
+
+    tbody {
+
+      tr:hover {
+
+        td {
+          background:var(--color-bg-softer);
+        }
+      }
+    }
+  }
+}
+
+.qa-table-wrap {
+  margin-bottom:0;
+}
+
+.qa-check-col {
+  width:36px;
+}
+
+.qa-metric-col {
+  text-align:center;
+}
+
+.qa-actions-col {
+  width:110px;
+
+  &.wide {
+    width:190px;
   }
 }
 

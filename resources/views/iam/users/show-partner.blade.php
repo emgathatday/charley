@@ -28,8 +28,7 @@
     $approvalClass = in_array((string) $approval, ['approved', 'Verified'], true) ? 'status-active' : ((string) $approval === 'suspended' ? 'status-suspended' : 'status-pending');
     $subscriptionStatus = $profile->subscription_status ?? 'inactive';
     $joined = $detail['joined'] ?? ($user->created_at?->format('M j, Y') ?? 'Unknown');
-    $logoMedia = $profile instanceof \App\Models\PartnerProfile && $profile->relationLoaded('logoMedia') ? $profile->logoMedia : null;
-    $logoUrl = $logoMedia ? \Illuminate\Support\Facades\Storage::disk($logoMedia->disk)->url($logoMedia->path) : null;
+    $logoUrl = $partnerLogoUrl ?? null;
 @endphp
 
 @section('content')
@@ -42,7 +41,7 @@
     <div class="profile-head" aria-label="Legal Identity Partner Display TODO-safe display boundary">
         <div class="profile-head-row">
             <div class="profile-head-main">
-                <div class="profile-logo">@if ($logoUrl)<img class="profile-logo-img" src="{{ $logoUrl }}" alt="{{ $company }} logo">@else{{ $initials }}@endif</div>
+                <div class="profile-logo">@if ($logoUrl)<img class="profile-logo-img" src="{{ $logoUrl }}" alt="{{ $company }} logo" style="width: 100%;height: 100%;object-fit: cover;">@else{{ $initials }}@endif</div>
                 <div>
                     <div class="profile-title-row">
                         <h1>{{ $company }}</h1>
@@ -143,7 +142,7 @@
                 <div class="pb-card"><div class="pb-tier-label"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-verified-div-class-profile-meta-i"></use></svg>{{ $tier }}</div><div class="pb-amount">{{ $subscriptionStatus }}</div><div class="pb-amount-sub">Partner Subscription</div><div class="pb-row"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-5-jul-2026-14-32-circle"></use></svg>Renews {{ $renewal }}</div><div class="pb-row"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>{{ str_replace('_', ' ', ucfirst((string) $approval)) }}</div></div>
                 <div class="panel-card uniform-13"><div class="panel-card-head"><div class="panel-title-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-partner-management-path-d-m9-12"></use></svg><h3 class="panel-title-tight">Company Info</h3></div><button class="icon-edit-btn" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-profile-r"></use></svg></button></div><div class="info-list"><div class="info-row"><span class="k">Legal Name</span><span class="v">{{ $company }}</span></div><div class="info-row"><span class="k">Country</span><span class="v">{{ $profile->country ?? 'No profile yet' }}</span></div><div class="info-row"><span class="k">Founded</span><span class="v">{{ $profile->founded_year ?? 'No profile yet' }}</span></div><div class="info-row"><span class="k">Website</span><span class="v">{{ $website }}</span></div><div class="info-row"><span class="k">Primary Email</span><span class="v">{{ $contactEmail }}</span></div><div class="info-row"><span class="k">Partner ID</span><span class="v mono-muted">#PTN-{{ str_pad($user->id, 5, '0', STR_PAD_LEFT) }}</span></div></div></div>
                 <div class="panel-card uniform-13"><h3 class="panel-title-space">Primary Contact</h3><div class="contact-card"><div class="contact-avatar">{{ $contactInitials }}</div><div><div class="contact-name">{{ $detail['name'] }}</div><div class="contact-role">Primary partner contact</div></div></div><div class="info-divider compact"></div><div class="info-list"><div class="info-row"><span class="k">Email</span><span class="v">{{ $contactEmail }}</span></div><div class="info-row"><span class="k">Phone</span><span class="v">{{ $profile->phone ?? 'No profile yet' }}</span></div></div></div>
-                <div class="panel-card"><h3 class="panel-title-space">Admin Actions</h3><div class="admin-action-list">@foreach (['active' => 'Activate partner', 'suspended' => 'Suspend partner', 'frozen' => 'Freeze partner'] as $status => $label)<form method="POST" action="{{ route('admin.dashboard.iam.user-security.update', $user) }}">@csrf @method('PUT')<input type="hidden" name="role" value="partner"><input type="hidden" name="status" value="{{ $status }}"><input type="hidden" name="admin_note" value="Status changed from partner detail."><button class="admin-action-btn {{ $status === 'frozen' ? 'danger' : '' }}" type="submit">{{ $label }}</button></form>@endforeach</div></div>
+                <div class="panel-card"><h3 class="panel-title-space">Admin Actions</h3><div class="admin-action-list">@foreach (['active' => 'Activate partner', 'suspended' => 'Suspend partner', 'frozen' => 'Freeze partner'] as $status => $label)<form method="POST" action="{{ route('admin.dashboard.iam.account-penalty-freeze.update', $user) }}">@csrf @method('PUT')<input type="hidden" name="role" value="partner"><input type="hidden" name="status" value="{{ $status }}"><input type="hidden" name="admin_note" value="Status changed from partner detail."><button class="admin-action-btn {{ $status === 'frozen' ? 'danger' : '' }}" type="submit">{{ $label }}</button></form>@endforeach</div></div>
             </div>
         </div>
     </div>
@@ -190,7 +189,7 @@
     <div class="modal-overlay" id="freezeModal">
         <div class="modal-box active">
             <div class="modal-head"><div class="modal-head-title"><div><h3>Freeze this account?</h3><div class="sub">{{ $company }} will lose partner access until manually restored.</div></div></div><button class="modal-close" type="button" onclick="closeDetailModal('freeze')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></button></div>
-            <form method="POST" action="{{ route('admin.dashboard.iam.user-security.update', $user) }}">
+            <form method="POST" action="{{ route('admin.dashboard.iam.account-penalty-freeze.update', $user) }}">
                 @csrf
                 @method('PUT')
                 <div class="modal-body"><input type="hidden" name="role" value="partner"><input type="hidden" name="status" value="frozen"><textarea class="form-textarea" name="admin_note">Frozen from IAM partner detail view.</textarea></div>
@@ -215,3 +214,4 @@
 @endsection
 
 @include('iam.users._detail-scripts')
+

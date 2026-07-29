@@ -1,80 +1,236 @@
-@extends('layouts.app')
+@extends('layouts.rebuild-dashboard')
 
-@section('title', 'Verification Queue')
+@section('title', 'Profile Verification Queue')
 
-@section('content_header')
-    <div class="page-header">
-        <div>
-            <div class="page-title">Verification Queue</div>
-            <div class="page-subtitle">Review identity submissions by status, method, applicant, and reviewer state.</div>
-        </div>
-        <div class="page-actions">
-            <a class="btn" href="{{ route('admin.dashboard.iam.users') }}"><i class="bi bi-people" aria-hidden="true"></i>User Management</a>
-        </div>
-    </div>
-@endsection
+@php
+    $activeStatus = $filters['status'] ?? '';
+    $activeMethod = $filters['method'] ?? '';
+    $searchValue = $filters['search'] ?? '';
+    $statusTabs = [
+        '' => ['label' => 'All', 'count' => $queueStats['all'] ?? $verificationRequests->total()],
+        'pending' => ['label' => 'Pending', 'count' => $queueStats['pending'] ?? 0],
+        'more_info_required' => ['label' => 'Info Requested', 'count' => $queueStats['more_info_required'] ?? 0],
+        'approved' => ['label' => 'Approved', 'count' => $queueStats['approved'] ?? 0],
+        'rejected' => ['label' => 'Rejected', 'count' => $queueStats['rejected'] ?? 0],
+    ];
+    $statusSummary = [
+        ['class' => 'amber', 'label' => 'Pending Review', 'value' => $queueStats['pending'] ?? 0, 'sub' => 'Awaiting admin decision', 'icon' => 'icon-14-pending-review-approval'],
+        ['class' => 'blue', 'label' => 'Info Requested', 'value' => $queueStats['more_info_required'] ?? 0, 'sub' => 'Waiting on applicant', 'icon' => 'icon-3-questions-attached'],
+        ['class' => 'indigo', 'label' => 'Approved', 'value' => $queueStats['approved'] ?? 0, 'sub' => 'Completed applications', 'icon' => 'icon-create-user-svg-viewbox-0-0'],
+        ['class' => '', 'label' => 'Rejected', 'value' => $queueStats['rejected'] ?? 0, 'sub' => 'Closed after review', 'icon' => 'icon-reject-application-internal-reviewer-note'],
+    ];
+@endphp
 
 @section('content')
+    <div class="page-head">
+        <div>
+            <h1>Profile Verification Queue</h1>
+            <p>Review credentials, company documents, and certifications submitted by professionals and partner organizations applying for verified status on Charley.</p>
+        </div>
+        <div class="page-actions">
+            <a class="btn-outline" href="{{ route('admin.dashboard.iam.users') }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions-button-class-btn-btn-danger"></use></svg>
+                User Management
+            </a>
+        </div>
+    </div>
+
     @if (session('status'))
         <div class="alert alert-success">{{ session('status') }}</div>
     @endif
     @if ($errors->any())
-        <div class="alert alert-danger">{{ $errors->first() }}</div>
+        <div class="alert alert-danger">
+            <strong>Review note required.</strong>
+            <div>{{ $errors->first('admin_notes') ?: $errors->first() }}</div>
+        </div>
     @endif
 
-    <div class="stats-row" style="grid-template-columns:repeat(4,minmax(0,1fr));padding:0;margin-bottom:22px;">
-        <a class="stat-card amber" href="{{ route('admin.dashboard.iam.verification-queue', array_merge(request()->except('page'), ['status' => 'pending'])) }}"><div class="stat-label">Pending</div><div class="stat-value">{{ number_format($queueStats['pending']) }}</div></a>
-        <a class="stat-card blue" href="{{ route('admin.dashboard.iam.verification-queue', array_merge(request()->except('page'), ['status' => 'more_info_required'])) }}"><div class="stat-label">More Info</div><div class="stat-value">{{ number_format($queueStats['more_info_required']) }}</div></a>
-        <a class="stat-card emerald" href="{{ route('admin.dashboard.iam.verification-queue', array_merge(request()->except('page'), ['status' => 'approved'])) }}"><div class="stat-label">Approved</div><div class="stat-value">{{ number_format($queueStats['approved']) }}</div></a>
-        <a class="stat-card red" href="{{ route('admin.dashboard.iam.verification-queue', array_merge(request()->except('page'), ['status' => 'rejected'])) }}"><div class="stat-label">Rejected</div><div class="stat-value">{{ number_format($queueStats['rejected']) }}</div></a>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3">
+        @foreach ($statusSummary as $summary)
+            <div class="col">
+                <div class="stat-card {{ $summary['class'] }}" >
+                    <div class="stat-label">{{ $summary['label'] }}</div>
+                    <div class="stat-value">{{ number_format($summary['value']) }}</div>
+                    <div class="stat-sub">{{ $summary['sub'] }}</div>
+                    <div class="stat-chip {{ $summary['class'] === '' ? 'red' : 'up' }}">
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#{{ $summary['icon'] }}"></use></svg>
+                        {{ number_format($summary['value']) }} applications
+                    </div>
+                </div>
+            </div>
+        @endforeach
     </div>
 
-    <form class="filter-bar" method="GET" action="{{ route('admin.dashboard.iam.verification-queue') }}">
-        <div class="filter-search">
-            <i class="bi bi-search"></i>
-            <input id="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Name, username or email">
+    <div class="filter-bar">
+        <div class="tab-group">
+            @foreach ($statusTabs as $status => $tab)
+                <a class="tab-item {{ $activeStatus === $status ? 'active' : '' }}" href="{{ route('admin.dashboard.iam.verification-queue', array_filter(array_merge(request()->except('page'), ['status' => $status]), fn ($value) => $value !== '' && $value !== null)) }}">
+                    {{ $tab['label'] }} <span class="tab-count">{{ number_format($tab['count']) }}</span>
+                </a>
+            @endforeach
         </div>
-        <select class="filter-select" id="status" name="status">
-            <option value="">All statuses</option>
-            @foreach (['pending', 'approved', 'rejected', 'more_info_required'] as $status)
-                <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ str_replace('_', ' ', $status) }}</option>
-            @endforeach
-        </select>
-        <select class="filter-select" id="method" name="method">
-            <option value="">All methods</option>
-            @foreach (['work_email', 'linkedin', 'company_letter', 'university_letter', 'justification_letter'] as $method)
-                <option value="{{ $method }}" @selected(($filters['method'] ?? '') === $method)>{{ str_replace('_', ' ', $method) }}</option>
-            @endforeach
-        </select>
-        <button class="btn btn-primary" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i>Apply</button>
-    </form>
+    </div>
 
     <div class="table-card">
-        <div class="table-header"><div><div class="table-title">Identity Review Items</div><div class="table-meta">{{ $verificationRequests->total() }} results</div></div></div>
-        <div class="table-responsive">
-            <table class="qa-table">
-                <thead><tr><th>Applicant</th><th>Method</th><th>Type</th><th>Status</th><th>Submitted</th><th>Reviewed By</th><th class="text-end">Actions</th></tr></thead>
+        <div class="table-header">
+            <div>
+                <select class="filter-select" id="bulkSelect">
+                    <option value="">Bulk Actions</option>
+                    <option value="approve">Approve selected</option>
+                    <option value="more_info_required">Request more info</option>
+                    <option value="reject">Reject selected</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn-apply" type="button">Apply</button>
+            </div>
+
+            <form class="search-form" method="GET" action="{{ route('admin.dashboard.iam.verification-queue') }}">
+                <div class="search-box">
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg>
+                    <input type="text" name="search" value="{{ $searchValue }}" placeholder="Search applicants...">
+                </div>
+                <select class="filter-select" name="method" onchange="this.form.submit()">
+                    <option value="">All Methods</option>
+                    @foreach ($methodOptions as $method)
+                        <option value="{{ $method }}" @selected($activeMethod === $method)>{{ str_replace('_', ' ', ucwords($method, '_')) }}</option>
+                    @endforeach
+                </select>
+                <select class="filter-select" name="status" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    @foreach ($statusOptions as $status)
+                        <option value="{{ $status }}" @selected($activeStatus === $status)>{{ str_replace('_', ' ', ucwords($status, '_')) }}</option>
+                    @endforeach
+                </select>
+                <button class="btn-outline btn-filter" type="submit">
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>
+                    Filter
+                </button>
+            </form>
+
+            <div class="table-title-block">
+                <div class="table-title">All Applications</div>
+                <div class="table-meta">Showing {{ $verificationRequests->firstItem() ?? 0 }}-{{ $verificationRequests->lastItem() ?? 0 }} of {{ number_format($verificationRequests->total()) }} applications</div>
+            </div>
+        </div>
+
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:36px;"><input type="checkbox" class="cb" id="selectAllCb" onchange="toggleSelectAll(this)"></th>
+                        <th>Applicant</th>
+                        <th>Type</th>
+                        <th>Method</th>
+                        <th>Documents</th>
+                        <th>Submitted</th>
+                        <th>SLA</th>
+                        <th>Status</th>
+                        <th>Reviewer</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
                 <tbody>
-                    @forelse ($verificationRequests as $request)
+                    @forelse ($verificationRequests as $verificationRequest)
+                        @php
+                            $documents = $verificationRequest->document_media ?? [];
+                            $firstDocument = $documents[0] ?? null;
+                        @endphp
                         <tr>
-                            <td><a class="fw-semibold text-decoration-none" href="{{ route('admin.dashboard.iam.user-security', $request->user) }}">{{ trim($request->user->first_name . ' ' . $request->user->last_name) ?: $request->user->username ?: $request->user->email }}</a><div class="small text-secondary">{{ $request->user->email }}</div></td>
-                            <td><span class="badge badge-info">{{ str_replace('_', ' ', $request->verification_method) }}</span></td>
-                            <td>{{ str_replace('_', ' ', $request->submission_type) }}</td>
-                            <td><span class="badge {{ $request->status === 'approved' ? 'badge-success' : ($request->status === 'rejected' ? 'badge-danger' : 'badge-warning') }}">{{ str_replace('_', ' ', $request->status) }}</span></td>
-                            <td>{{ $request->created_at?->format('Y-m-d H:i') }}</td>
-                            <td>{{ $request->reviewer?->email ?? '-' }}</td>
-                            <td class="text-end"><div class="d-flex justify-content-end gap-2">
-                                <form method="POST" action="{{ route('admin.dashboard.iam.verification-queue.approve', $request) }}">@csrf<input type="hidden" name="admin_notes" value="Approved from admin dashboard"><button class="btn" type="submit" title="Approve"><i class="bi bi-check-lg"></i></button></form>
-                                <form method="POST" action="{{ route('admin.dashboard.iam.verification-queue.more-info', $request) }}">@csrf<input type="hidden" name="admin_notes" value="Please provide additional verification evidence."><button class="btn" type="submit" title="More info"><i class="bi bi-chat-left-text"></i></button></form>
-                                <form method="POST" action="{{ route('admin.dashboard.iam.verification-queue.reject', $request) }}">@csrf<input type="hidden" name="admin_notes" value="Rejected from admin dashboard review."><button class="btn" type="submit" title="Reject"><i class="bi bi-x-lg"></i></button></form>
-                            </div></td>
+                            <td onclick="event.stopPropagation()"><input type="checkbox" class="cb row-cb"></td>
+                            <td>
+                                <div class="applicant-cell">
+                                    <div class="applicant-avatar {{ ($verificationRequest->user?->role ?? '') === 'partner' ? 'logo' : '' }}">
+                                        {{ strtoupper(substr($verificationRequest->applicant_name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <a class="applicant-name" href="{{ route('admin.dashboard.iam.verification-queue.show', $verificationRequest) }}">{{ $verificationRequest->applicant_name }}</a>
+                                        <div class="applicant-meta">{{ $verificationRequest->user?->email ?? 'No email' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="type-tag {{ $verificationRequest->applicant_type_class }}">{{ $verificationRequest->applicant_type_label }}</span></td>
+                            <td>{{ $verificationRequest->method_label }}<div class="sla-sub">{{ $verificationRequest->submission_type_label }}</div></td>
+                            <td>
+                                <div>{{ count($documents) }} {{ count($documents) === 1 ? 'file' : 'files' }}</div>
+                                @if ($firstDocument)
+                                    <div class="sla-sub">
+                                        @if ($firstDocument['url'])
+                                            <a href="{{ $firstDocument['url'] }}" target="_blank" rel="noopener">{{ $firstDocument['name'] }}</a>
+                                        @else
+                                            {{ $firstDocument['name'] }}
+                                        @endif
+                                    </div>
+                                @endif
+                            </td>
+                            <td>{{ $verificationRequest->created_at?->format('M j, Y') }}<div class="sla-sub">{{ $verificationRequest->created_at?->format('h:i A') }}</div></td>
+                            <td><div class="sla {{ $verificationRequest->sla['class'] }}">{{ $verificationRequest->sla['label'] }}</div><div class="sla-sub">{{ $verificationRequest->sla['sub'] }}</div></td>
+                            <td><span class="badge {{ $verificationRequest->status_class }}"><span class="dot-sm"></span>{{ $verificationRequest->status_label }}</span></td>
+                            <td>{{ $verificationRequest->reviewer_name ?? '-' }}<div class="sla-sub">{{ $verificationRequest->reviewed_at?->format('M j, Y') ?? 'Not reviewed' }}</div></td>
+                            <td onclick="event.stopPropagation()">
+                                <div class="row-actions">
+                                    <a class="row-btn view" title="View verification detail" href="{{ route('admin.dashboard.iam.verification-queue.show', $verificationRequest) }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-input-type-checkbox-id"></use></svg></a>
+                                    <button class="row-btn" type="button" title="Approve" onclick="openReviewPanel('approve-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-create-user-svg-viewbox-0-0"></use></svg></button>
+                                    <button class="row-btn" type="button" title="More info" onclick="openReviewPanel('more-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-3-questions-attached"></use></svg></button>
+                                    <button class="row-btn" type="button" title="Reject" onclick="openReviewPanel('reject-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-reject-application-internal-reviewer-note"></use></svg></button>
+                                </div>
+                                <div class="review-panel" id="approve-{{ $verificationRequest->id }}" hidden>
+                                    <form method="POST" action="{{ route('admin.dashboard.iam.verification-queue.approve', $verificationRequest) }}">
+                                        @csrf
+                                        <textarea class="note-area" name="admin_notes" placeholder="Approval note (optional)">{{ old('admin_notes') }}</textarea>
+                                        <button class="btn-primary" type="submit">Approve</button>
+                                    </form>
+                                </div>
+                                <div class="review-panel" id="more-{{ $verificationRequest->id }}" hidden>
+                                    <form method="POST" action="{{ route('admin.dashboard.iam.verification-queue.more-info', $verificationRequest) }}">
+                                        @csrf
+                                        <textarea class="note-area @error('admin_notes') is-invalid @enderror" name="admin_notes" placeholder="Required note for applicant">{{ old('admin_notes') }}</textarea>
+                                        @error('admin_notes')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        <button class="btn-outline" type="submit">Request More Info</button>
+                                    </form>
+                                </div>
+                                <div class="review-panel" id="reject-{{ $verificationRequest->id }}" hidden>
+                                    <form method="POST" action="{{ route('admin.dashboard.iam.verification-queue.reject', $verificationRequest) }}">
+                                        @csrf
+                                        <textarea class="note-area @error('admin_notes') is-invalid @enderror" name="admin_notes" placeholder="Required rejection note">{{ old('admin_notes') }}</textarea>
+                                        @error('admin_notes')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        <button class="btn-danger" type="submit">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center text-secondary py-4">No verification requests found.</td></tr>
+                        <tr><td colspan="10"><div class="empty-state"><span>No verification applications match the selected filters.</span></div></td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="table-foot"><span class="table-foot-info">Showing {{ $verificationRequests->firstItem() ?? 0 }}-{{ $verificationRequests->lastItem() ?? 0 }} of {{ number_format($verificationRequests->total()) }}</span>{{ $verificationRequests->onEachSide(1)->links('pagination::bootstrap-5') }}</div>
+
+        <div class="table-foot">
+            <div class="foot-info">Showing <b>{{ $verificationRequests->firstItem() ?? 0 }}-{{ $verificationRequests->lastItem() ?? 0 }}</b> of <b>{{ number_format($verificationRequests->total()) }}</b> applications</div>
+            <div class="pager">
+                @if ($verificationRequests->onFirstPage())
+                    <button class="pager-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg></button>
+                @else
+                    <a class="pager-btn" href="{{ $verificationRequests->previousPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg></a>
+                @endif
+                @foreach ($verificationRequests->getUrlRange(max(1, $verificationRequests->currentPage() - 1), min($verificationRequests->lastPage(), $verificationRequests->currentPage() + 1)) as $page => $url)
+                    <a class="pager-btn {{ $page === $verificationRequests->currentPage() ? 'active' : '' }}" href="{{ $url }}">{{ $page }}</a>
+                @endforeach
+                @if ($verificationRequests->hasMorePages())
+                    <a class="pager-btn" href="{{ $verificationRequests->nextPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg></a>
+                @else
+                    <button class="pager-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg></button>
+                @endif
+            </div>
+        </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+function toggleSelectAll(cb){document.querySelectorAll('.row-cb').forEach((row)=>row.checked=cb.checked)}
+function openReviewPanel(id){document.querySelectorAll('.review-panel').forEach((panel)=>{if(panel.id!==id)panel.hidden=true});const panel=document.getElementById(id);if(panel)panel.hidden=!panel.hidden}
+</script>
+@endpush
+

@@ -1,26 +1,19 @@
-@extends('layouts.master')
+@extends('layouts.rebuild-dashboard')
 
 @section('title', 'QA Dashboard & Questions')
 
 @section('content_header')
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-sm-6">
-                    <h1 class="mb-0">QA Dashboard & Questions</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">QA</li>
-                    </ol>
-                </div>
-            </div>
+    <div class="page-head">
+        <div>
+            <h1>QA Dashboard & Questions</h1>
+            <p>Review member accounts, verify professional credentials, manage account types, and monitor community contributions.</p>
         </div>
     </div>
+    
 @endsection
 
 @section('content')
+    
     <div class="app-content">
         <div class="container-fluid">
             @include('templates.components.alert-session')

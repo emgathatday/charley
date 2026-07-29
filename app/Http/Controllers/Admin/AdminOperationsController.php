@@ -9,7 +9,6 @@ use App\Models\ContentApprovalQueue;
 use App\Models\PlatformSetting;
 use App\Models\SupportTicket;
 use App\Models\User;
-use App\Services\Admin\AccountPenaltyService;
 use App\Services\Admin\AdminIntegrationService;
 use App\Services\Admin\ContentApprovalQueueService;
 use App\Services\Admin\PlatformSettingService;
@@ -61,27 +60,6 @@ class AdminOperationsController extends Controller
         $service->open(User::findOrFail($validated['user_id']), $validated);
         return redirect()->route('admin.dashboard.admin-operations.index')->with('status', 'Support ticket created.');
     }
-
-    public function createPenalty(): View
-    {
-        return view('admin.admin-operations.account-penalties.create', ['users' => User::query()->orderBy('email')->get()]);
-    }
-
-    public function storePenalty(Request $request, AccountPenaltyService $service): RedirectResponse
-    {
-        $this->abortIfMissingTable('account_penalties');
-        $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
-            'action_type' => ['required', Rule::in(['warning', 'temporary_suspension', 'account_freeze', 'unfreeze', 'ban', 'self_freeze', 'self_unfreeze'])],
-            'duration_days' => ['nullable', 'integer', 'min:1'],
-            'starts_at' => ['nullable', 'date'],
-            'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
-            'reason' => ['required', 'string'],
-        ]);
-        $service->issue(User::findOrFail($validated['user_id']), $request->user(), $validated);
-        return redirect()->route('admin.dashboard.admin-operations.index')->with('status', 'Account penalty created.');
-    }
-
     public function editSetting(?PlatformSetting $platformSetting = null): View
     {
         return view('admin.admin-operations.platform-settings.edit', ['platformSetting' => $platformSetting]);

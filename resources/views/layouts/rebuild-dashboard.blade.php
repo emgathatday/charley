@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $title ?? 'Dashboard') | Charley</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -80,6 +79,7 @@
                                 <div><div class="admin-name">{{ $adminName }}</div><div class="admin-role">{{ $adminEmail }}</div></div>
                             </div>
                             <a class="settings-item" href="{{ route('admin.dashboard.iam.users.admin-profile') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-my-profile-path-d-m"></use></svg>My Profile</a>
+                            <a class="settings-item" href="{{ route('admin.dashboard.platform-settings.index') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-platform-settings-ai-assistant"></use></svg>Platform Settings</a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -89,7 +89,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="content">
                 @yield('content_header')
                 @yield('content')

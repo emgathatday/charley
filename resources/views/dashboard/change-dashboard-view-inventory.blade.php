@@ -33,7 +33,7 @@
                 'admin.dashboard.iam.users' => '/dashboard/iam/users',
                 'admin.dashboard.iam.users.show' => '/dashboard/iam/users/{user}',
                 'admin.dashboard.iam.verification-queue' => '/dashboard/iam/verification-queue',
-                'admin.dashboard.iam.user-security' => '/dashboard/iam/user-security/{user?}',
+                'admin.dashboard.iam.account-penalty-freeze' => '/dashboard/iam/account-penalty-freeze',
             ],
             'views' => [
                 'iam.users',
@@ -41,7 +41,7 @@
                 'iam.users.show-partner',
                 'iam.users.show-admin',
                 'iam.verification-queue',
-                'iam.user-security',
+                'iam.account-penalty-freeze',
             ],
             'targets' => [
                 'user-management.html',
@@ -106,14 +106,12 @@
             'routes' => [
                 'admin.dashboard.admin-operations.index' => '/dashboard/admin-operations',
                 'admin.dashboard.admin-operations.support-tickets.create' => '/dashboard/admin-operations/support-tickets/create',
-                'admin.dashboard.admin-operations.account-penalties.create' => '/dashboard/admin-operations/account-penalties/create',
                 'admin.dashboard.admin-operations.platform-settings.edit' => '/dashboard/admin-operations/platform-settings/edit/{platformSetting?}',
                 'admin.dashboard.admin-operations.admin-integrations.create' => '/dashboard/admin-operations/admin-integrations/create',
             ],
             'views' => [
                 'admin.admin-operations.index',
                 'admin.admin-operations.support-tickets.create',
-                'admin.admin-operations.account-penalties.create',
                 'admin.admin-operations.platform-settings.edit',
                 'admin.admin-operations.admin-integrations.create',
             ],

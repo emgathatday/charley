@@ -248,6 +248,47 @@
   }
 }
 
+.qa-stat-icon {
+
+  &.blue {
+    background:var(--color-blue-soft);
+    color:var(--color-blue);
+  }
+
+  &.amber {
+    background:var(--color-amber-soft);
+    color:var(--color-amber-darker);
+  }
+
+  &.slate {
+    background:var(--color-bg-soft);
+    color:var(--color-ink-muted);
+  }
+}
+
+.weekly-theme-stat-icon {
+
+  &.primary {
+    background:var(--color-blue-soft);
+    color:var(--color-blue-dark);
+  }
+
+  &.success {
+    background:var(--color-emerald-soft);
+    color:var(--color-emerald-dark);
+  }
+
+  &.warning {
+    background:var(--color-amber-soft);
+    color:var(--color-amber-darker);
+  }
+
+  &.muted {
+    background:var(--color-bg-soft);
+    color:var(--color-ink-muted);
+  }
+}
+
 @include mixin.respond-to(mobile) {
   .card {
 

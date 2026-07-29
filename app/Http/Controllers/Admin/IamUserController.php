@@ -83,6 +83,12 @@ class IamUserController extends Controller
             $user->security_label = $this->securityLabel($user);
             $user->status_label = $this->statusLabel($user);
             $user->status_badge = $this->statusBadge($user);
+        $profilePhotoMediaId = match ($user->role) {
+            'professional' => $user->engineer_photo_media_id ?? null,
+            'unverified_member' => $user->unverified_photo_media_id ?? $user->engineer_photo_media_id ?? null,
+            default => null,
+        };
+        $user->profile_photo_url = $profilePhotoMediaId ? $this->profilePhotoUrl((object) ['photo_media_id' => $profilePhotoMediaId]) : null;
             $user->latest_verification_status = $user->pending_verification_requests_count > 0
                 ? 'Pending approval'
                 : ($user->is_verified ? 'Verified' : 'Not verified');
@@ -161,6 +167,8 @@ class IamUserController extends Controller
         return view($view, [
             'user' => $user,
             'detail' => $detail,
+            'partnerLogoUrl' => $user->role === 'partner' ? $this->partnerLogoUrl($profile) : null,
+            'profilePhotoUrl' => in_array($user->role, ['professional', 'unverified_member'], true) ? $this->profilePhotoUrl($profile) : null,
         ]);
     }
 
@@ -748,6 +756,12 @@ class IamUserController extends Controller
         $user->security_label = $this->securityLabel($user);
         $user->status_label = $this->statusLabel($user);
         $user->status_badge = $this->statusBadge($user);
+        $profilePhotoMediaId = match ($user->role) {
+            'professional' => $user->engineer_photo_media_id ?? null,
+            'unverified_member' => $user->unverified_photo_media_id ?? $user->engineer_photo_media_id ?? null,
+            default => null,
+        };
+        $user->profile_photo_url = $profilePhotoMediaId ? $this->profilePhotoUrl((object) ['photo_media_id' => $profilePhotoMediaId]) : null;
         $user->latest_verification_status = $user->pending_verification_requests_count > 0 ? 'Pending approval' : ($user->is_verified ? 'Verified' : 'Not verified');
 
         if ($user->role === 'partner') {
@@ -780,6 +794,8 @@ class IamUserController extends Controller
         $hasUnverifiedProfiles = Schema::hasTable('unverified_member_profiles');
         $hasPartnerProfiles = Schema::hasTable('partner_profiles');
         $hasPlantTypes = Schema::hasTable('plant_types');
+        $hasEngineerProfilePhoto = $hasEngineerProfiles && Schema::hasColumn('engineer_profiles', 'photo_media_id');
+        $hasUnverifiedProfilePhoto = $hasUnverifiedProfiles && Schema::hasColumn('unverified_member_profiles', 'photo_media_id');
 
         $query = User::query()->select('users.*');
 
@@ -792,27 +808,36 @@ class IamUserController extends Controller
                     'engineer_profiles.expertise_tags as unverified_expertise_tags',
                     'engineer_profiles.experience_years as engineer_experience_years',
                     'engineer_profiles.experience_years as unverified_experience_years',
+                    $hasEngineerProfilePhoto ? 'engineer_profiles.photo_media_id as engineer_photo_media_id' : DB::raw('null as engineer_photo_media_id'),
                 ]);
         } else {
             $query->addSelect([
                 DB::raw('null as engineer_industry_specialization'),
                 DB::raw('null as engineer_expertise_tags'),
                 DB::raw('null as engineer_experience_years'),
+                DB::raw('null as engineer_photo_media_id'),
             ]);
         }
 
-        if ($hasUnverifiedProfiles && ! $hasEngineerProfiles) {
+        if ($hasUnverifiedProfiles && $hasEngineerProfiles) {
+            $query->leftJoin('unverified_member_profiles', 'unverified_member_profiles.user_id', '=', 'users.id')
+                ->addSelect([
+                    $hasUnverifiedProfilePhoto ? 'unverified_member_profiles.photo_media_id as unverified_photo_media_id' : DB::raw('null as unverified_photo_media_id'),
+                ]);
+        } elseif ($hasUnverifiedProfiles) {
             $query->leftJoin('unverified_member_profiles', 'unverified_member_profiles.user_id', '=', 'users.id')
                 ->addSelect([
                     'unverified_member_profiles.field_of_study as unverified_field_of_study',
                     'unverified_member_profiles.expertise_tags as unverified_expertise_tags',
                     'unverified_member_profiles.experience_years as unverified_experience_years',
+                    $hasUnverifiedProfilePhoto ? 'unverified_member_profiles.photo_media_id as unverified_photo_media_id' : DB::raw('null as unverified_photo_media_id'),
                 ]);
-        } elseif (! $hasEngineerProfiles) {
+        } else {
             $query->addSelect([
                 DB::raw('null as unverified_field_of_study'),
                 DB::raw('null as unverified_expertise_tags'),
                 DB::raw('null as unverified_experience_years'),
+                DB::raw('null as unverified_photo_media_id'),
             ]);
         }
 
@@ -1208,22 +1233,16 @@ class IamUserController extends Controller
 
     private function partnerLogoUrl(?object $profile): ?string
     {
-        $mediaId = (int) ($profile->logo_media_id ?? 0);
-        if ($mediaId <= 0 || ! Schema::hasTable('media_files')) {
-            return null;
-        }
-
-        $media = MediaFile::query()->find($mediaId);
-        if (! $media || ! $media->path) {
-            return null;
-        }
-
-        return Storage::disk($media->disk ?: 'public')->url($media->path);
+        return $this->mediaUrl((int) ($profile->logo_media_id ?? 0));
     }
 
     private function profilePhotoUrl(?object $profile): ?string
     {
-        $mediaId = (int) ($profile->photo_media_id ?? 0);
+        return $this->mediaUrl((int) ($profile->photo_media_id ?? 0));
+    }
+
+    private function mediaUrl(int $mediaId): ?string
+    {
         if ($mediaId <= 0 || ! Schema::hasTable('media_files')) {
             return null;
         }
@@ -1233,7 +1252,11 @@ class IamUserController extends Controller
             return null;
         }
 
-        return Storage::disk($media->disk ?: 'public')->url($media->path);
+        try {
+            return Storage::disk($media->disk ?: 'public')->url($media->path);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     private function storeEngineerProfilePhoto(UploadedFile $file, ?int $uploaderId): MediaFile
@@ -1610,3 +1633,11 @@ class IamUserController extends Controller
             ->all();
     }
 }
+
+
+
+
+
+
+
+

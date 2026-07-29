@@ -1,0 +1,72 @@
+{
+    "source":  [
+                   "rebuild/pages/qa-detail.html",
+                   "rebuild/assets/js/pages/qa-detail.js"
+               ],
+    "mode":  "incremental",
+    "scannedFiles":  [
+                         "rebuild/pages/qa-detail.html",
+                         "rebuild/assets/js/pages/qa-detail.js"
+                     ],
+    "output":  "rebuild/assets/icons",
+    "svgSourceCount":  176,
+    "rawSvgFound":  0,
+    "spriteUseFound":  68,
+    "dedupedIconCount":  45,
+    "newIconsCreated":  [
+                            "icon-reply-to-answer"
+                        ],
+    "reusedIcons":  [
+                        "icon-admin-featured-star",
+                        "icon-moderation-and-reports-path-d-m14",
+                        "icon-danger-zone-div-class-set",
+                        "icon-create-user-svg-viewbox-0-0",
+                        "icon-delete",
+                        "icon-un-publish-question-svg-viewbox-0-0",
+                        "icon-9-verifications-exceeded-the-48h",
+                        "icon-anonymous-identity-visible-to-admin",
+                        "icon-2-files-svg-viewbox-0-0"
+                    ],
+    "unnamedIcons":  [
+
+                     ],
+    "missingSource":  [
+
+                      ],
+    "mapMissingInSprite":  [
+
+                           ],
+    "spriteExtraVsMap":  [
+
+                         ],
+    "idMappings":  [
+
+                   ],
+    "specialIconsNotCurrentColor":  [
+
+                                    ],
+    "needReview":  [
+
+                   ],
+    "symbolCount":  162,
+    "mapCount":  162,
+    "sourceExtraVsMap":  [
+                             "icon-1-204-views-svg-viewbox-0-0",
+                             "icon-3-new-this-week-all",
+                             "icon-add-partner-manually-div-class-stat-icon",
+                             "icon-add-user-3-users-sel",
+                             "icon-company-work-email-verified-ops-cobalt-compressi",
+                             "icon-div-class-stat-strip-style-grid-template-columns",
+                             "icon-edit-profile-display-name",
+                             "icon-host-webinars-or-events-line",
+                             "icon-linkedin-company-profile-linkedin-com-company-co",
+                             "icon-message-partner-pat",
+                             "icon-new-low-chrome-shift-catalyst-now",
+                             "icon-new-support-ticket-user-or",
+                             "icon-p",
+                             "icon-path-d-m11-4h4a2-2-0"
+                         ],
+    "htmlMissingInSprite":  [
+
+                            ]
+}

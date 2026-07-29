@@ -22,11 +22,14 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::get('iam/my-profile', [IamUserController::class, 'adminProfile'])->name('iam.users.admin-profile');
     Route::get('iam/users/{user}', [IamUserController::class, 'show'])->name('iam.users.show');
     Route::get('iam/verification-queue', [IamVerificationController::class, 'index'])->name('iam.verification-queue');
+    Route::get('iam/verification-queue/{verificationRequest}', [IamVerificationController::class, 'show'])->name('iam.verification-queue.show');
     Route::post('iam/verification-queue/{verificationRequest}/approve', [IamVerificationController::class, 'approve'])->name('iam.verification-queue.approve');
     Route::post('iam/verification-queue/{verificationRequest}/reject', [IamVerificationController::class, 'reject'])->name('iam.verification-queue.reject');
     Route::post('iam/verification-queue/{verificationRequest}/more-info', [IamVerificationController::class, 'requestMoreInfo'])->name('iam.verification-queue.more-info');
-    Route::get('iam/user-security/{user?}', [IamSecurityController::class, 'show'])->name('iam.user-security');
-    Route::put('iam/user-security/{user}', [IamSecurityController::class, 'update'])->name('iam.user-security.update');
+    Route::get('iam/account-penalty-freeze', [IamSecurityController::class, 'show'])->name('iam.account-penalty-freeze');
+    Route::get('iam/account-penalty-freeze/{user}', [IamSecurityController::class, 'show'])->name('iam.account-penalty-freeze.show');
+    Route::put('iam/account-penalty-freeze/{user}', [IamSecurityController::class, 'update'])->name('iam.account-penalty-freeze.update');
 });
+
 
 

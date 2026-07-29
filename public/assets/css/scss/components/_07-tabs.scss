@@ -147,16 +147,9 @@
   }
 }
 
-.qa-tabs-wrap {
-  background:var(--card);
-  border:1px solid var(--border-soft);
-  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
-  box-shadow:var(--shadow-sm);
-  border-bottom:none;
-  padding:0 10px;
-  display:flex;
-  align-items:center;
-  gap:2px;
+.qa-tab-bar {
+  margin-bottom:16px;
+  max-width:100%;
   overflow-x:auto;
 }
 

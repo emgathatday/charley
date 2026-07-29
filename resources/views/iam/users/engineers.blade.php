@@ -208,10 +208,11 @@
                         $exp = $expertiseMeta($user);
                         $points = (($user->verification_requests_count ?? 0) * 45) + (($user->pending_verification_requests_count ?? 0) * 12) + (int) ($user->engineer_experience_years ?? $user->unverified_experience_years ?? 0) * 120;
                         $filledStars = $stars($points);
+                        $profilePhotoUrl = $user->profile_photo_url ?? null;
                     @endphp
                     <tr>
                         <td><input class="row-check" type="checkbox" onchange="handleRowCheck()"></td>
-                        <td><div class="user-cell"><div class="user-avatar"><img class="user-avatar-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjEwIiBmaWxsPSIjRjFGNEY4Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSIzOCIgcj0iMTgiIGZpbGw9IiNDOEQwREEiLz48cGF0aCBkPSJNNTAgNjBjLTIyIDAtMzQgMTQtMzQgMzJ2OGg2OHYtOGMwLTE4LTEyLTMyLTM0LTMyeiIgZmlsbD0iI0M4RDBEQSIvPjwvc3ZnPg==" alt="{{ $user->display_name }}"></div><div><a class="user-name" href="{{ route('admin.dashboard.iam.users.show', $user) }}">{{ $user->display_name }}</a><div class="user-email">{{ $user->email }}</div></div></div></td>
+                        <td><div class="user-cell"><div class="user-avatar"><img class="user-avatar-img" src="{{ $profilePhotoUrl ?: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjEwIiBmaWxsPSIjRjFGNEY4Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSIzOCIgcj0iMTgiIGZpbGw9IiNDOEQwREEiLz48cGF0aCBkPSJNNTAgNjBjLTIyIDAtMzQgMTQtMzQgMzJ2OGg2OHYtOGMwLTE4LTEyLTMyLTM0LTMyeiIgZmlsbD0iI0M4RDBEQSIvPjwvc3ZnPg==' }}" alt="{{ $user->display_name }}" style="width: 100%;height: 100%;object-fit: cover;"></div><div><a class="user-name" href="{{ route('admin.dashboard.iam.users.show', $user) }}">{{ $user->display_name }}</a><div class="user-email">{{ $user->email }}</div></div></div></td>
                         <td><span class="role-badge {{ $role['class'] }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>{{ $role['label'] }}</span></td>
                         <td><span class="exp-badge {{ $exp['class'] }}">{{ $exp['label'] }}</span></td>
                         <td><div class="points-cell">{{ number_format($points) }} <span>pts</span></div><div class="stars">@for ($i = 0; $i < 5; $i++)<svg class="star {{ $i < $filledStars ? '' : 'empty' }}" viewBox="0 0 24 24" fill="{{ $i < $filledStars ? '#F59E0B' : '#E2E8F0' }}" stroke="{{ $i < $filledStars ? '#F59E0B' : '#CBD5E1' }}" stroke-width="1"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>@endfor</div></td>
@@ -264,6 +265,7 @@ function closeFreezeModal(){document.getElementById('freezeModal').classList.rem
 function confirmFreeze(){closeFreezeModal()}
 </script>
 @endpush
+
 
 
 

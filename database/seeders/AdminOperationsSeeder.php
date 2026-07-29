@@ -17,7 +17,14 @@ class AdminOperationsSeeder extends Seeder
         };
 
         foreach ($this->platformSettings() as $setting) {
-            $settingModel->newQuery()->firstOrCreate(['key' => $setting['key']], $setting);
+            $settingModel->newQuery()->updateOrCreate(
+                ['key' => $setting['key']],
+                [
+                    'value' => $setting['value'],
+                    'group' => $setting['group'],
+                    'description' => $setting['description'],
+                ]
+            );
         }
 
         $admin = User::query()->where('role', 'admin')->orderBy('id')->first();
@@ -114,6 +121,22 @@ class AdminOperationsSeeder extends Seeder
     private function platformSettings(): array
     {
         return [
+            ['key' => 'general.platform_name', 'value' => 'Charley', 'group' => 'general', 'description' => 'Shown in the browser tab, emails, and navigation.'],
+            ['key' => 'general.support_email', 'value' => 'support@charley.tech', 'group' => 'general', 'description' => 'Destination for direct support communication.'],
+            ['key' => 'general.default_timezone', 'value' => 'Central European Time (CET)', 'group' => 'general', 'description' => 'Default timezone for scheduling and displayed dates.'],
+            ['key' => 'general.default_language', 'value' => 'English', 'group' => 'general', 'description' => 'Default language for new accounts.'],
+            ['key' => 'general.maintenance_mode', 'value' => '0', 'group' => 'general', 'description' => 'Restrict platform access to admins only.'],
+            ['key' => 'security.session_timeout_minutes', 'value' => '240', 'group' => 'security', 'description' => 'Inactive session timeout in minutes.'],
+            ['key' => 'security.max_login_attempts', 'value' => '5', 'group' => 'security', 'description' => 'Failed login attempts before temporary lockout.'],
+            ['key' => 'verification.expiry_months', 'value' => '24', 'group' => 'verification', 'description' => 'Profile verification expiry window in months.'],
+            ['key' => 'ai.monthly_quota_default', 'value' => '100', 'group' => 'ai', 'description' => 'Default monthly Charley AI query quota.'],
+            ['key' => 'community.moderation_required', 'value' => '1', 'group' => 'community', 'description' => 'Require moderation before community content becomes visible.'],
+            ['key' => 'reputation.points_enabled', 'value' => '1', 'group' => 'reputation', 'description' => 'Enable reputation point accrual.'],
+            ['key' => 'quizzes.passing_threshold', 'value' => '80', 'group' => 'quizzes', 'description' => 'Required quiz passing percentage.'],
+            ['key' => 'partners.require_admin_approval', 'value' => '1', 'group' => 'partners', 'description' => 'Require admin approval for new partner registrations.'],
+            ['key' => 'notifications.email_enabled', 'value' => '1', 'group' => 'notifications', 'description' => 'Enable email notifications.'],
+            ['key' => 'notifications.in_app_enabled', 'value' => '1', 'group' => 'notifications', 'description' => 'Enable in-app notifications.'],
+            ['key' => 'notifications.admin_digest_frequency', 'value' => 'Daily', 'group' => 'notifications', 'description' => 'Admin digest cadence.'],
             ['key' => 'support.auto_assign_enabled', 'value' => 'true', 'group' => 'support', 'description' => 'Auto assign support tickets to available admins.'],
             ['key' => 'approval.default_priority', 'value' => 'normal', 'group' => 'approval', 'description' => 'Default priority for content approval queue items.'],
             ['key' => 'integrations.email_provider', 'value' => 'gmail', 'group' => 'integrations', 'description' => 'Default admin email integration provider.'],

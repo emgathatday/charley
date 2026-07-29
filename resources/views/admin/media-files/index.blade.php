@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.rebuild-dashboard')
 
 @section('content')
     <div class="content-header">

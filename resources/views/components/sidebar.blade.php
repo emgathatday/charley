@@ -56,7 +56,7 @@
                 <svg class="icon"><use href="/assets/icons/sprite.svg#icon-monthly-expert-recognition-svg-viewbox-0"></use></svg>
                 Monthly Expert Recognition
             </a>
-            <a href="{{ route('admin.dashboard.iam.user-security') }}" class="nav-item {{ request()->routeIs('admin.dashboard.iam.user-security') ? 'active' : '' }}">
+            <a href="{{ route('admin.dashboard.iam.account-penalty-freeze') }}" class="nav-item {{ request()->routeIs('admin.dashboard.iam.account-penalty-freeze*') ? 'active' : '' }}">
                 <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>
                 Account Penalty &amp; Freeze
             </a>

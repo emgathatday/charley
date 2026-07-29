@@ -706,101 +706,6 @@
   text-align:right;
 }
 
-.qa-tab {
-  padding:14px 16px;
-  font-size:13px;
-  font-weight:600;
-  color:var(--ink-faint);
-  border-bottom:2px solid transparent;
-  cursor:pointer;
-  transition:.13s;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  white-space:nowrap;
-
-  &:hover {
-    color:var(--ink-soft);
-  }
-
-  &.active {
-    color:var(--color-blue-dark);
-    border-bottom-color:var(--color-blue-dark);
-
-    .qa-tab-count {
-      background:var(--color-blue-soft);
-      color:var(--color-blue-dark);
-    }
-  }
-}
-
-.qa-tab-count {
-  font-size:12px;
-  font-weight:700;
-  padding:1px 7px;
-  border-radius:20px;
-  background:var(--color-bg-soft);
-  color:var(--ink-faint);
-}
-
-.qa-table-wrap {
-  background:var(--card);
-  border:1px solid var(--border-soft);
-  border-radius:0 0 var(--radius-lg) var(--radius-lg);
-  box-shadow:var(--shadow-sm);
-  overflow-x:auto;
-}
-
-.qa-table {
-  width:100%;
-  border-collapse:collapse;
-
-  th {
-    text-align:left;
-    font-size:12px;
-    font-weight:700;
-    color:var(--ink-faint);
-    text-transform:uppercase;
-    letter-spacing:0.05em;
-    padding:10px 14px;
-    background:var(--color-bg);
-    border-bottom:1px solid var(--border-soft);
-    white-space:nowrap;
-  }
-
-  td {
-    padding:13px 14px;
-    border-bottom:1px solid var(--border-soft);
-    vertical-align:top;
-    font-size:13px;
-    color:var(--ink-soft);
-  }
-
-  tr:last-child {
-
-    td {
-      border-bottom:none;
-    }
-  }
-
-  tbody {
-
-    tr:hover {
-
-      td {
-        background:var(--color-bg-softer);
-      }
-    }
-  }
-
-  tr:hover {
-
-    td {
-      background:var(--color-bg-softer);
-    }
-  }
-}
-
 .qa-row-checkbox {
   width:16px;
   height:16px;
@@ -1095,6 +1000,15 @@
   }
 }
 
+.theme-week-badge-active {
+  background:var(--color-emerald-soft);
+
+  .wk-label,
+  .wk-date {
+    color:var(--color-emerald-dark);
+  }
+}
+
 .theme-body {
   flex:1;
   min-width:0;
@@ -1211,6 +1125,15 @@
 .theme-row-actions {
   display:flex;
   gap:6px;
+}
+
+.archived-theme-note {
+  display:flex;
+  padding:16px 20px 6px;
+
+  .empty-state-sub {
+    text-align:center;
+  }
 }
 
 @include mixin.respond-to(small) {
