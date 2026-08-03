@@ -6,22 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\LoginTokenConsumeRequest;
 use App\Http\Requests\LoginTokenIssueRequest;
+use App\Http\Requests\MfaChallengeRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\LoginTokenResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\AccountSecurityService;
 use App\Services\LoginTokenService;
 use App\Services\RegistrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 class AuthController extends Controller
 {
     public function __construct(
         private readonly RegistrationService $registrationService,
-        private readonly LoginTokenService $loginTokenService
+        private readonly LoginTokenService $loginTokenService,
+        private readonly AccountSecurityService $accountSecurityService
     ) {
     }
 
@@ -39,6 +45,53 @@ class AuthController extends Controller
             throw new RuntimeException('Invalid login credentials.');
         }
 
+        if ($user->mfa_enabled) {
+            if (($credentials['code'] ?? null) || ($credentials['recovery_code'] ?? null)) {
+                if (! $this->accountSecurityService->validMfaCredential($user, $credentials['code'] ?? null, $credentials['recovery_code'] ?? null, consumeRecoveryCode: true)) {
+                    throw ValidationException::withMessages(['code' => 'Invalid MFA challenge.']);
+                }
+
+                $user = $this->registrationService->markLoggedIn($user);
+
+                return response()->json([
+                    'data' => new UserResource($user),
+                ]);
+            }
+
+            $challengeToken = Str::random(64);
+            Cache::put($this->mfaChallengeCacheKey($challengeToken), $user->id, now()->addMinutes(5));
+
+            return response()->json([
+                'data' => [
+                    'mfa_required' => true,
+                    'challenge_token' => $challengeToken,
+                ],
+            ]);
+        }
+
+        $user = $this->registrationService->markLoggedIn($user);
+
+        return response()->json([
+            'data' => new UserResource($user),
+        ]);
+    }
+
+    public function mfaChallenge(MfaChallengeRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $cacheKey = $this->mfaChallengeCacheKey($data['challenge_token']);
+        $userId = Cache::get($cacheKey);
+
+        if (! $userId) {
+            throw new RuntimeException('Invalid MFA challenge.');
+        }
+
+        $user = User::query()->findOrFail($userId);
+        if (! $this->accountSecurityService->validMfaCredential($user, $data['code'] ?? null, $data['recovery_code'] ?? null, consumeRecoveryCode: true)) {
+            throw ValidationException::withMessages(['code' => 'Invalid MFA challenge.']);
+        }
+
+        Cache::forget($cacheKey);
         $user = $this->registrationService->markLoggedIn($user);
 
         return response()->json([
@@ -92,6 +145,9 @@ class AuthController extends Controller
             ],
         ]);
     }
+
+    private function mfaChallengeCacheKey(string $challengeToken): string
+    {
+        return 'auth:mfa-challenge:' . hash('sha256', $challengeToken);
+    }
 }
-
-

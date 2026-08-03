@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             TaxonomySeeder::class,
             FeedCmsSeeder::class,
             LibrarySeeder::class,
+            QaReputationSeeder::class,
+            QaBackendDashboardSeeder::class,
             DemoPartnerDashboardSeeder::class,
         ]);
     }

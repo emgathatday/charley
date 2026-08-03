@@ -1,67 +1,94 @@
 @extends('layouts.rebuild-dashboard')
 
 @section('content')
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0">Media Files</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Media Files</li>
-                    </ol>
-                </div>
+    <div class="page-head">
+        <div>
+            <h1>Media Files</h1>
+            <p>All attachments of Platform.</p>
+        </div>
+    </div>
+    <!-- Stat Cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3">
+        <div class="col">
+            <div class="stat-card blue">
+                <div class="stat-label">Total uploads</div>
+                <div class="stat-value">{{ $totalUploads }}</div>
+                <div class="stat-sub">Attachments.</div>                
+            </div>
+        </div>
+        <div class="col">
+            <div class="stat-card indigo">
+                <div class="stat-label">Attached files</div>
+                <div class="stat-value">{{ number_format($attachedFiles) }}</div>
+                <div class="stat-sub">Files.</div>                
+            </div>
+        </div>
+        <div class="col">
+            <div class="stat-card amber">
+                <div class="stat-label">Orphan files</div>
+                <div class="stat-value">{{ number_format($orphanFiles) }}</div>
+                <div class="stat-sub">File</div>
+                
+            </div>
+        </div>
+        <div class="col">
+            <div class="stat-card">
+                <div class="stat-label">Processing</div>
+                <div class="stat-value">{{ number_format($processingFiles) }}</div>
+                <div class="stat-sub">File</div>                
             </div>
         </div>
     </div>
+    <!-- Tabs -->
+    
+    <!-- Table -->
+    <div class="table-wrap">
+        <div class="table-header">
+            <div class="table-title-block">
+                <div class="table-title">All Attachments</div>
+                <div class="table-meta">Showing 100 Files</div>
+            </div>
 
+        </div>
+        <div class="table-scroll">
+            <table class="">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Original name</th>
+                        <th>Category</th>
+                        <th>Context</th>
+                        <th>Disk</th>
+                        <th>Status</th>
+                        <th>Attached to</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($mediaFiles as $mediaFile)
+                        <tr>
+                            <td><a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}">#{{ $mediaFile->id }}</a></td>
+                            <td>{{ $mediaFile->original_name }}</td>
+                            <td>{{ $mediaFile->file_category ?? 'none' }}</td>
+                            <td>{{ $mediaFile->upload_context ?? 'none' }}</td>
+                            <td>{{ $mediaFile->disk }}</td>
+                            <td>{{ $mediaFile->processing_status ?? 'none' }}</td>
+                            <td>{{ $mediaFile->attachable_type ? class_basename($mediaFile->attachable_type).' #'.$mediaFile->attachable_id : 'orphan' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No media files found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+        </div>
+    </div>
     <section class="content">
         <div class="container-fluid">
             @if (session('status'))
                 <div class="alert alert-success">{{ session('status') }}</div>
             @endif
-
-            <div class="row">
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3>{{ $totalUploads }}</h3>
-                            <p>Total uploads</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-photo-video"></i></div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>{{ $attachedFiles }}</h3>
-                            <p>Attached files</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-link"></i></div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3>{{ $orphanFiles }}</h3>
-                            <p>Orphan files</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-unlink"></i></div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-secondary">
-                        <div class="inner">
-                            <h3>{{ $processingFiles }}</h3>
-                            <p>Processing</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-cog"></i></div>
-                    </div>
-                </div>
-            </div>
-
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card">
@@ -100,36 +127,7 @@
                             </form>
                         </div>
                         <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Original name</th>
-                                        <th>Category</th>
-                                        <th>Context</th>
-                                        <th>Disk</th>
-                                        <th>Status</th>
-                                        <th>Attached to</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($mediaFiles as $mediaFile)
-                                        <tr>
-                                            <td><a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}">#{{ $mediaFile->id }}</a></td>
-                                            <td>{{ $mediaFile->original_name }}</td>
-                                            <td>{{ $mediaFile->file_category ?? 'none' }}</td>
-                                            <td>{{ $mediaFile->upload_context ?? 'none' }}</td>
-                                            <td>{{ $mediaFile->disk }}</td>
-                                            <td>{{ $mediaFile->processing_status ?? 'none' }}</td>
-                                            <td>{{ $mediaFile->attachable_type ? class_basename($mediaFile->attachable_type).' #'.$mediaFile->attachable_id : 'orphan' }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="7" class="text-center text-muted py-4">No media files found.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                            
                         </div>
                         <div class="card-footer clearfix">
                             {{ $mediaFiles->links() }}

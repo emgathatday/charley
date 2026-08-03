@@ -20,6 +20,8 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::get('iam/users/{user}/edit/partner', [IamUserController::class, 'editPartner'])->name('iam.users.edit-partner');
     Route::put('iam/users/{user}/edit/partner', [IamUserController::class, 'updatePartner'])->name('iam.users.update-partner');
     Route::get('iam/my-profile', [IamUserController::class, 'adminProfile'])->name('iam.users.admin-profile');
+    Route::delete('iam/my-profile/sessions/{session}', [IamUserController::class, 'revokeAdminProfileSession'])->name('iam.users.admin-profile.sessions.revoke');
+    Route::delete('iam/my-profile/sessions', [IamUserController::class, 'revokeOtherAdminProfileSessions'])->name('iam.users.admin-profile.sessions.revoke-others');
     Route::get('iam/users/{user}', [IamUserController::class, 'show'])->name('iam.users.show');
     Route::get('iam/verification-queue', [IamVerificationController::class, 'index'])->name('iam.verification-queue');
     Route::get('iam/verification-queue/{verificationRequest}', [IamVerificationController::class, 'show'])->name('iam.verification-queue.show');
@@ -30,6 +32,3 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::get('iam/account-penalty-freeze/{user}', [IamSecurityController::class, 'show'])->name('iam.account-penalty-freeze.show');
     Route::put('iam/account-penalty-freeze/{user}', [IamSecurityController::class, 'update'])->name('iam.account-penalty-freeze.update');
 });
-
-
-

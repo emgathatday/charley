@@ -89,6 +89,9 @@
 
                 <div class="form-card">
                     <div class="main-view" id="mainView">
+                        @php
+                            $showMfaChallenge = session('mfa_required') || $errors->has('code') || $errors->has('recovery_code');
+                        @endphp
                         @if (session('status'))
                             <div class="error-msg" style="display:flex;background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.28);color:#047857;">
                                 <svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>
@@ -103,7 +106,54 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('admin.login.store') }}">
+                        @if ($showMfaChallenge)
+                            <form method="POST" action="{{ route('admin.login.mfa', [], false) }}" class="mfa-challenge-form" style="margin-bottom:20px;">
+                                @csrf
+                                <div class="form-group">
+                                    <label class="form-label" for="mfa_code">Authenticator code</label>
+                                    <div class="input-wrap">
+                                        <svg class="icon input-icon"><use href="/assets/icons/sprite.svg#icon-active-sessions-svg-viewbox-0-0"></use></svg>
+                                        <input
+                                            class="form-input @error('code') is-invalid @enderror"
+                                            id="mfa_code"
+                                            name="code"
+                                            type="text"
+                                            inputmode="numeric"
+                                            pattern="[0-9]{6}"
+                                            maxlength="6"
+                                            placeholder="Enter 6-digit code"
+                                            autocomplete="one-time-code"
+                                            autofocus
+                                        >
+                                    </div>
+                                </div>
+
+                                <button class="forgot-link" type="button" onclick="showRecoveryCodeField()" style="background:none;border:0;padding:0;margin:0 0 16px;color:var(--accent-blue);font:inherit;font-weight:700;cursor:pointer;">Use a recovery code</button>
+
+                                <div class="form-group" id="recoveryCodeGroup" style="display:none;">
+                                    <label class="form-label" for="recovery_code">Recovery code</label>
+                                    <div class="input-wrap">
+                                        <svg class="icon input-icon"><use href="/assets/icons/sprite.svg#icon-penalty-history-3-actions-recorded"></use></svg>
+                                        <input
+                                            class="form-input @error('recovery_code') is-invalid @enderror"
+                                            id="recovery_code"
+                                            name="recovery_code"
+                                            type="text"
+                                            placeholder="Enter recovery code"
+                                            autocomplete="one-time-code"
+                                        >
+                                    </div>
+                                </div>
+
+                                <button class="btn-login" type="submit">
+                                    <span class="btn-text">Verify and enter Admin Console</span>
+                                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-secured-access"></use></svg>
+                                </button>
+                            </form>
+                        @endif
+
+                        @unless ($showMfaChallenge)
+                            <form method="POST" action="{{ route('admin.login.store') }}">
                             @csrf
                             <div class="form-group">
                                 <label class="form-label" for="email">Email address</label>
@@ -154,7 +204,8 @@
                                 <div class="spinner" id="loginSpinner"></div>
                                 <svg id="loginArrow" class="icon"><use href="/assets/icons/sprite.svg#icon-secured-access"></use></svg>
                             </button>
-                        </form>
+                            </form>
+                        @endunless
 
                         <div class="form-divider">
                             <div class="form-divider-line"></div>
@@ -194,8 +245,14 @@
             if (!input) return;
             input.type = input.type === 'password' ? 'text' : 'password';
         }
+
+        function showRecoveryCodeField() {
+            const group = document.getElementById('recoveryCodeGroup');
+            const input = document.getElementById('recovery_code');
+            if (!group) return;
+            group.style.display = 'block';
+            if (input) input.focus();
+        }
     </script>
 </body>
 </html>
-
-

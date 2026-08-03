@@ -349,8 +349,15 @@
 }
 
 .hero-stats-row {
+  display:flex;
+  gap:26px;
+  flex-wrap:wrap;
   margin-bottom:20px;
   position:relative;
+}
+
+.hero-stat {
+  min-width:max-content;
 }
 
 .hero-stat-num {

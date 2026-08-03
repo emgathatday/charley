@@ -952,8 +952,7 @@
 .theme-list-wrap {
   background:var(--card);
   border:1px solid var(--border-soft);
-  border-top:none;
-  border-radius:0 0 var(--radius-lg) var(--radius-lg);
+  border-radius:var(--radius-lg);
   box-shadow:var(--shadow-sm);
   padding:6px;
 }

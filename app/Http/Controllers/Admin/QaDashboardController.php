@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class QaDashboardController extends Controller
@@ -26,7 +27,7 @@ class QaDashboardController extends Controller
             ...$this->viewData($request),
             'question' => $this->questionDetailData($question),
             'questionAnswers' => $this->questionAnswersData($question),
-            'warningHistory' => $this->demoWarningHistory(),
+            'warningHistory' => $this->warningHistoryData($question),
         ]);
     }
 
@@ -252,6 +253,7 @@ class QaDashboardController extends Controller
             ...$this->filters(),
             'stats' => $this->stats(),
             'questions' => $this->questionsData($request),
+            'qaTabCounts' => $this->qaTabCounts(),
             'answers' => $this->answersData($request),
             'themes' => $this->themes(),
             'themeAssignments' => $this->themeAssignments(),
@@ -261,7 +263,7 @@ class QaDashboardController extends Controller
             'ledger' => $this->ledger($request),
             'reputationUsers' => $this->reputationUsers($request),
             'users' => $this->users(),
-            'filters' => $request->only(['status', 'plant_type_id', 'weekly_theme_id', 'keyword', 'date_from', 'date_to', 'question_id', 'is_admin_featured', 'year_month', 'source_type', 'flag_status']),
+            'filters' => $request->only(['tab', 'status', 'plant_type_id', 'weekly_theme_id', 'keyword', 'date_from', 'date_to', 'question_id', 'is_admin_featured', 'year_month', 'source_type', 'flag_status']),
         ];
     }
 
@@ -290,28 +292,24 @@ class QaDashboardController extends Controller
             ['label' => 'Answers', 'value' => Schema::hasTable('answers') ? DB::table('answers')->count() : 0, 'color' => 'info', 'icon' => 'bi bi-chat-dots'],
         ];
 
-        return collect($stats)->sum('value') > 0 ? $stats : [
-            ['label' => 'Pending Review', 'value' => 5, 'color' => 'warning', 'icon' => 'bi bi-hourglass-split'],
-            ['label' => 'Published', 'value' => 18, 'color' => 'success', 'icon' => 'bi bi-check2-circle'],
-            ['label' => 'Flagged', 'value' => 3, 'color' => 'danger', 'icon' => 'bi bi-flag'],
-            ['label' => 'Answers', 'value' => 12, 'color' => 'info', 'icon' => 'bi bi-chat-dots'],
-        ];
+        return $stats;
     }
 
     private function questionsData(Request $request)
     {
         if (! Schema::hasTable('questions')) {
-            return $this->filteredDemoQuestions($request);
+            return collect();
         }
-
-        $hasQuestions = DB::table('questions')->exists();
 
         $questions = DB::table('questions')
             ->leftJoin('users', 'users.id', '=', 'questions.user_id')
+            ->leftJoin('engineer_profiles', 'engineer_profiles.user_id', '=', 'questions.user_id')
             ->leftJoin('plant_types', 'plant_types.id', '=', 'questions.plant_type_id')
             ->leftJoin('weekly_themes', 'weekly_themes.id', '=', 'questions.weekly_theme_id')
-            ->select('questions.*', 'users.username as user_username', 'users.first_name as user_first_name', 'users.last_name as user_last_name', 'users.email as user_email', 'plant_types.name as plant_name', 'weekly_themes.title as theme_title')
-            ->when($request->get('status'), fn ($query, $status) => $query->where('questions.status', $status))
+            ->select('questions.*', 'users.username as user_username', 'users.first_name as user_first_name', 'users.last_name as user_last_name', 'users.email as user_email', 'engineer_profiles.position as engineer_position', 'engineer_profiles.current_company as engineer_company', 'engineer_profiles.photo_media_id as engineer_photo_media_id', 'plant_types.name as plant_name', 'weekly_themes.title as theme_title')
+            ->when($request->get('tab') === 'pending', fn ($query) => $query->where('questions.status', 'pending'))
+            ->when(in_array($request->get('tab'), ['open', 'unanswered'], true), fn ($query) => $query->whereNotExists(fn ($subQuery) => $subQuery->selectRaw('1')->from('answers')->whereColumn('answers.question_id', 'questions.id')))
+            ->when($request->get('status') && $request->get('status') !== 'all', fn ($query, $status) => $query->where('questions.status', $status))
             ->when($request->integer('plant_type_id'), fn ($query, $plantTypeId) => $query->where('questions.plant_type_id', $plantTypeId))
             ->when($request->integer('weekly_theme_id'), fn ($query, $weeklyThemeId) => $query->where('questions.weekly_theme_id', $weeklyThemeId))
             ->when($request->filled('keyword'), function ($query) use ($request): void {
@@ -336,15 +334,50 @@ class QaDashboardController extends Controller
                 'theme' => $question->theme_title ?: 'Open discussion',
                 'weekly_theme_id' => $question->weekly_theme_id,
                 'status' => $question->status,
-                'status_color' => ['published' => 'success', 'pending' => 'warning', 'flagged' => 'danger', 'hidden' => 'secondary'][$question->status] ?? 'light',
-                'author' => $question->is_anonymous ? 'Anonymous' : $this->userDisplayName($question, $question->user_id),
+                'status_color' => $this->statusColor($question->status),
+                'status_label' => $this->statusLabel($question->status),
+                'author' => $this->userDisplayName($question, $question->user_id),
+                'author_id' => $question->user_id ? (int) $question->user_id : null,
+                'author_email' => $question->user_email ?: 'No email recorded',
+                'author_profile_photo_url' => $this->mediaUrl((int) ($question->engineer_photo_media_id ?? 0)),
+                'author_role' => $this->authorRole($question),
+                'is_anonymous' => (bool) $question->is_anonymous,
                 'domains' => $this->domains($question->id),
                 'answer_count' => $this->answerCount((int) $question->id),
+                'warning_count' => $this->warningCountForQuestion((int) $question->id),
+                'attachment_count' => $this->attachmentCount($question->attachment_media_ids),
                 'body' => Str::limit($question->body, 220),
                 'created_at' => $question->created_at,
             ]);
 
-        return $questions->isNotEmpty() || $hasQuestions ? $questions : $this->filteredDemoQuestions($request);
+        return $questions;
+    }
+
+    private function authorRole(object $question): string
+    {
+        $role = $question->engineer_position
+            ?: ($question->engineer_company ? 'Engineer at '.$question->engineer_company : 'Engineer');
+
+        return $question->is_anonymous ? $role.' - public anonymous' : $role;
+    }
+
+    private function qaTabCounts(): array
+    {
+        if (! Schema::hasTable('questions')) {
+            return ['all' => 0, 'open' => 0, 'pending' => 0];
+        }
+
+        $openCount = Schema::hasTable('answers')
+            ? DB::table('questions')
+                ->whereNotExists(fn ($query) => $query->selectRaw('1')->from('answers')->whereColumn('answers.question_id', 'questions.id'))
+                ->count()
+            : DB::table('questions')->count();
+
+        return [
+            'all' => DB::table('questions')->count(),
+            'open' => $openCount,
+            'pending' => DB::table('questions')->where('status', 'pending')->count(),
+        ];
     }
 
     private function answersData(Request $request)
@@ -389,9 +422,10 @@ class QaDashboardController extends Controller
         if (Schema::hasTable('questions')) {
             $question = DB::table('questions')
                 ->leftJoin('users', 'users.id', '=', 'questions.user_id')
+                ->leftJoin('engineer_profiles', 'engineer_profiles.user_id', '=', 'questions.user_id')
                 ->leftJoin('plant_types', 'plant_types.id', '=', 'questions.plant_type_id')
                 ->leftJoin('weekly_themes', 'weekly_themes.id', '=', 'questions.weekly_theme_id')
-                ->select('questions.*', 'users.username as user_username', 'users.first_name as user_first_name', 'users.last_name as user_last_name', 'users.email as user_email', 'plant_types.name as plant_name', 'weekly_themes.title as theme_title')
+                ->select('questions.*', 'users.username as user_username', 'users.first_name as user_first_name', 'users.last_name as user_last_name', 'users.email as user_email', 'engineer_profiles.position as engineer_position', 'engineer_profiles.current_company as engineer_company', 'engineer_profiles.photo_media_id as engineer_photo_media_id', 'plant_types.name as plant_name', 'weekly_themes.title as theme_title')
                 ->where('questions.id', $questionId)
                 ->first();
 
@@ -404,19 +438,26 @@ class QaDashboardController extends Controller
                     'theme' => $question->theme_title ?: 'Open discussion',
                     'weekly_theme_id' => $question->weekly_theme_id,
                     'status' => $question->status,
-                    'status_color' => ['published' => 'success', 'pending' => 'warning', 'flagged' => 'danger', 'hidden' => 'secondary', 'active' => 'success', 'draft' => 'warning', 'unactive' => 'secondary'][$question->status] ?? 'light',
-                    'status_label' => $question->status === 'unactive' ? 'Inactive' : Str::headline($question->status),
-                    'author' => $question->is_anonymous ? 'Anonymous' : $this->userDisplayName($question, $question->user_id),
-                    'author_role' => $question->is_anonymous ? 'Anonymous poster' : 'Community member',
-                    'author_email' => $question->is_anonymous ? 'Hidden for public view' : ($question->user_email ?: 'No email recorded'),
-                    'author_meta' => $question->is_anonymous ? 'Identity retained for admin moderation' : 'Verified user account',
+                    'status_color' => $this->statusColor($question->status),
+                    'status_label' => $this->statusLabel($question->status),
+                    'author' => $this->userDisplayName($question, $question->user_id),
+                    'author_id' => $question->user_id ? (int) $question->user_id : null,
+                    'author_profile_photo_url' => $this->mediaUrl((int) ($question->engineer_photo_media_id ?? 0)),
+                    'author_role' => $this->authorRole($question),
+                    'author_email' => $question->user_email ?: 'No email recorded',
+                    'author_meta' => $question->is_anonymous ? 'Public anonymous; identity visible to admin' : 'Verified engineer account',
+                    'is_anonymous' => (bool) $question->is_anonymous,
                     'domains' => $this->domains($question->id),
+                    'answer_count' => $this->answerCount((int) $question->id),
+                    'warning_count' => $this->warningCountForQuestion((int) $question->id),
+                    'attachment_count' => $this->attachmentCount($question->attachment_media_ids),
+                    'attachments' => $this->attachments($question->attachment_media_ids),
                     'created_at' => $question->created_at,
                 ];
             }
         }
 
-        return collect($this->demoQuestionDetails())->firstWhere('id', $questionId) ?: $this->demoQuestionDetails()[0];
+        abort(404);
     }
 
     private function questionAnswersData(int $questionId)
@@ -435,6 +476,7 @@ class QaDashboardController extends Controller
                     'confidence' => $answer->confidence_level ?: 'unrated',
                     'featured' => (bool) $answer->is_admin_featured,
                     'rank' => $answer->admin_rank_order ?: '-',
+                    'warning' => $this->warningForAnswer((int) $answer->id),
                 ]);
 
             if ($answers->isNotEmpty() || (Schema::hasTable('questions') && DB::table('questions')->where('id', $questionId)->exists())) {
@@ -442,7 +484,7 @@ class QaDashboardController extends Controller
             }
         }
 
-        return collect($this->demoQuestionAnswers());
+        return collect();
     }
 
     private function domains(int $questionId): string
@@ -455,6 +497,129 @@ class QaDashboardController extends Controller
                 ->pluck('knowledge_domains.name')
                 ->implode(', ')
             : '';
+    }
+
+    private function statusLabel(string $status): string
+    {
+        return [
+            'published' => 'Active',
+            'pending' => 'Pending Approval',
+            'hidden' => 'Blocked',
+            'flagged' => 'Flagged',
+        ][$status] ?? Str::headline($status);
+    }
+
+    private function statusColor(string $status): string
+    {
+        return [
+            'published' => 'success',
+            'pending' => 'warning',
+            'flagged' => 'danger',
+            'hidden' => 'secondary',
+        ][$status] ?? 'light';
+    }
+
+    private function attachmentCount(mixed $attachmentMediaIds): int
+    {
+        return count($this->mediaIds($attachmentMediaIds));
+    }
+
+    private function attachments(mixed $attachmentMediaIds)
+    {
+        $ids = $this->mediaIds($attachmentMediaIds);
+
+        if ($ids === [] || ! Schema::hasTable('media_files')) {
+            return collect();
+        }
+
+        return DB::table('media_files')
+            ->whereIn('id', $ids)
+            ->orderBy('id')
+            ->get(['id', 'original_name', 'mime_type', 'size', 'file_category']);
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function mediaIds(mixed $attachmentMediaIds): array
+    {
+        if (blank($attachmentMediaIds)) {
+            return [];
+        }
+
+        $ids = is_array($attachmentMediaIds) ? $attachmentMediaIds : json_decode((string) $attachmentMediaIds, true);
+
+        return collect(is_array($ids) ? $ids : [])
+            ->filter(fn ($id): bool => is_numeric($id))
+            ->map(fn ($id): int => (int) $id)
+            ->values()
+            ->all();
+    }
+
+    private function warningCountForQuestion(int $questionId): int
+    {
+        if (! Schema::hasTable('qa_moderation_warnings') || ! Schema::hasTable('answers')) {
+            return 0;
+        }
+
+        return DB::table('qa_moderation_warnings')
+            ->where(function ($query) use ($questionId): void {
+                $query->where(function ($query) use ($questionId): void {
+                    $query->where('warnable_type', 'question')
+                        ->where('warnable_id', $questionId);
+                })->orWhere(function ($query) use ($questionId): void {
+                    $query->where('warnable_type', 'answer')
+                        ->whereIn('warnable_id', DB::table('answers')->where('question_id', $questionId)->select('id'));
+                });
+            })
+            ->count();
+    }
+
+    private function warningForAnswer(int $answerId): ?object
+    {
+        if (! Schema::hasTable('qa_moderation_warnings')) {
+            return null;
+        }
+
+        return DB::table('qa_moderation_warnings')
+            ->where('warnable_type', 'answer')
+            ->where('warnable_id', $answerId)
+            ->latest('created_at')
+            ->first();
+    }
+
+    private function warningHistoryData(int $questionId)
+    {
+        if (! Schema::hasTable('qa_moderation_warnings')) {
+            return collect();
+        }
+
+        $answerIds = Schema::hasTable('answers')
+            ? DB::table('answers')->where('question_id', $questionId)->pluck('id')->all()
+            : [];
+
+        return DB::table('qa_moderation_warnings')
+            ->where(function ($query) use ($questionId, $answerIds): void {
+                $query->where(function ($query) use ($questionId): void {
+                    $query->where('warnable_type', 'question')
+                        ->where('warnable_id', $questionId);
+                });
+
+                if ($answerIds !== []) {
+                    $query->orWhere(function ($query) use ($answerIds): void {
+                        $query->where('warnable_type', 'answer')
+                            ->whereIn('warnable_id', $answerIds);
+                    });
+                }
+            })
+            ->latest('created_at')
+            ->get()
+            ->map(fn ($warning): array => [
+                'date' => $warning->created_at,
+                'status' => $warning->status,
+                'note' => $warning->reason,
+                'severity' => $warning->severity,
+            ]);
     }
 
     private function themes()
@@ -802,6 +967,23 @@ class QaDashboardController extends Controller
         ];
     }
 
+    private function mediaUrl(int $mediaId): ?string
+    {
+        if ($mediaId <= 0 || ! Schema::hasTable('media_files')) {
+            return null;
+        }
+
+        $media = DB::table('media_files')->where('id', $mediaId)->first(['disk', 'path']);
+        if (! $media || ! $media->path) {
+            return null;
+        }
+
+        try {
+            return Storage::disk($media->disk ?: 'public')->url($media->path);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
     private function userDisplayName(object $row, ?int $userId = null): string
     {
         $firstName = $row->user_first_name ?? $row->first_name ?? null;

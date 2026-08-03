@@ -80,7 +80,7 @@
 
         <div class="nav-group">
             <div class="nav-label">Technical Q&amp;A</div>
-            <a href="{{ route('admin.dashboard.qa.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.qa.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.dashboard.qa.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.qa.*') && ! request()->routeIs('admin.dashboard.qa.weekly-themes') ? 'active' : '' }}">
                 <svg class="icon"><use href="/assets/icons/sprite.svg#icon-qanda-management-rect-x-3-y-4"></use></svg>
                 Q&amp;A Management
             </a>

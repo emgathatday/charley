@@ -437,7 +437,84 @@ class IamUserController extends Controller
 
     public function adminProfile(Request $request): View
     {
-        return view('iam.users.admin-profile', ['admin' => $request->user(), 'displayName' => $this->displayName($request->user()), 'initials' => 'AD', 'profileTitle' => 'Platform Administrator', 'organisation' => 'Charley Platform', 'timezone' => config('app.timezone'), 'sessions' => collect(), 'latestSession' => null]);
+        $admin = $request->user();
+        $currentSessionId = $request->session()->getId();
+        $sessions = Schema::hasTable('sessions')
+            ? $admin->sessions()->orderByDesc('last_activity')->get()->each(function ($session) use ($currentSessionId): void {
+                $session->is_current = hash_equals((string) $session->id, (string) $currentSessionId);
+            })
+            : collect();
+        $latestSession = $sessions->firstWhere('is_current', true) ?? $sessions->first();
+
+        return view('iam.users.admin-profile', [
+            'admin' => $admin,
+            'displayName' => $this->displayName($admin),
+            'initials' => 'AD',
+            'profileTitle' => 'Platform Administrator',
+            'organisation' => 'Charley Platform',
+            'timezone' => config('app.timezone'),
+            'sessions' => $sessions,
+            'latestSession' => $latestSession,
+        ]);
+    }
+
+    public function revokeAdminProfileSession(Request $request, string $session): RedirectResponse
+    {
+        if (Schema::hasTable('sessions')) {
+            $preservedSessionId = $this->adminProfileSessionIdToPreserve($request);
+
+            if (! $preservedSessionId || ! hash_equals((string) $preservedSessionId, $session)) {
+                $deleted = $request->user()->sessions()
+                    ->whereKey($session)
+                    ->delete();
+
+                if ($deleted > 0) {
+                    $this->rotateAdminRememberToken($request);
+                }
+            }
+        }
+
+        return redirect()
+            ->route('admin.dashboard.iam.users.admin-profile', ['section' => 'sessions'])
+            ->with('status', 'Session revoked.');
+    }
+
+    public function revokeOtherAdminProfileSessions(Request $request): RedirectResponse
+    {
+        if (Schema::hasTable('sessions')) {
+            $preservedSessionId = $this->adminProfileSessionIdToPreserve($request);
+
+            $deleted = $request->user()->sessions()
+                ->when($preservedSessionId, fn ($query) => $query->whereKeyNot($preservedSessionId))
+                ->delete();
+
+            if ($deleted > 0) {
+                $this->rotateAdminRememberToken($request);
+            }
+        }
+
+        return redirect()
+            ->route('admin.dashboard.iam.users.admin-profile', ['section' => 'sessions'])
+            ->with('status', 'Other sessions revoked.');
+    }
+
+    private function adminProfileSessionIdToPreserve(Request $request): ?string
+    {
+        $currentSessionId = (string) $request->session()->getId();
+        if ($request->user()->sessions()->whereKey($currentSessionId)->exists()) {
+            return $currentSessionId;
+        }
+
+        return $request->user()->sessions()
+            ->orderByDesc('last_activity')
+            ->value('id');
+    }
+
+    private function rotateAdminRememberToken(Request $request): void
+    {
+        $request->user()->forceFill([
+            'remember_token' => Str::random(60),
+        ])->save();
     }
 
     public function storeEngineer(Request $request): RedirectResponse
@@ -1633,11 +1710,3 @@ class IamUserController extends Controller
             ->all();
     }
 }
-
-
-
-
-
-
-
-

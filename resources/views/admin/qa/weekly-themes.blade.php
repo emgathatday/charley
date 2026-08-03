@@ -1,137 +1,142 @@
 @extends('layouts.rebuild-dashboard')
 
-@section('title', 'QA Weekly Themes')
-
-@section('content_header')
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-sm-6"><h1 class="mb-0">QA Weekly Themes</h1></div>
-                <div class="col-sm-6"><ol class="breadcrumb float-sm-end mb-0"><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.qa.index') }}">QA</a></li><li class="breadcrumb-item active" aria-current="page">Weekly Themes</li></ol></div>
-            </div>
-        </div>
-    </div>
-@endsection
+@section('title', 'Weekly Theme Management')
 
 @section('content')
-    <div class="app-content">
-        <div class="container-fluid">
-            @include('templates.components.alert-session')
-            @include('admin.qa.components.action-tabs')
+@php
+    $themes = collect($themes ?? []);
+    $themeAssignments = collect($themeAssignments ?? []);
+    $assignableQuestions = collect($assignableQuestions ?? []);
+    $today = now()->startOfDay();
+    $dateLabel = function ($value, string $format = 'd M') {
+        return $value ? \Illuminate\Support\Carbon::parse($value)->format($format) : '-';
+    };
+    $activeThemes = $themes->filter(fn ($theme) => ($theme->status ?? 'active') === 'active' && $theme->week_start_date && $theme->week_end_date && \Illuminate\Support\Carbon::parse($theme->week_start_date)->startOfDay()->lte($today) && \Illuminate\Support\Carbon::parse($theme->week_end_date)->endOfDay()->gte($today))->values();
+    $upcomingThemes = $themes->filter(fn ($theme) => ($theme->status ?? 'active') === 'active' && $theme->week_start_date && \Illuminate\Support\Carbon::parse($theme->week_start_date)->startOfDay()->gt($today))->values();
+    $archivedThemes = $themes->filter(fn ($theme) => ($theme->status ?? '') === 'archived')->values();
+    $fallbackActive = $activeThemes->first() ?: $themes->first();
+    $assignedCount = function ($theme) use ($themeAssignments) {
+        return $themeAssignments->get($theme->id, collect())->count() ?: ($theme->assigned_questions_count ?? 0);
+    };
+    $themeTopic = fn ($theme) => trim(explode(' ', (string) $theme->title)[0] ?? 'Theme') ?: 'Theme';
+@endphp
 
-            <div class="row g-3">
-                <div class="col-lg-5">
-                    <div class="card card-outline card-primary mb-3">
-                        <div class="card-header"><h3 class="card-title mb-0">Create Weekly Theme</h3></div>
-                        <div class="card-body">
-                            <form method="POST" action="{{ route('admin.dashboard.qa.weekly-themes.store') }}" class="row g-3">
-                                @csrf
-                                <div class="col-12">
-                                    <label class="form-label" for="title">Title</label>
-                                    <input id="title" name="title" class="form-control" value="Rotating equipment reliability" placeholder="Theme title">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label" for="description">Description</label>
-                                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="Editorial campaign goal and guidance">Demo editorial campaign for pumps, compressors, turbines, and vibration troubleshooting.</textarea>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="week_start_date">Start date</label>
-                                    <input id="week_start_date" name="week_start_date" type="date" class="form-control" value="{{ now()->startOfWeek()->toDateString() }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="week_end_date">End date</label>
-                                    <input id="week_end_date" name="week_end_date" type="date" class="form-control" value="{{ now()->endOfWeek()->toDateString() }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="status">Status</label>
-                                    <select id="status" name="status" class="form-select">
-                                        <option value="active">Active</option>
-                                        <option value="archived">Archived</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn btn-primary" type="submit"><i class="bi bi-save me-1"></i>Save Weekly Theme</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+    @include('templates.components.alert-session')
 
-                    <div class="card card-outline card-info mb-3">
-                        <div class="card-header"><h3 class="card-title mb-0">Assign Question To Theme</h3></div>
-                        <div class="card-body">
-                            <form method="POST" action="{{ route('admin.dashboard.qa.weekly-themes.assign-question', $themes->first()->id ?? 9301) }}" class="row g-3 align-items-end">
-                                @csrf
-                                <div class="col-12">
-                                    <label class="form-label" for="assign_theme_id">Weekly theme</label>
-                                    <select id="assign_theme_id" class="form-select" onchange="this.form.action=this.options[this.selectedIndex].dataset.action">
-                                        @foreach ($themes as $theme)
-                                            <option value="{{ $theme->id }}" data-action="{{ route('admin.dashboard.qa.weekly-themes.assign-question', $theme->id) }}">{{ $theme->title }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label" for="question_id">Question</label>
-                                    <select id="question_id" name="question_id" class="form-select">
-                                        @foreach ($assignableQuestions as $question)
-                                            <option value="{{ $question['id'] }}">#{{ $question['id'] }} - {{ $question['title'] }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-12"><button class="btn btn-outline-primary" type="submit"><i class="bi bi-link-45deg me-1"></i>Assign Demo Question</button></div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-7">
-                    <div class="card card-outline card-primary">
-                        <div class="card-header"><h3 class="card-title mb-0">Theme Calendar And Assignments</h3></div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead><tr><th>Theme</th><th>Dates</th><th>Status</th><th>Questions</th><th class="text-end">Controls</th></tr></thead>
-                                    <tbody>
-                                    @forelse ($themes as $theme)
-                                        @php($assignedQuestions = $themeAssignments->get($theme->id, collect()))
-                                        <tr>
-                                            <td><div class="fw-semibold">{{ $theme->title }}</div><div class="small text-body-secondary">{{ $theme->description }}</div></td>
-                                            <td>{{ $theme->week_start_date }} to {{ $theme->week_end_date }}</td>
-                                            <td><span class="badge text-bg-{{ $theme->status === 'active' ? 'success' : 'secondary' }}">{{ Str::headline($theme->status) }}</span></td>
-                                            <td><span class="badge text-bg-info">{{ $assignedQuestions->count() ?: ($theme->assigned_questions_count ?? 0) }} assigned</span></td>
-                                            <td class="text-end">
-                                                <form method="POST" action="{{ route('admin.dashboard.qa.weekly-themes.status', [$theme->id, $theme->status === 'active' ? 'archived' : 'active']) }}">
-                                                    @csrf
-                                                    <button class="btn btn-sm btn-outline-primary" type="submit">{{ $theme->status === 'active' ? 'Archive' : 'Activate' }}</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5" class="bg-body-tertiary">
-                                                <div class="d-flex flex-column gap-2">
-                                                    @forelse ($assignedQuestions as $question)
-                                                        <div class="d-flex justify-content-between align-items-center border rounded p-2 bg-body">
-                                                            <div><span class="fw-semibold">#{{ $question['id'] }}</span> {{ $question['title'] }} <span class="badge text-bg-light ms-2">{{ $question['plant'] }}</span></div>
-                                                            <form method="POST" action="{{ route('admin.dashboard.qa.weekly-themes.remove-question', [$theme->id, $question['id']]) }}">
-                                                                @csrf
-                                                                <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-x-lg me-1"></i>Remove</button>
-                                                            </form>
-                                                        </div>
-                                                    @empty
-                                                        <div class="text-body-secondary small">No questions assigned to this weekly theme yet.</div>
-                                                    @endforelse
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr><td class="text-muted text-center py-3" colspan="5">No weekly themes available.</td></tr>
-                                    @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="page-head">
+        <div>
+            <div class="page-title weekly-theme-title">Weekly Theme Management</div>
+            <div class="page-subtitle">Set the featured technical topic that anchors the Q&amp;A section each week</div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primary" type="button" onclick="openThemeModal()">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-note"></use></svg>
+                Create New Theme
+            </button>
         </div>
     </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3 weekly-theme-stat-row">
+        @foreach ([
+            ['label' => 'Total Themes Created', 'value' => $themes->count(), 'tone' => 'primary', 'icon' => 'icon-5-jul-2026-14-32-circle'],
+            ['label' => 'Active This Week', 'value' => $activeThemes->count(), 'tone' => 'success', 'icon' => 'icon-9-verifications-exceeded-the-48h'],
+            ['label' => 'Scheduled Ahead', 'value' => $upcomingThemes->count(), 'tone' => 'warning', 'icon' => 'icon-monthly-expert-recognition-svg-viewbox-0'],
+            ['label' => 'Archived', 'value' => $archivedThemes->count(), 'tone' => 'muted', 'icon' => 'icon-33-archived-div-class-hero-live'],
+        ] as $stat)
+            <div class="col">
+                <div class="stat-card">
+                    <div class="stat-card-top"><div class="stat-icon weekly-theme-stat-icon {{ $stat['tone'] }}"><svg class="icon"><use href="/assets/icons/sprite.svg#{{ $stat['icon'] }}"></use></svg></div></div>
+                    <div class="stat-value">{{ number_format($stat['value']) }}</div>
+                    <div class="stat-label">{{ $stat['label'] }}</div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    @if ($fallbackActive)
+        <div class="hero-theme">
+            <div class="hero-live-tag"><span class="hero-live-dot"></span>{{ ($fallbackActive->status ?? 'active') === 'active' ? 'Live now' : 'Latest theme' }} - Week of {{ $dateLabel($fallbackActive->week_start_date ?? null, 'd M Y') }}</div>
+            <div class="hero-title">{{ $fallbackActive->title }}</div>
+            <div class="hero-desc">{{ $fallbackActive->description }}</div>
+            <div class="hero-badges">
+                <span class="hero-badge">{{ $themeTopic($fallbackActive) }}</span>
+                <span class="hero-badge">Q&amp;A Focus</span>
+                <span class="hero-badge">Technical Discussion</span>
+            </div>
+            <div class="hero-stats-row">
+                <div class="hero-stat"><div class="hero-stat-num">{{ $assignedCount($fallbackActive) }}</div><div class="hero-stat-label">Featured Questions</div></div>
+                <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Library Articles Attached</div></div>
+                <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Partner Contributions</div></div>
+                <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Views So Far</div></div>
+            </div>
+            <div class="hero-actions">
+                <button class="hero-btn primary" type="button" onclick="editTheme('{{ $fallbackActive->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-profile-r"></use></svg>Edit This Week's Theme</button>
+                <button class="hero-btn" type="button" onclick="showToast('Announcement drafting waits for a confirmed backend workflow','blue')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-announcement-management-charley-library-svg"></use></svg>Post Announcement</button>
+                <form method="POST" action="{{ route('admin.dashboard.qa.weekly-themes.status', [$fallbackActive->id, 'archived']) }}">
+                    @csrf
+                    <button class="hero-btn" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-33-archived-div-class-hero-live"></use></svg>Archive Now</button>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    <div class="tab-bar qa-tab-bar weekly-theme-tab-bar">
+        <button type="button" class="tab-btn qa-tab active" data-tab="upcoming" onclick="switchThemeTab(this)">Upcoming <span class="tab-count qa-tab-count">{{ $upcomingThemes->count() }}</span></button>
+        <button type="button" class="tab-btn qa-tab" data-tab="active" onclick="switchThemeTab(this)">Active <span class="tab-count qa-tab-count">{{ $activeThemes->count() }}</span></button>
+        <button type="button" class="tab-btn qa-tab" data-tab="archived" onclick="switchThemeTab(this)">Archived <span class="tab-count qa-tab-count">{{ $archivedThemes->count() }}</span></button>
+    </div>
+
+    <div class="theme-list-wrap" id="upcomingList">
+        @forelse ($upcomingThemes as $theme)
+            @include('admin.qa.weekly-themes-theme-row', ['theme' => $theme, 'statusType' => 'scheduled', 'assignedCount' => $assignedCount($theme), 'dateLabel' => $dateLabel, 'themeTopic' => $themeTopic])
+        @empty
+            <div class="empty-state show"><div class="empty-state-title">No upcoming themes scheduled</div><div class="empty-state-sub">Create a new weekly theme to plan the next Q&amp;A spotlight.</div></div>
+        @endforelse
+    </div>
+
+    <div class="theme-list-wrap d-none" id="activeList">
+        @forelse ($activeThemes as $theme)
+            @include('admin.qa.weekly-themes-theme-row', ['theme' => $theme, 'statusType' => 'active', 'assignedCount' => $assignedCount($theme), 'dateLabel' => $dateLabel, 'themeTopic' => $themeTopic])
+        @empty
+            <div class="empty-state show"><div class="empty-state-title">No active theme this week</div><div class="empty-state-sub">Activate a scheduled theme when the weekly campaign is ready.</div></div>
+        @endforelse
+    </div>
+
+    <div class="theme-list-wrap d-none" id="archivedList">
+        @forelse ($archivedThemes as $theme)
+            @include('admin.qa.weekly-themes-theme-row', ['theme' => $theme, 'statusType' => 'archived', 'assignedCount' => $assignedCount($theme), 'dateLabel' => $dateLabel, 'themeTopic' => $themeTopic])
+        @empty
+            <div class="empty-state show"><div class="empty-state-title">No archived themes</div><div class="empty-state-sub">Completed themes will appear here for reuse and review.</div></div>
+        @endforelse
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="modal-overlay" id="themeModal" onclick="if(event.target===this)closeModal('theme')">
+        <form class="modal theme-modal" method="POST" action="{{ route('admin.dashboard.qa.weekly-themes.store') }}">
+            @csrf
+            <div class="tm-header">
+                <div class="tm-header-title" id="tmHeaderTitle">Create New Theme</div>
+                <button class="tm-close" type="button" onclick="closeModal('theme')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-button-class-btn-btn-ghost-style-flex-1-onclick-"></use></svg></button>
+            </div>
+            <div class="tm-body">
+                <div class="tm-field"><label class="tm-label" for="tmTitle">Theme Title</label><input class="tm-input" id="tmTitle" name="title" type="text" placeholder="e.g. Primary Reformer Reliability" required></div>
+                <div class="tm-field"><label class="tm-label" for="tmDescription">Short Description</label><textarea class="tm-textarea" id="tmDescription" name="description" placeholder="A short summary shown on the homepage and Q&amp;A section..."></textarea></div>
+                <div class="row row-cols-1 row-cols-md-3 g-3 tm-field">
+                    <div class="col"><label class="tm-label" for="tmWeekStart">Week Start Date</label><input class="tm-input" id="tmWeekStart" name="week_start_date" type="date" value="{{ now()->addWeek()->startOfWeek()->toDateString() }}" required></div>
+                    <div class="col"><label class="tm-label" for="tmWeekEnd">Week End Date</label><input class="tm-input" id="tmWeekEnd" name="week_end_date" type="date" value="{{ now()->addWeek()->endOfWeek()->toDateString() }}" required></div>
+                    <div class="col"><label class="tm-label" for="tmStatus">Status</label><select class="tm-select" id="tmStatus" name="status"><option value="active">Active</option><option value="archived">Archived</option></select></div>
+                </div>
+                <div class="tm-field"><label class="tm-label">Related Plant Type</label><div class="tm-chip-picker" id="tmPlantChips">@foreach ($plantTypes as $plantType)<div class="tm-chip" data-val="{{ $plantType->name }}" onclick="toggleChip(this)">{{ $plantType->name }}</div>@endforeach</div></div>
+                <div class="tm-field"><label class="tm-label">Related Equipment / Topic</label><div class="tm-chip-picker" id="tmEquipChips"><div class="tm-chip" data-val="Primary Reformer" onclick="toggleChip(this)">Primary Reformer</div><div class="tm-chip" data-val="CO2 Removal" onclick="toggleChip(this)">CO2 Removal</div><div class="tm-chip" data-val="Synthesis Loop" onclick="toggleChip(this)">Synthesis Loop</div><div class="tm-chip" data-val="Compression" onclick="toggleChip(this)">Compression</div><div class="tm-chip" data-val="Safety" onclick="toggleChip(this)">Safety</div><div class="tm-chip" data-val="Integrity" onclick="toggleChip(this)">Integrity</div></div></div>
+                <div class="tm-field"><label class="tm-label">Featured Q&amp;A</label><div class="tm-select-list">@forelse ($assignableQuestions->take(5) as $question)<label class="tm-select-item"><input type="checkbox" disabled> {{ $question['title'] }}</label>@empty<label class="tm-select-item"><input type="checkbox" disabled> No assignable questions available</label>@endforelse</div><div class="tm-hint">Question assignment is display-only here until the assign/remove routes are registered.</div></div>
+                <div class="tm-field"><div class="tm-toggle-row"><div><div class="tm-toggle-label">Pin this theme</div><div class="tm-toggle-sub">Pinned ordering is UI-only until a persistence contract is confirmed</div></div><label class="switch"><input type="checkbox" id="tmPinToggle" disabled><span class="slider"></span></label></div></div>
+            </div>
+            <div class="tm-footer"><button class="btn-ghost" type="button" onclick="closeModal('theme')">Cancel</button><button class="btn-ghost" type="button" onclick="showToast('Draft persistence is waiting for a confirmed backend workflow','blue')">Save as Draft</button><button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-create-user-svg-viewbox-0-0"></use></svg><span id="tmSaveLabel">Schedule Theme</span></button></div>
+        </form>
+    </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('assets/js/pages/weekly-theme-management.js') }}"></script>
+@endpush
