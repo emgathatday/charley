@@ -16,7 +16,7 @@ class ConnectionActionRequest extends FormRequest
     {
         return [
             'receiver_id' => ['sometimes', 'required', 'integer', 'exists:users,id'],
-            'initiated_context' => ['sometimes', 'required', Rule::in(['engineer_to_engineer', 'partner_to_engineer', 'engineer_to_partner'])],
+            'initiated_context' => ['sometimes', 'required', Rule::in(['engineer_to_engineer', 'engineer_to_partner'])],
         ];
     }
 }

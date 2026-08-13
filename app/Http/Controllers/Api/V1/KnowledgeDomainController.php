@@ -29,7 +29,7 @@ class KnowledgeDomainController extends Controller
 
     public function show(KnowledgeDomain $knowledgeDomain): KnowledgeDomainResource
     {
-        return KnowledgeDomainResource::make($knowledgeDomain->load(['plantType', 'quizQuestions.choices']));
+        return KnowledgeDomainResource::make($knowledgeDomain->load(['plantType', 'plantTypes', 'quizQuestions.choices']));
     }
 
     public function update(KnowledgeDomainRequest $request, KnowledgeDomain $knowledgeDomain): KnowledgeDomainResource

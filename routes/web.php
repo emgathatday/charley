@@ -8,6 +8,7 @@ require __DIR__.'/web/dashboard/media-files.php';
 require __DIR__.'/web/dashboard/plant-types.php';
 require __DIR__.'/web/dashboard/taxonomy.php';
 require __DIR__.'/web/dashboard/partner-profiles.php';
+require __DIR__.'/web/dashboard/profiles.php';
 require __DIR__.'/web/dashboard/subscriptions.php';
 require __DIR__.'/web/dashboard/admin-operations.php';
 require __DIR__.'/web/dashboard/feed-cms.php';

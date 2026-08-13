@@ -1,36 +1,61 @@
-@extends('layouts.app')
+@extends('layouts.rebuild-dashboard')
 
-@section('title', 'Edit Subscription Tier')
+@section('title', 'View/edit Subscription')
+
+@php
+    $tierLabel = $subscriptionTier->display_name ?: $subscriptionTier->name;
+    $enabledPermissions = $subscriptionTier->tierPermissions?->count() ?? 0;
+@endphp
 
 @section('content')
-    <div class="subscription-form-page">
+    @include('templates.components.alert-session')
+
+    <form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.update', $subscriptionTier) }}">
+        @csrf
+        @method('PUT')
+
+        <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="back-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg>Back to Subscriptions</a>
+
         <div class="page-head">
-            <div>
-                <h1>Edit Subscription Tier</h1>
-                <p>Update {{ $subscriptionTier->display_name ?: $subscriptionTier->name }} while preserving dynamic permissions and partner bindings.</p>
-            </div>
-            <div class="page-head-actions">
-                <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-button-class-btn-btn-ghost-style-flex-1-onclick-"></use></svg>Back</a>
-            </div>
-        </div>
-
-        @include('templates.components.alert-session')
-
-        <div class="form-card">
-            <form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.update', $subscriptionTier) }}">
-                @csrf
-                @method('PUT')
-                <div class="form-card-head"><h2>{{ $subscriptionTier->display_name ?: $subscriptionTier->name }}</h2><span>Tier #{{ $subscriptionTier->id }}</span></div>
-                @include('admin.subscriptions.tiers._form', ['subscriptionTier' => $subscriptionTier])
-                <div class="form-actions">
-                    <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}">Cancel</a>
-                    <button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-5-this-month-svg-viewbox-0"></use></svg>Save Tier</button>
+            <div class="page-head-left">
+                <div class="company-logo"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-subscription-and-billing"></use></svg></div>
+                <div>
+                    <div class="page-title-row"><div class="page-title">{{ $tierLabel }}</div><span class="badge {{ $subscriptionTier->is_active ? 'sub-status-active' : 'sub-status-expired' }}">{{ $subscriptionTier->is_active ? 'Active' : 'Inactive' }}</span><span class="badge {{ $subscriptionTier->is_public ? 'sub-badge-success' : 'sub-badge-muted' }}">{{ $subscriptionTier->is_public ? 'Public' : 'Admin-only' }}</span></div>
+                    <div class="page-sub"><span>subscription_tiers #{{ $subscriptionTier->id }}</span><span class="sep"></span><span>code: {{ $subscriptionTier->code }}</span><span class="sep"></span><span>{{ number_format($enabledPermissions) }} permissions enabled</span></div>
                 </div>
-            </form>
+            </div>
+            <div class="header-actions"><button class="btn btn-outline" type="button">Preview public card</button><button class="btn btn-primary" type="submit">Save edits</button></div>
         </div>
-    </div>
-@endsection
 
-@push('styles')
-@include('admin.subscriptions._form-styles')
-@endpush
+        <div class="detail-grid subscription-detail-grid">
+            <div class="col-main">
+                @include('admin.subscriptions.tiers._form', ['subscriptionTier' => $subscriptionTier])
+            </div>
+
+            <div class="col-side">
+                <div class="side-card">
+                    <div class="card card-padded decision-panel">
+                        <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>Plan Controls</div></div>
+                        <div class="mini-kv"><span class="mini-kv-label">Current status</span><span class="mini-kv-value">{{ $subscriptionTier->is_active ? 'Active' : 'Inactive' }}</span></div>
+                        <div class="mini-kv"><span class="mini-kv-label">Visibility</span><span class="mini-kv-value">{{ $subscriptionTier->is_public ? 'Public' : 'Admin-only' }}</span></div>
+                        <div class="mini-kv"><span class="mini-kv-label">Monthly price</span><span class="mini-kv-value">${{ number_format((float) $subscriptionTier->monthly_price, 0) }}</span></div>
+                        <div class="mini-kv"><span class="mini-kv-label">Enabled permissions</span><span class="mini-kv-value">{{ number_format($enabledPermissions) }}</span></div>
+                        <div class="decision-divider"></div>
+                        <button class="btn btn-primary btn-block" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>Save changes</button>
+                        <button class="btn btn-outline btn-block btn-block-spaced" type="button">Duplicate plan</button>
+                        <button class="btn btn-ghost-danger btn-block btn-block-spaced" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-rejected-partner-announcement-techgas"></use></svg>Set inactive</button>
+                    </div>
+
+                    <div class="card card-padded">
+                        <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-penalty-history-3-actions-recorded"></use></svg>Change history</div></div>
+                        <div class="timeline verification-timeline">
+                            <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Plan loaded for review</div><div class="tl-time">Static timeline until audit source is assigned</div></div>
+                            <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Updated at</div><div class="tl-time">{{ optional($subscriptionTier->updated_at)->format('d M Y H:i') ?? 'Not recorded' }}</div></div>
+                            <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Plan created</div><div class="tl-time">{{ optional($subscriptionTier->created_at)->format('d M Y H:i') ?? 'Not recorded' }}</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+@endsection

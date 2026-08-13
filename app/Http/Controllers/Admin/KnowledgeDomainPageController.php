@@ -25,11 +25,13 @@ class KnowledgeDomainPageController extends Controller
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:255'],
             'plant_type_id' => ['nullable', 'integer', 'exists:plant_types,id'],
-            'is_active' => ['nullable', 'boolean'],
+            'plant_type_ids' => ['nullable', 'array'],
+            'plant_type_ids.*' => ['integer', 'distinct', 'exists:plant_types,id'],
+            'is_active' => ['nullable', Rule::in(['0', '1', 0, 1, true, false])],
         ]);
 
         $domains = KnowledgeDomain::query()
-            ->with('plantType')
+            ->with(['plantType', 'plantTypes'])
             ->withCount([
                 'quizQuestions',
                 'quizQuestions as active_questions_count' => fn ($query) => $query->where('status', 'active'),
@@ -43,8 +45,13 @@ class KnowledgeDomainPageController extends Controller
                         ->orWhere('slug', 'like', "%{$search}%");
                 });
             })
-            ->when($filters['plant_type_id'] ?? null, fn ($query, int $plantTypeId) => $query->where('plant_type_id', $plantTypeId))
-            ->when($request->filled('is_active'), fn ($query) => $query->where('is_active', (bool) $filters['is_active']))
+            ->when($filters['plant_type_id'] ?? null, fn ($query, int $plantTypeId) => $query->where(function ($plantQuery) use ($plantTypeId): void {
+                $plantQuery
+                    ->where('plant_type_id', $plantTypeId)
+                    ->orWhereHas('plantTypes', fn ($relationQuery) => $relationQuery->where('plant_types.id', $plantTypeId))
+                    ->orDoesntHave('plantTypes');
+            }))
+            ->when($request->filled('is_active'), fn ($query) => $query->where('is_active', (string) $filters['is_active'] === '1'))
             ->orderBy('sort_order')
             ->orderBy('name')
             ->paginate(15)
@@ -89,6 +96,7 @@ class KnowledgeDomainPageController extends Controller
     {
         $knowledgeDomain->load([
             'plantType',
+            'plantTypes',
             'quizQuestions' => fn ($query) => $query->with('choices')->orderBy('sort_order')->orderBy('id'),
         ]);
 
@@ -186,6 +194,8 @@ class KnowledgeDomainPageController extends Controller
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('knowledge_domains', 'slug')->ignore($domain?->id)],
             'description' => ['nullable', 'string'],
             'plant_type_id' => ['nullable', 'integer', 'exists:plant_types,id'],
+            'plant_type_ids' => ['nullable', 'array'],
+            'plant_type_ids.*' => ['integer', 'distinct', 'exists:plant_types,id'],
             'icon' => ['nullable', 'string', 'max:255'],
             'quiz_question_count' => ['required', 'integer', 'min:1', 'max:200'],
             'is_active' => ['required', 'boolean'],
@@ -193,6 +203,15 @@ class KnowledgeDomainPageController extends Controller
         ]);
 
         $data['slug'] = $data['slug'] ?: Str::slug($data['name']);
+
+        if (array_key_exists('plant_type_ids', $data)) {
+            $data['plant_type_ids'] = collect($data['plant_type_ids'] ?? [])
+                ->filter(fn ($id): bool => filled($id))
+                ->map(fn ($id): int => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+        }
 
         return $data;
     }

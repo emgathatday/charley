@@ -1,35 +1,31 @@
-@extends('layouts.app')
+@extends('layouts.rebuild-dashboard')
 
-@section('title', 'Create Subscription Tier')
+@section('title', 'Tạo Subscription mới')
 
 @section('content')
-    <div class="subscription-form-page">
+    @include('templates.components.alert-session')
+
+    <form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.store') }}">
+        @csrf
+        <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="back-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg>Back to Subscriptions</a>
+
         <div class="page-head">
-            <div>
-                <h1>Create Subscription Tier</h1>
-                <p>Configure a dynamic partner package without fixed Gold, Diamond, or Platinum enums.</p>
-            </div>
-            <div class="page-head-actions">
-                <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-button-class-btn-btn-ghost-style-flex-1-onclick-"></use></svg>Back</a>
+            <div class="page-title-row">
+                <div><div class="page-title">Tạo Subscription mới</div><div class="page-subtitle">Tạo gói thành viên mới và cấu hình permission theo name, module, type, value, toggle on/off.</div></div>
+                <div class="page-head-actions"><button class="btn btn-outline" type="button">Save draft</button><button class="btn btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>Create subscription</button></div>
             </div>
         </div>
 
-        @include('templates.components.alert-session')
-
-        <div class="form-card">
-            <form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.store') }}">
-                @csrf
-                <div class="form-card-head"><h2>Tier details</h2><span>Partner subscription catalog</span></div>
-                @include('admin.subscriptions.tiers._form', ['subscriptionTier' => null])
-                <div class="form-actions">
-                    <a class="btn-secondary" href="{{ route('admin.dashboard.subscriptions.index') }}">Cancel</a>
-                    <button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-5-this-month-svg-viewbox-0"></use></svg>Save Tier</button>
-                </div>
-            </form>
+        <div class="tab-bar subscription-tab-bar mb-3">
+            <button class="tab-btn active" type="button">Thông tin gói</button>
+            <button class="tab-btn" type="button">Permissions</button>
         </div>
-    </div>
+
+        @include('admin.subscriptions.tiers._form', ['subscriptionTier' => null])
+
+        <div class="action-bar">
+            <div class="action-bar-left">Value `-1` hiển thị là Không giới hạn; permission tắt sẽ không được gán vào gói.</div>
+            <div class="action-bar-right"><a href="{{ route('admin.dashboard.subscriptions.index') }}" class="btn btn-ghost">Cancel</a><button class="btn btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>Create plan</button></div>
+        </div>
+    </form>
 @endsection
-
-@push('styles')
-@include('admin.subscriptions._form-styles')
-@endpush

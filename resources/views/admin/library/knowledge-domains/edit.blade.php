@@ -1,48 +1,143 @@
-﻿@extends('layouts.master')
+@extends('layouts.rebuild-dashboard')
 
-@section('title', 'Edit Knowledge Domain')
-
-@section('content_header')
-    <div class="app-content-header"><div class="container-fluid"><div class="row align-items-center"><div class="col-sm-6"><h1 class="mb-0">Edit Knowledge Domain</h1></div><div class="col-sm-6"><ol class="breadcrumb float-sm-end mb-0"><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.library.knowledge-domains.index') }}">Knowledge Domains</a></li><li class="breadcrumb-item active" aria-current="page">Edit</li></ol></div></div></div></div>
-@endsection
+@section('title', 'Knowledge Domain Detail')
 
 @section('content')
-    <div class="app-content"><div class="container-fluid">
-        @include('templates.components.alert-session')
+    @php
+        $questions = $domain->quizQuestions ?? collect();
+        $totalQuestions = $questions->count();
+        $activeQuestions = $questions->where('status', 'active')->count();
+        $draftQuestions = $questions->where('status', 'draft')->count();
+        $plantLabel = $domain->plantTypes->pluck('name')->join(', ') ?: ($domain->plantType?->name ?? 'General');
+        $activeValue = (string) old('is_active', (int) $domain->is_active) === '1';
+        $previewTotal = old('total_question_count', $domain->total_question_count ?: $totalQuestions);
+        $previewPerAttempt = old('quiz_question_count', $domain->quiz_question_count);
+    @endphp
 
-        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-            <div><h2 class="h4 mb-1">{{ $domain->name }}</h2><div class="text-body-secondary"><code>{{ $domain->slug }}</code> - quiz questions managed inside nested domain screens only</div></div>
-            <div class="d-flex gap-2"><a href="{{ route('admin.dashboard.library.knowledge-domains.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a><a href="{{ route('admin.dashboard.library.knowledge-domains.questions.create', $domain) }}" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>New Question</a></div>
+    @include('templates.components.alert-session')
+
+    <a href="{{ route('admin.dashboard.library.knowledge-domains.index') }}" class="back-link">
+        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg>
+        Back to Knowledge Domains
+    </a>
+
+    <form id="knowledge-domain-form" method="POST" action="{{ route('admin.dashboard.library.knowledge-domains.update', $domain) }}">
+        @csrf
+        @method('PUT')
+
+        <div class="page-head">
+            <div class="page-head-left">
+                <div class="company-logo knowledge-domain-logo">
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-platform-settings-ai-assistant"></use></svg>
+                </div>
+                <div>
+                    <div class="page-title-row">
+                        <div class="page-title">{{ old('name', $domain->name) }}</div>
+                        <span @class(['badge', $activeValue ? 'knowledge-badge-active' : 'knowledge-badge-muted'])>{{ $activeValue ? 'Active' : 'Inactive' }}</span>
+                    </div>
+                    <div class="page-sub"><span>knowledge_domains #{{ $domain->id }}</span><span class="sep"></span><span>slug: {{ old('slug', $domain->slug) }}</span><span class="sep"></span><span>plant: {{ $plantLabel }}</span></div>
+                </div>
+            </div>
         </div>
 
-        <form method="POST" action="{{ route('admin.dashboard.library.knowledge-domains.update', $domain) }}">
+        <div class="knowledge-create-layout">
+            <div class="knowledge-create-main">
+                @include('admin.library.knowledge-domains._form')
+
+                <div class="table-wrap knowledge-question-table-wrap" id="questions">
+                    <div class="table-header table-head-panel">
+                        <div class="table-head-main">
+                            <div class="table-title">Questions</div>
+                            <div class="table-meta">{{ $totalQuestions }} questions attached to this knowledge domain.</div>
+                        </div>
+                        <div class="table-head-actions">
+                            <select class="filter-select"><option>All Difficulty</option><option>easy</option><option>medium</option><option>hard</option></select>
+                            <select class="filter-select"><option>All Statuses</option><option>active</option><option>draft</option><option>archived</option></select>
+                            <button class="btn-outline btn-filter" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>Filter</button>
+                            <button class="btn btn-outline btn-sm" type="button">Import</button>
+                            <a href="{{ route('admin.dashboard.library.knowledge-domains.questions.create', $domain) }}" class="btn btn-primary btn-sm">Add Question</a>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="knowledge-question-table">
+                            <thead><tr><th class="knowledge-check-col"><input class="knowledge-check-input" type="checkbox"></th><th>Question</th><th>Difficulty</th><th>Choices</th><th>Image</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                @forelse ($questions as $question)
+                                    <tr>
+                                        <td><input class="knowledge-check-input" type="checkbox"></td>
+                                        <td>
+                                            <div class="knowledge-question-title">
+                                                <strong>{{ $question->question_text }}</strong>
+                                                <span>{{ $question->explanation ? Str::limit($question->explanation, 96) : 'No explanation added.' }}</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge knowledge-badge-info">{{ $question->difficulty_level ?? 'medium' }}</span></td>
+                                        <td>{{ $question->choices->count() }} choices</td>
+                                        <td><span @class(['badge', $question->question_image_media_id ? 'knowledge-badge-info' : 'knowledge-badge-muted'])>{{ $question->question_image_media_id ? 'Media' : 'None' }}</span></td>
+                                        <td><span @class(['badge', $question->status === 'active' ? 'knowledge-badge-active' : ($question->status === 'draft' ? 'knowledge-badge-warning' : 'knowledge-badge-muted')])>{{ $question->status }}</span></td>
+                                        <td>{{ optional($question->updated_at)->format('d M') ?? 'Not recorded' }}</td>
+                                        <td>
+                                            <div class="action-cell">
+                                                <a href="{{ route('admin.dashboard.library.knowledge-domains.questions.edit', [$domain, $question]) }}" class="action-btn primary" aria-label="View question"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-1-204-views-svg-viewbox-0-0"></use></svg></a>
+                                                <a href="{{ route('admin.dashboard.library.knowledge-domains.questions.edit', [$domain, $question]) }}" class="action-btn" aria-label="Edit question"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-note"></use></svg></a>
+                                                <button class="action-btn danger" type="submit" form="delete-question-{{ $question->id }}" aria-label="Archive question"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions-button-class-btn-btn-danger"></use></svg></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8"><div class="knowledge-question-title"><strong>No questions yet.</strong><span>Create the first question in the nested question screen.</span></div></td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination"><span class="page-info">Showing {{ $questions->count() }} of {{ $totalQuestions }} results</span><button class="page-btn active" type="button">1</button></div>
+                </div>
+            </div>
+
+            <div class="knowledge-create-side">
+                <div class="side-card">
+                    <div class="card card-padded knowledge-preview-card">
+                        <div class="card-title">Quiz settings</div>
+                        <div class="knowledge-preview-metric"><span>Total question count</span><strong>{{ $previewTotal }}</strong></div>
+                        <div class="knowledge-preview-metric"><span>Active questions</span><strong>{{ $activeQuestions }}</strong></div>
+                        <div class="knowledge-preview-metric"><span>Draft questions</span><strong>{{ $draftQuestions }}</strong></div>
+                        <div class="knowledge-preview-metric"><span>Per attempt</span><strong>{{ $previewPerAttempt }}</strong></div>
+                        <div class="knowledge-switch-stack">
+                            <div class="switch-row">
+                                <div>
+                                    <div class="sw-label">Visible in Library</div>
+                                    <div class="sw-desc">Available in quiz and expertise flows.</div>
+                                </div>
+                                <input type="hidden" name="is_active" value="0">
+                                <label class="switch">
+                                    <input id="is_active_switch" type="checkbox" name="is_active" value="1" @checked($activeValue)>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        @error('is_active')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        <div class="decision-actions">
+                            <button class="btn btn-primary btn-block-spaced" type="submit">Save changes</button>
+                            <a href="{{ route('admin.dashboard.library.knowledge-domains.questions.create', $domain) }}" class="btn btn-outline btn-block-spaced">Add question</a>
+                            <a href="{{ route('admin.dashboard.library.knowledge-domains.index') }}" class="btn btn-ghost btn-block-spaced">Cancel</a>
+                        </div>
+                        <div class="knowledge-warning-note">Question rows belong to quiz_questions and choices belong to quiz_question_choices. Prefer inactive/archive when historical quiz_attempts exist.</div>
+                    </div>
+                    <div class="card card-padded">
+                        <div class="card-title">Related tables</div>
+                        <div class="knowledge-schema-list"><span>quiz_questions</span><span>quiz_attempts</span><span>user_domain_expertise</span><span>mandatory_quiz_domains</span><span>rank_promotion_quiz_logs</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @foreach ($questions as $question)
+        <form id="delete-question-{{ $question->id }}" method="POST" action="{{ route('admin.dashboard.library.knowledge-domains.questions.destroy', [$domain, $question]) }}" onsubmit="return confirm('Delete this question?');">
             @csrf
-            @method('PUT')
-            @include('admin.library.knowledge-domains._form')
-            <div class="d-flex justify-content-end gap-2 mb-3"><button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Domain</button></div>
+            @method('DELETE')
         </form>
-
-        <div class="row g-3 mb-3">
-            <div class="col-md-4"><div class="info-box"><span class="info-box-icon text-bg-primary"><i class="bi bi-question-circle"></i></span><div class="info-box-content"><span class="info-box-text">Total Questions</span><span class="info-box-number">{{ $domain->quizQuestions->count() }}</span></div></div></div>
-            <div class="col-md-4"><div class="info-box"><span class="info-box-icon text-bg-success"><i class="bi bi-check2-circle"></i></span><div class="info-box-content"><span class="info-box-text">Active</span><span class="info-box-number">{{ $domain->quizQuestions->where('status', 'active')->count() }}</span></div></div></div>
-            <div class="col-md-4"><div class="info-box"><span class="info-box-icon text-bg-warning"><i class="bi bi-pencil"></i></span><div class="info-box-content"><span class="info-box-text">Draft</span><span class="info-box-number">{{ $domain->quizQuestions->where('status', 'draft')->count() }}</span></div></div></div>
-        </div>
-
-        <div class="card card-outline card-primary mb-3">
-            <div class="card-header d-flex justify-content-between align-items-center"><h3 class="card-title mb-0">Embedded Quiz Question Manager</h3><a href="{{ route('admin.dashboard.library.knowledge-domains.questions.create', $domain) }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Add Question</a></div>
-            <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>Question</th><th>Status</th><th>Choices</th><th>Sort</th><th class="text-end">Actions</th></tr></thead><tbody>
-                @forelse ($domain->quizQuestions as $question)
-                    <tr>
-                        <td><a class="fw-semibold text-decoration-none" href="{{ route('admin.dashboard.library.knowledge-domains.questions.edit', [$domain, $question]) }}">{{ $question->question_text }}</a><div class="small text-body-secondary">{{ Str::limit($question->explanation, 96) }}</div></td>
-                        <td><span class="badge text-bg-{{ $question->status === 'active' ? 'success' : ($question->status === 'draft' ? 'warning' : 'secondary') }}">{{ Str::headline($question->status) }}</span></td>
-                        <td><span class="badge text-bg-info">{{ $question->choices->count() }} options</span></td>
-                        <td>{{ $question->sort_order ?? 0 }}</td>
-                        <td class="text-end"><div class="d-flex justify-content-end gap-1"><a class="btn btn-sm btn-outline-primary" href="{{ route('admin.dashboard.library.knowledge-domains.questions.edit', [$domain, $question]) }}"><i class="bi bi-pencil-square"></i></a><form method="POST" action="{{ route('admin.dashboard.library.knowledge-domains.questions.clone', [$domain, $question]) }}">@csrf<button class="btn btn-sm btn-outline-info" type="submit"><i class="bi bi-copy"></i></button></form><form method="POST" action="{{ route('admin.dashboard.library.knowledge-domains.questions.destroy', [$domain, $question]) }}" onsubmit="return confirm('Delete this question?');">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button></form></div></td>
-                    </tr>
-                @empty
-                    <tr><td colspan="5" class="text-center text-body-secondary py-4">No questions yet. Create the first question in the nested question screen.</td></tr>
-                @endforelse
-            </tbody></table></div></div>
-        </div>
-    </div></div>
+    @endforeach
 @endsection

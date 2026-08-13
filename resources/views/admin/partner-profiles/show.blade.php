@@ -61,6 +61,16 @@
         </section>
     </div>
 
+
+    <section class="form-card" style="margin-top:20px;">
+        <div class="form-card-header"><div class="form-card-icon emerald"><i class="bi bi-person-lines-fill"></i></div><div><div class="form-card-title">Connection Actions</div><div class="form-card-sub">Profile connection state and messaging availability.</div></div></div>
+        <div class="form-card-body"><div class="info-grid">
+            <div class="info-item"><div class="info-label">Profile User</div><div class="info-value">{{ $partnerProfile->user?->email ?? 'No linked user' }}</div></div>
+            <div class="info-item"><div class="info-label">Connection State</div><div class="info-value"><span class="badge badge-info">Admin review only</span></div></div>
+            <div class="info-item"><div class="info-label">Messaging CTA</div><div class="info-value text-secondary">Disabled until a connection status is accepted.</div></div>
+            <div class="info-item"><div class="info-label">Pending Review</div><div class="info-value"><a href="{{ route('admin.dashboard.profiles.connection-requests.index') }}" class="btn"><i class="bi bi-inboxes" aria-hidden="true"></i>Open Request Queue</a></div></div>
+        </div></div>
+    </section>
     <div class="table-card" style="margin-top:20px;">
         <div class="table-header"><div><div class="table-title">Products</div><div class="table-meta">Media references use media_files IDs, not raw paths.</div></div></div>
         <div class="table-responsive"><table class="qa-table"><thead><tr><th>Name</th><th>Type</th><th>Category</th><th>Image Media</th><th>Datasheet</th><th>Status</th></tr></thead><tbody>@forelse ($partnerProfile->products as $product)<tr><td>{{ $product->name }}</td><td>{{ ucfirst($product->item_type) }}</td><td>{{ $product->category ?? '-' }}</td><td>{{ $product->imageMedia?->original_name ?? ($product->image_media_id ? '#'.$product->image_media_id : '-') }}</td><td>{{ $product->datasheetMedia?->original_name ?? ($product->datasheet_media_id ? '#'.$product->datasheet_media_id : '-') }}</td><td>{{ $product->is_active ? 'Active' : 'Inactive' }}</td></tr>@empty<tr><td colspan="6" class="text-center text-secondary py-4">No products.</td></tr>@endforelse</tbody></table></div>

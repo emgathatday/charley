@@ -29,6 +29,10 @@ class MediaFileController extends Controller
             $query->where('processing_status', $request->string('processing_status')->toString());
         }
 
+        if ($request->filled('upload_context')) {
+            $query->where('upload_context', $request->string('upload_context')->toString());
+        }
+
         if ($request->boolean('orphans_only')) {
             $query->where('is_orphan', true);
         }
@@ -40,6 +44,9 @@ class MediaFileController extends Controller
             'selectedMediaFile' => $mediaFile ?? $mediaFiles->first(),
             'totalUploads' => MediaFile::query()->count(),
             'attachedFiles' => MediaFile::query()->whereNotNull('attachable_type')->whereNotNull('attachable_id')->count(),
+            'librarySources' => MediaFile::query()->where('upload_context', 'library_item')->count(),
+            'quizImages' => MediaFile::query()->whereIn('upload_context', ['question_attachment', 'answer_attachment'])->count(),
+            'storageUsedBytes' => (int) MediaFile::query()->sum('size'),
             'orphanFiles' => MediaFile::query()->where('is_orphan', true)->count(),
             'processingFiles' => MediaFile::query()->where('processing_status', 'processing')->count(),
         ]);

@@ -58,3 +58,8 @@ docker compose logs -f app nginx queue
 - The current `composer.json` still requires `laravel/framework:^12.0` and `php:^8.2`. The container uses PHP 8.3 so it is ready for the documented Laravel 13 target, but upgrading the framework dependency should be handled as a separate dependency change.
 - `.env.docker.example` uses Docker service names for internal hosts: `postgres` and `redis`.
 - PostgreSQL extensions are created idempotently on initial database volume creation via `docker/postgres/init/01-extensions.sql`.
+ - The `node` service uses `node:22-bullseye` (Debian/glibc) rather than `node:22-alpine`.
+	 This was chosen because some frontend dependencies (for example `lightningcss`) include
+	 native binaries that are distributed for glibc-based systems and can crash (SIGBUS)
+	 under Alpine's musl libc. If you prefer Alpine, rebuild native modules inside an
+	 Alpine workload or ensure all native packages provide musl-compatible builds.

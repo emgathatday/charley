@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Connection extends Model
 {
@@ -22,6 +22,8 @@ class Connection extends Model
     protected function casts(): array
     {
         return [
+            'status' => 'string',
+            'initiated_context' => 'string',
             'declined_at' => 'datetime',
             'accepted_at' => 'datetime',
             'blocked_at' => 'datetime',
@@ -43,21 +45,8 @@ class Connection extends Model
         return $this->belongsTo(User::class, 'blocked_by');
     }
 
-    public function scopePending(Builder $query): Builder
+    public function connectionRequest(): HasOne
     {
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeAccepted(Builder $query): Builder
-    {
-        return $query->where('status', 'accepted');
-    }
-
-    public function scopeForUser(Builder $query, int $userId): Builder
-    {
-        return $query->where(function (Builder $query) use ($userId): void {
-            $query->where('requester_id', $userId)
-                ->orWhere('receiver_id', $userId);
-        });
+        return $this->hasOne(ConnectionRequest::class);
     }
 }

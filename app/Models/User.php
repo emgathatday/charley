@@ -117,4 +117,34 @@ class User extends Authenticatable
     {
         return $this->hasMany(Session::class);
     }
+
+    public function connectionRequests(): HasMany
+    {
+        return $this->hasMany(ConnectionRequest::class, 'requester_id');
+    }
+
+    public function targetedConnectionRequests(): HasMany
+    {
+        return $this->hasMany(ConnectionRequest::class, 'target_user_id');
+    }
+
+    public function reviewedConnectionRequests(): HasMany
+    {
+        return $this->hasMany(ConnectionRequest::class, 'reviewed_by');
+    }
+
+    public function requestedConnections(): HasMany
+    {
+        return $this->hasMany(Connection::class, 'requester_id');
+    }
+
+    public function receivedConnections(): HasMany
+    {
+        return $this->hasMany(Connection::class, 'receiver_id');
+    }
+
+    public function blockedConnections(): HasMany
+    {
+        return $this->hasMany(Connection::class, 'blocked_by');
+    }
 }

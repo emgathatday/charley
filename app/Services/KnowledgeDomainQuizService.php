@@ -34,9 +34,9 @@ class KnowledgeDomainQuizService
     public function searchDomains(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return $this->domains->newQuery()
-            ->with(['plantType', 'createdBy'])
+            ->with(['plantType', 'plantTypes', 'createdBy'])
             ->when($filters['active'] ?? null, fn (Builder $query, bool $active) => $query->where('is_active', $active))
-            ->when($filters['plant_type_id'] ?? null, fn (Builder $query, int $plantTypeId) => $query->where('plant_type_id', $plantTypeId))
+            ->when($filters['plant_type_id'] ?? null, fn (Builder $query, int $plantTypeId) => $this->filterByPlantType($query, $plantTypeId))
             ->when($filters['q'] ?? null, function (Builder $query, string $term): void {
                 $query->where(function (Builder $innerQuery) use ($term): void {
                     $innerQuery
@@ -59,8 +59,9 @@ class KnowledgeDomainQuizService
             }
 
             $domain = $this->domains->newQuery()->create($payload);
+            $this->syncPlantTypes($domain, $data);
 
-            return $domain->refresh()->load(['plantType', 'createdBy']);
+            return $domain->refresh()->load(['plantType', 'plantTypes', 'createdBy']);
         });
     }
 
@@ -69,8 +70,9 @@ class KnowledgeDomainQuizService
         return DB::transaction(function () use ($domain, $data): KnowledgeDomain {
             $record = $this->resolveDomain($domain);
             $record->fill($this->domainPayload($data, true))->save();
+            $this->syncPlantTypes($record, $data, true);
 
-            return $record->refresh()->load(['plantType', 'createdBy']);
+            return $record->refresh()->load(['plantType', 'plantTypes', 'createdBy']);
         });
     }
 
@@ -316,6 +318,45 @@ class KnowledgeDomainQuizService
         }
 
         return $payload;
+    }
+
+    private function filterByPlantType(Builder $query, int $plantTypeId): void
+    {
+        $query->where(function (Builder $plantQuery) use ($plantTypeId): void {
+            $plantQuery
+                ->where('plant_type_id', $plantTypeId)
+                ->orWhereHas('plantTypes', fn (Builder $relationQuery) => $relationQuery->where('plant_types.id', $plantTypeId))
+                ->orDoesntHave('plantTypes');
+        });
+    }
+
+    private function syncPlantTypes(KnowledgeDomain $domain, array $data, bool $partial = false): void
+    {
+        if ($partial && ! array_key_exists('plant_type_ids', $data) && ! array_key_exists('plant_type_id', $data)) {
+            return;
+        }
+
+        $plantTypeIds = collect($data['plant_type_ids'] ?? [])
+            ->filter(fn ($id): bool => filled($id))
+            ->map(fn ($id): int => (int) $id)
+            ->unique()
+            ->values();
+
+        if (! array_key_exists('plant_type_ids', $data) && ! empty($data['plant_type_id'])) {
+            $plantTypeIds = collect([(int) $data['plant_type_id']]);
+        }
+
+        $syncPayload = $plantTypeIds
+            ->mapWithKeys(fn (int $plantTypeId, int $index): array => [
+                $plantTypeId => [
+                    'is_primary' => $index === 0,
+                    'sort_order' => $index,
+                ],
+            ])
+            ->all();
+
+        $domain->plantTypes()->sync($syncPayload);
+        $domain->forceFill(['plant_type_id' => $plantTypeIds->first()])->save();
     }
 
     private function questionPayload(array $data, KnowledgeDomain $domain, ?User $actor = null, bool $partial = false): array

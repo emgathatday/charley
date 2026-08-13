@@ -14,6 +14,5 @@ class ConnectionUpdated
         public readonly int $requesterId,
         public readonly int $receiverId,
         public readonly string $status,
-    ) {
-    }
+    ) {}
 }

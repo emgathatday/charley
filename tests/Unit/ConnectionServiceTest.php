@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\ConnectionService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Mockery;
 use RuntimeException;
 use Tests\TestCase;
@@ -20,7 +21,8 @@ class ConnectionServiceTest extends TestCase
         parent::setUp();
 
         Carbon::setTestNow(Carbon::parse('2026-06-29 09:00:00'));
-        $this->service = new ConnectionService();
+        Event::fake();
+        $this->service = new ConnectionService;
     }
 
     protected function tearDown(): void
@@ -59,7 +61,7 @@ class ConnectionServiceTest extends TestCase
     public function test_request_rejects_invalid_context(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Invalid connection context.');
+        $this->expectExceptionMessage('Invalid direct connection context.');
 
         $requester = new User(['status' => 'active']);
         $requester->id = 5;
@@ -74,7 +76,7 @@ class ConnectionServiceTest extends TestCase
     {
         DB::shouldReceive('transaction')->once()->andReturnUsing(fn (callable $callback) => $callback());
 
-        $actor = new User();
+        $actor = new User;
         $actor->id = 2;
 
         $connection = $this->mockTransitionConnection([
@@ -98,7 +100,7 @@ class ConnectionServiceTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Only the receiver can accept a connection.');
 
-        $actor = new User();
+        $actor = new User;
         $actor->id = 3;
 
         $connection = new Connection([
@@ -114,7 +116,7 @@ class ConnectionServiceTest extends TestCase
     {
         DB::shouldReceive('transaction')->once()->andReturnUsing(fn (callable $callback) => $callback());
 
-        $actor = new User();
+        $actor = new User;
         $actor->id = 2;
 
         $connection = $this->mockTransitionConnection([
@@ -136,7 +138,7 @@ class ConnectionServiceTest extends TestCase
     {
         DB::shouldReceive('transaction')->once()->andReturnUsing(fn (callable $callback) => $callback());
 
-        $actor = new User();
+        $actor = new User;
         $actor->id = 1;
 
         $connection = $this->mockTransitionConnection([
@@ -154,12 +156,19 @@ class ConnectionServiceTest extends TestCase
         $this->assertNull($connection->declined_at, 'Block should clear declined timestamp.');
     }
 
+    public function test_can_message_only_allows_accepted_connections(): void
+    {
+        $this->assertTrue($this->service->canMessage(new Connection(['status' => 'accepted'])));
+        $this->assertFalse($this->service->canMessage(new Connection(['status' => 'pending'])));
+        $this->assertFalse($this->service->canMessage(new Connection(['status' => 'blocked'])));
+    }
+
     public function test_block_rejects_non_participant(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Only participants can block a connection.');
 
-        $actor = new User();
+        $actor = new User;
         $actor->id = 3;
 
         $connection = new Connection([
@@ -172,12 +181,13 @@ class ConnectionServiceTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     private function mockTransitionConnection(array $attributes): Connection
     {
         $connection = Mockery::mock(Connection::class)->makePartial();
         $connection->forceFill($attributes);
+        $connection->id = $attributes['id'] ?? 100;
         $connection->shouldReceive('save')->once()->andReturnTrue();
         $connection->shouldReceive('refresh')->once()->andReturnSelf();
 
