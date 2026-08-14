@@ -36,6 +36,13 @@
         'suspended', 'frozen', 'cancelled', 'rejected', 'expired' => 'status-suspended',
         default => 'status-pending',
     };
+    $partnerStatCards = [
+        ['icon' => 'icon-partners', 'value' => number_format($allCount), 'label' => 'Total Partners', 'trend' => number_format($users->count()) . ' this page'],
+        ['icon' => 'icon-month', 'value' => number_format($activeSubscriptionCount), 'label' => 'Active Subscriptions', 'trend' => 'Module 04 source'],
+        ['icon' => 'icon-clock', 'value' => number_format($pendingCount), 'label' => 'Pending Approval', 'trend' => 'Awaiting review'],
+        ['icon' => 'icon-lock', 'value' => number_format($suspendedCount), 'label' => 'Restricted', 'trend' => 'Frozen or suspended'],
+        ['icon' => 'icon-billing', 'value' => number_format(count($subscriptionTierOptions ?? [])), 'label' => 'Active Tiers', 'trend' => 'Dynamic catalog'],
+    ];
 @endphp
 
 @section('content')
@@ -47,55 +54,14 @@
         </div>
         <div class="page-head-actions">
             <a href="{{ route('admin.dashboard.iam.users.create-partner') }}" class="btn-primary">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-another-document-div-clas"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-another-document-clas"></use></svg>
                 Add Partner Manually
             </a>
         </div>
     </div>
 
     <!-- Stats -->
-    <div class="row g-3 mb-3">
-        <div class="col">
-            <div class="stat-card">
-                <div class="stat-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-partner-management-path-d-m9-12"></use></svg></div>
-                <div class="stat-value">{{ number_format($allCount) }}</div>
-                <div class="stat-label">Total Partners</div>
-                <div class="stat-trend">{{ number_format($users->count()) }} this page</div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="stat-card">
-                <div class="stat-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-5-this-month-svg-viewbox-0"></use></svg></div>
-                <div class="stat-value">{{ number_format($activeSubscriptionCount) }}</div>
-                <div class="stat-label">Active Subscriptions</div>
-                <div class="stat-trend">Module 04 source</div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="stat-card">
-                <div class="stat-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg></div>
-                <div class="stat-value">{{ number_format($pendingCount) }}</div>
-                <div class="stat-label">Pending Approval</div>
-                <div class="stat-trend">Awaiting review</div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="stat-card">
-                <div class="stat-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg></div>
-                <div class="stat-value">{{ number_format($suspendedCount) }}</div>
-                <div class="stat-label">Restricted</div>
-                <div class="stat-trend">Frozen or suspended</div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="stat-card">
-                <div class="stat-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-subscription-and-billing"></use></svg></div>
-                <div class="stat-value">{{ number_format(count($subscriptionTierOptions ?? [])) }}</div>
-                <div class="stat-label">Active Tiers</div>
-                <div class="stat-trend">Dynamic catalog</div>
-            </div>
-        </div>
-    </div>
+    {{ \App\Support\AdminStatCards::render(['row_class' => 'row g-3 mb-3', 'cards' => $partnerStatCards]) }}
 
     <!-- Toolbar: tabs -->
     <div class="row g-3 align-items-center mb-3">
@@ -133,7 +99,7 @@
                 </select>
                 <button class="btn-apply" type="button" onclick="applyBulkAction()">Apply</button>
                 <div class="search-box">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-search-2"></use></svg>
                     <input type="text" name="keyword" value="{{ $filters['keyword'] ?? '' }}" placeholder="Search company name, website, or country...">
                 </div>
                 <select class="native-select" name="subscription_tier_id" onchange="this.form.submit()">
@@ -149,7 +115,7 @@
                     @endforeach
                 </select>
                 <button class="btn-filter" type="submit">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-all-partners-div-class-toolbar-meta-sub"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-2"></use></svg>
                     Filter
                 </button>
             </div>
@@ -194,7 +160,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="tier-badge tier-{{ $code }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-subscription-and-billing"></use></svg>{{ $tierLabel($user) }}</span></td>
+                            <td><span class="tier-badge tier-{{ $code }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-billing"></use></svg>{{ $tierLabel($user) }}</span></td>
                             <td>{{ $user->plant_type_label }}</td>
                             <td><span class="status-pill {{ $verificationClass($user) }}"><span class="dot"></span>{{ $verificationLabel($user) }}</span></td>
                             <td><span class="status-pill {{ $subscriptionClass($user) }}"><span class="dot"></span>{{ $subscriptionLabel($user) }}</span></td>
@@ -208,8 +174,8 @@
                                         </button>
                                     @else
                                         <a class="action-btn" href="{{ route('admin.dashboard.iam.users.show', $user) }}" title="View partner detail"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-view-partner-detail"></use></svg></a>
-                                        <a class="action-btn" href="{{ route('admin.dashboard.iam.users.edit-partner', $user) }}" title="Edit partner"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-profile-r"></use></svg></a>
-                                        <button class="action-btn danger" type="button" title="Freeze account"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg></button>
+                                        <a class="action-btn" href="{{ route('admin.dashboard.iam.users.edit-partner', $user) }}" title="Edit partner"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-3"></use></svg></a>
+                                        <button class="action-btn danger" type="button" title="Freeze account"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg></button>
                                     @endif
                                 </div>
                             </td>

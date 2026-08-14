@@ -30,7 +30,7 @@
         </div>
         <div class="header-actions">
             <button class="btn-primary" type="button" onclick="openThemeModal()">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-note"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg>
                 Create New Theme
             </button>
         </div>
@@ -39,9 +39,9 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3 weekly-theme-stat-row">
         @foreach ([
             ['label' => 'Total Themes Created', 'value' => $themes->count(), 'tone' => 'primary', 'icon' => 'icon-5-jul-2026-14-32-circle'],
-            ['label' => 'Active This Week', 'value' => $activeThemes->count(), 'tone' => 'success', 'icon' => 'icon-9-verifications-exceeded-the-48h'],
+            ['label' => 'Active This Week', 'value' => $activeThemes->count(), 'tone' => 'success', 'icon' => 'icon-clock'],
             ['label' => 'Scheduled Ahead', 'value' => $upcomingThemes->count(), 'tone' => 'warning', 'icon' => 'icon-monthly-expert-recognition-svg-viewbox-0'],
-            ['label' => 'Archived', 'value' => $archivedThemes->count(), 'tone' => 'muted', 'icon' => 'icon-33-archived-div-class-hero-live'],
+            ['label' => 'Archived', 'value' => $archivedThemes->count(), 'tone' => 'muted', 'icon' => 'icon-archive'],
         ] as $stat)
             <div class="col">
                 <div class="stat-card">
@@ -70,11 +70,11 @@
                 <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Views So Far</div></div>
             </div>
             <div class="hero-actions">
-                <button class="hero-btn primary" type="button" onclick="editTheme('{{ $fallbackActive->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-profile-r"></use></svg>Edit This Week's Theme</button>
-                <button class="hero-btn" type="button" onclick="showToast('Announcement drafting waits for a confirmed backend workflow','blue')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-announcement-management-charley-library-svg"></use></svg>Post Announcement</button>
+                <button class="hero-btn primary" type="button" onclick="editTheme('{{ $fallbackActive->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-3"></use></svg>Edit This Week's Theme</button>
+                <button class="hero-btn" type="button" onclick="showToast('Announcement drafting waits for a confirmed backend workflow','blue')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-announcements"></use></svg>Post Announcement</button>
                 <form method="POST" action="{{ route('admin.dashboard.qa.weekly-themes.status', [$fallbackActive->id, 'archived']) }}">
                     @csrf
-                    <button class="hero-btn" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-33-archived-div-class-hero-live"></use></svg>Archive Now</button>
+                    <button class="hero-btn" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-archive"></use></svg>Archive Now</button>
                 </form>
             </div>
         </div>
@@ -117,7 +117,7 @@
             @csrf
             <div class="tm-header">
                 <div class="tm-header-title" id="tmHeaderTitle">Create New Theme</div>
-                <button class="tm-close" type="button" onclick="closeModal('theme')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-button-class-btn-btn-ghost-style-flex-1-onclick-"></use></svg></button>
+                <button class="tm-close" type="button" onclick="closeModal('theme')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-x"></use></svg></button>
             </div>
             <div class="tm-body">
                 <div class="tm-field"><label class="tm-label" for="tmTitle">Theme Title</label><input class="tm-input" id="tmTitle" name="title" type="text" placeholder="e.g. Primary Reformer Reliability" required></div>
@@ -132,7 +132,7 @@
                 <div class="tm-field"><label class="tm-label">Featured Q&amp;A</label><div class="tm-select-list">@forelse ($assignableQuestions->take(5) as $question)<label class="tm-select-item"><input type="checkbox" disabled> {{ $question['title'] }}</label>@empty<label class="tm-select-item"><input type="checkbox" disabled> No assignable questions available</label>@endforelse</div><div class="tm-hint">Question assignment is display-only here until the assign/remove routes are registered.</div></div>
                 <div class="tm-field"><div class="tm-toggle-row"><div><div class="tm-toggle-label">Pin this theme</div><div class="tm-toggle-sub">Pinned ordering is UI-only until a persistence contract is confirmed</div></div><label class="switch"><input type="checkbox" id="tmPinToggle" disabled><span class="slider"></span></label></div></div>
             </div>
-            <div class="tm-footer"><button class="btn-ghost" type="button" onclick="closeModal('theme')">Cancel</button><button class="btn-ghost" type="button" onclick="showToast('Draft persistence is waiting for a confirmed backend workflow','blue')">Save as Draft</button><button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-create-user-svg-viewbox-0-0"></use></svg><span id="tmSaveLabel">Schedule Theme</span></button></div>
+            <div class="tm-footer"><button class="btn-ghost" type="button" onclick="closeModal('theme')">Cancel</button><button class="btn-ghost" type="button" onclick="showToast('Draft persistence is waiting for a confirmed backend workflow','blue')">Save as Draft</button><button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-check-2"></use></svg><span id="tmSaveLabel">Schedule Theme</span></button></div>
         </form>
     </div>
 @endsection

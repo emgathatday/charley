@@ -37,6 +37,12 @@
         ['initials' => 'RT', 'avatar' => 'account-avatar-rt', 'name' => 'Reza Taheri', 'email' => 'r.taheri@fajrpetro.ir', 'role' => 'Professional', 'status' => 'Warned', 'statusClass' => 'warned', 'violation' => 'Abusive behaviour', 'chip' => 'chip-abuse', 'duration' => 'Warning issued 8 Jul 2026', 'initiated' => 'Admin - Sara R.', 'primaryAction' => 'Escalate'],
         ['initials' => 'JV', 'avatar' => 'account-avatar-jv', 'name' => 'Johan Vermeulen', 'email' => 'j.vermeulen@sasolenergy.co.za', 'role' => 'Professional', 'status' => 'Suspended', 'statusClass' => 'suspended', 'violation' => 'Impersonation', 'chip' => 'chip-impersonation', 'duration' => '30 days - Expires 8 Aug 2026', 'initiated' => 'Admin - Sara R.', 'primaryAction' => 'Freeze'],
     ];
+    $penaltyStatCards = [
+        ['class' => 'red', 'label' => 'Frozen Accounts', 'value' => $statusCounts['frozen'], 'sub' => 'Account-freeze rows'],
+        ['class' => 'orange', 'label' => 'Active Suspensions', 'value' => $statusCounts['suspended'], 'sub' => 'Temporary suspension rows'],
+        ['class' => 'amber', 'label' => 'Warnings Issued', 'value' => $statusCounts['warned'], 'sub' => 'Warning rows'],
+        ['class' => 'blue', 'label' => 'Pending Review', 'value' => $statusCounts['pending'], 'sub' => 'Latest verification queue'],
+    ];
 @endphp
 
     @if (session('status'))<div class="alert alert-success">{{ session('status') }}</div>@endif
@@ -50,12 +56,7 @@
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3">
-        <div class="col"><div class="stat-card red"><div class="stat-label">Frozen Accounts</div><div class="stat-value">{{ $statusCounts['frozen'] }}</div><div class="stat-sub">Account-freeze rows</div></div></div>
-        <div class="col"><div class="stat-card orange"><div class="stat-label">Active Suspensions</div><div class="stat-value">{{ $statusCounts['suspended'] }}</div><div class="stat-sub">Temporary suspension rows</div></div></div>
-        <div class="col"><div class="stat-card amber"><div class="stat-label">Warnings Issued</div><div class="stat-value">{{ $statusCounts['warned'] }}</div><div class="stat-sub">Warning rows</div></div></div>
-        <div class="col"><div class="stat-card blue"><div class="stat-label">Pending Review</div><div class="stat-value">{{ $statusCounts['pending'] }}</div><div class="stat-sub">Latest verification queue</div></div></div>
-    </div>
+    {{ \App\Support\AdminStatCards::render($penaltyStatCards) }}
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12 col-xl">

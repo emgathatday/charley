@@ -5,6 +5,16 @@
 @section('content')
     @include('templates.components.alert-session')
 
+    @php
+        $plantTypeRows = $plantTypes->getCollection();
+        $plantTypeStatCards = [
+            ['class' => 'blue', 'label' => 'Total Plant Types', 'value' => number_format($plantTypes->total()), 'sub' => 'Catalog records'],
+            ['class' => 'green', 'label' => 'Active', 'value' => number_format($plantTypeRows->where('is_active', true)->count()), 'sub' => 'Visible on this page'],
+            ['class' => 'amber', 'label' => 'Lib. Items', 'value' => number_format($plantTypeRows->sum('library_items_count')), 'sub' => 'Current page links'],
+            ['label' => 'K. Domains', 'value' => number_format($plantTypeRows->sum('knowledge_domains_count')), 'sub' => 'Current page links'],
+        ];
+    @endphp
+
     <div class="page-head">
         <div>
             <div class="page-title">Plant Types &amp; PFD Configuration</div>
@@ -13,11 +23,13 @@
         <div class="page-head-actions">
             <button class="btn btn-outline" type="button">Export</button>
             <a href="{{ route('admin.dashboard.plant-types.create') }}" class="btn btn-primary">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-2"></use></svg>
                 Add Plant Type
             </a>
         </div>
     </div>
+
+    {{ \App\Support\AdminStatCards::render($plantTypeStatCards) }}
 
     <div class="tab-bar plant-type-tab-bar mb-3">
         <button class="tab-btn active" type="button">Plant Types</button>
@@ -35,7 +47,7 @@
             <div @class(['plant-type-card', 'plant-type-card-inactive' => ! $plantType->is_active])>
                 <div class="plant-type-card-top">
                     <div @class(['plant-type-icon', $plantType->is_active ? $toneClass : 'plant-type-tone-muted'])>
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library-and-pfd-content-path"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library"></use></svg>
                     </div>
                     <div>
                         <div class="plant-type-name">{{ $plantType->name }}</div>
@@ -63,7 +75,7 @@
             <div class="plant-type-card">
                 <div class="plant-type-card-top">
                     <div class="plant-type-icon plant-type-tone-muted">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library-and-pfd-content-path"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library"></use></svg>
                     </div>
                     <div>
                         <div class="plant-type-name">No plant types yet</div>

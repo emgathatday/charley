@@ -14,7 +14,7 @@
     $settingSections = [
         'general' => [
             'label' => 'General',
-            'icon' => 'icon-general-svg-viewbox-0-0-24',
+            'icon' => 'icon-general',
             'summary' => 'Platform identity and default regional settings.',
             'panels' => [
                 ['fields' => [
@@ -30,7 +30,7 @@
         ],
         'security' => [
             'label' => 'Security & Access',
-            'icon' => 'icon-security-and-access-svg-viewbox-0',
+            'icon' => 'icon-security-access',
             'summary' => 'Authentication, session, and access-control rules that apply to every account type.',
             'panels' => [
                 ['fields' => [
@@ -48,7 +48,7 @@
         ],
         'verification' => [
             'label' => 'Verification',
-            'icon' => 'icon-profile-verification-queue-5-svg',
+            'icon' => 'icon-verification-queue',
             'summary' => 'Rules governing how Registered Members become Verified Professionals.',
             'panels' => [
                 ['fields' => [
@@ -67,7 +67,7 @@
         ],
         'ai' => [
             'label' => 'Charley AI',
-            'icon' => 'icon-ai-dataset-review-path',
+            'icon' => 'icon-ai-dataset',
             'summary' => 'Usage limits, knowledge sources, and governance for the Charley AI assistant.',
             'panels' => [
                 ['fields' => [
@@ -88,7 +88,7 @@
         ],
         'community' => [
             'label' => 'Q&A & Community',
-            'icon' => 'icon-qanda-management-rect-x-3-y-4',
+            'icon' => 'icon-qa',
             'summary' => 'Posting rules and engagement mechanics for the Technical Q&A pillar.',
             'panels' => [
                 ['fields' => [
@@ -103,7 +103,7 @@
         ],
         'reputation' => [
             'label' => 'Reputation & Points',
-            'icon' => 'icon-monthly-expert-recognition-svg-viewbox-0',
+            'icon' => 'icon-expert-recognition',
             'summary' => 'Point values and thresholds behind Contribution Rank and Monthly Expert Recognition.',
             'panels' => [
                 ['title' => 'Activity points', 'summary' => 'Awarded purely for participation, regardless of answer quality.', 'fields' => [
@@ -134,7 +134,7 @@
         ],
         'partners' => [
             'label' => 'Partner Tiers & Billing',
-            'icon' => 'icon-partner-management-path-d-m9-12',
+            'icon' => 'icon-partners',
             'summary' => 'Annual pricing and payment rules for Diamond, Gold, and Platinum partners.',
             'panels' => [
                 ['fields' => [
@@ -179,7 +179,7 @@
 
       <div class="page-head">
       <div class="page-head-title">
-        <div class="page-head-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-platform-settings-ai-assistant"></use></svg></div>
+        <div class="page-head-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-settings-2"></use></svg></div>
         <div>
           <h1>Platform Settings</h1>
           <div class="sub">Configure global rules, limits, and governance for the Charley platform. Changes apply platform-wide the moment you save.</div>
@@ -198,7 +198,7 @@
         @endforeach
         <div class="settings-nav-divider"></div>
         <div class="settings-nav-item danger" data-tab="danger">
-          <svg class="icon"><use href="/assets/icons/sprite.svg#icon-danger-zone-div-class-set"></use></svg>
+          <svg class="icon"><use href="/assets/icons/sprite.svg#icon-danger-zone"></use></svg>
           Danger Zone
         </div>
       </div>
@@ -222,7 +222,7 @@
                       @php $fieldName = $field['name'] ?? str_replace('.', '_', $field['key']); @endphp
                       <label class="checkbox-chip">
                         <input type="checkbox" name="{{ $fieldName }}" value="1" @checked($settingBool($field['key'], (bool) ($field['default'] ?? false)))>
-                        <span class="checkbox-chip-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg></span>
+                        <span class="checkbox-chip-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg></span>
                         {{ $field['label'] }}
                       </label>
                     @endforeach
@@ -255,7 +255,7 @@
                         <div class="setting-row-text">
                           <div class="setting-row-label">@isset($field['dot_style'])<span class="tier-dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;{{ $field['dot_style'] }}margin-right:7px;"></span>@endisset{{ $field['label'] }}</div>
                           @isset($field['description'])<div class="setting-row-desc">{{ $field['description'] }}</div>@endisset
-                          @isset($field['locked_note'])<div class="locked-note"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>{{ $field['locked_note'] }}</div>@endisset
+                          @isset($field['locked_note'])<div class="locked-note"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg>{{ $field['locked_note'] }}</div>@endisset
                         </div>
                         <div class="setting-row-control">
                           @if ($fieldType === 'locked')
@@ -295,11 +295,11 @@
           <div class="danger-card">
             <div class="setting-row">
               <div class="setting-row-text"><div class="setting-row-label">Clear Charley AI knowledge cache</div><div class="setting-row-desc">Forces Charley AI to re-sync from approved sources on its next query.</div></div>
-              <div class="setting-row-control"><button type="button" class="btn-danger-outline" onclick="openModal('clearcache')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-renew-subscription-extend-current-term"></use></svg>Clear cache</button></div>
+              <div class="setting-row-control"><button type="button" class="btn-danger-outline" onclick="openModal('clearcache')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-renew-subscription-extend-curren"></use></svg>Clear cache</button></div>
             </div>
             <div class="setting-row">
               <div class="setting-row-text"><div class="setting-row-label">Export all platform data</div><div class="setting-row-desc">Generates a full data export as a downloadable archive.</div></div>
-              <div class="setting-row-control"><button type="button" class="btn-danger-outline" onclick="openModal('export')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-download-pdf-div-class-modal-head-ico"></use></svg>Export data</button></div>
+              <div class="setting-row-control"><button type="button" class="btn-danger-outline" onclick="openModal('export')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-download-pdf"></use></svg>Export data</button></div>
             </div>
           </div>
         </div>
@@ -307,10 +307,10 @@
     </div>
 
       <div class="save-bar" id="saveBar">
-      <div class="save-bar-text"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-danger-zone-div-class-set"></use></svg>You have unsaved changes</div>
+      <div class="save-bar-text"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-danger-zone"></use></svg>You have unsaved changes</div>
       <div class="save-bar-actions">
         <a class="btn-secondary" href="{{ route('admin.dashboard.platform-settings.index') }}">Discard</a>
-        <button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-changes-div-class-modal-overlay-id-modalove"></use></svg>Save changes</button>
+        <button class="btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-changes"></use></svg>Save changes</button>
       </div>
     </div>
     </form>
@@ -318,8 +318,8 @@
     <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
       <div class="modal-box" id="modal-clearcache">
         <div class="modal-head">
-          <div class="modal-head-title"><div class="modal-head-icon" style="background:#FEF2F2;color:#DC2626;"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-renew-subscription-extend-current-term"></use></svg></div><div><h3>Clear Charley AI knowledge cache?</h3><div class="sub">Display-only until the backend cache workflow is approved</div></div></div>
-          <button type="button" class="modal-close" onclick="closeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></button>
+          <div class="modal-head-title"><div class="modal-head-icon" style="background:#FEF2F2;color:#DC2626;"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-renew-subscription-extend-curren"></use></svg></div><div><h3>Clear Charley AI knowledge cache?</h3><div class="sub">Display-only until the backend cache workflow is approved</div></div></div>
+          <button type="button" class="modal-close" onclick="closeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-strong"></use></svg></button>
         </div>
         <div class="modal-body">Charley AI cache clearing is intentionally disabled until a confirmed Admin Operations service contract exists.</div>
         <div class="modal-footer"><button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">Close</button></div>
@@ -327,8 +327,8 @@
 
       <div class="modal-box" id="modal-export">
         <div class="modal-head">
-          <div class="modal-head-title"><div class="modal-head-icon" style="background:#EFF6FF;color:#1D4ED8;"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-download-pdf-div-class-modal-head-ico"></use></svg></div><div><h3>Export all platform data</h3><div class="sub">Display-only until secure export handling is approved</div></div></div>
-          <button type="button" class="modal-close" onclick="closeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></button>
+          <div class="modal-head-title"><div class="modal-head-icon" style="background:#EFF6FF;color:#1D4ED8;"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-download-pdf"></use></svg></div><div><h3>Export all platform data</h3><div class="sub">Display-only until secure export handling is approved</div></div></div>
+          <button type="button" class="modal-close" onclick="closeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-strong"></use></svg></button>
         </div>
         <div class="modal-body">Full platform data export is intentionally disabled until a confirmed secure export workflow exists.</div>
         <div class="modal-footer"><button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">Close</button></div>

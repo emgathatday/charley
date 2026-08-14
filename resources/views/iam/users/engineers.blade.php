@@ -43,6 +43,35 @@
         $filled = $points >= 10000 ? 5 : ($points >= 7500 ? 4 : ($points >= 5000 ? 3 : ($points >= 2500 ? 2 : ($points >= 1000 ? 1 : 0))));
         return $filled;
     };
+    $engineerStatCards = [
+        [
+            'class' => 'blue',
+            'label' => 'Total Users',
+            'value' => number_format($allCount),
+            'sub' => 'All registered accounts',
+            'chip' => ['class' => 'up', 'icon' => 'icon-month-professionals', 'label' => number_format($users->count()) . ' this page'],
+        ],
+        [
+            'class' => 'indigo',
+            'label' => 'Professionals',
+            'value' => number_format($professionalCount),
+            'sub' => 'Active verified members',
+            'chip' => ['class' => 'up', 'icon' => 'icon-month-professionals', 'label' => 'Active'],
+        ],
+        [
+            'class' => 'amber',
+            'label' => 'Pending Verification',
+            'value' => number_format($stats['pending_approvals'] ?? 0),
+            'sub' => 'Awaiting admin review',
+            'chip' => ['class' => 'warn', 'icon' => 'icon-clock', 'label' => number_format($stats['pending_approvals'] ?? 0) . ' pending'],
+        ],
+        [
+            'label' => 'Suspended / Frozen',
+            'value' => number_format($restrictedCount),
+            'sub' => 'Accounts restricted',
+            'chip' => ['class' => 'red', 'icon' => 'icon-new-week', 'label' => number_format($stats['suspended_users'] ?? 0) . ' suspended'],
+        ],
+    ];
 @endphp
 
 @section('content')
@@ -54,52 +83,7 @@
     </div>
 
     <!-- Stat Cards -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3">
-        <div class="col">
-            <div class="stat-card blue">
-                <div class="stat-label">Total Users</div>
-                <div class="stat-value">{{ number_format($allCount) }}</div>
-                <div class="stat-sub">All registered accounts</div>
-                <div class="stat-chip up">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-38-this-month-professionals-847"></use></svg>
-                    {{ number_format($users->count()) }} this page
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="stat-card indigo">
-                <div class="stat-label">Professionals</div>
-                <div class="stat-value">{{ number_format($professionalCount) }}</div>
-                <div class="stat-sub">Active verified members</div>
-                <div class="stat-chip up">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-38-this-month-professionals-847"></use></svg>
-                    Active
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="stat-card amber">
-                <div class="stat-label">Pending Verification</div>
-                <div class="stat-value">{{ number_format($stats['pending_approvals'] ?? 0) }}</div>
-                <div class="stat-sub">Awaiting admin review</div>
-                <div class="stat-chip warn">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg>
-                    {{ number_format($stats['pending_approvals'] ?? 0) }} pending
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="stat-card">
-                <div class="stat-label">Suspended / Frozen</div>
-                <div class="stat-value">{{ number_format($restrictedCount) }}</div>
-                <div class="stat-sub">Accounts restricted</div>
-                <div class="stat-chip red">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-3-new-this-week-div"></use></svg>
-                    {{ number_format($stats['suspended_users'] ?? 0) }} suspended
-                </div>
-            </div>
-        </div>
-    </div>
+    {{ \App\Support\AdminStatCards::render($engineerStatCards) }}
 
     <!-- Tabs + Add User row -->
     <div class="row g-3 align-items-center mb-3">
@@ -151,7 +135,7 @@
             <!-- Group 2: Search form -->
             <div class="search-form">
                 <div class="search-box">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-search-2"></use></svg>
                     <input form="engineerFilterForm" type="text" name="keyword" value="{{ $filters['keyword'] ?? '' }}" placeholder="Search users...">
                 </div>
                 <select form="engineerFilterForm" class="filter-select" name="account_type" onchange="this.form.submit()">
@@ -173,7 +157,7 @@
                     @endforeach
                 </select>
                 <button form="engineerFilterForm" class="btn-outline btn-filter" type="submit">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter"></use></svg>
                     Filter
                 </button>
             </div>
@@ -219,7 +203,7 @@
                         <td>{{ $user->plant_type_label }}</td>
                         <td><span class="status-dot {{ $statusClass($user) }}">{{ $user->status_label }}</span></td>
                         <td>{{ $user->created_at?->format('d M Y') ?? '-' }}</td>
-                        <td><div class="action-group"><a class="act-btn primary" title="View profile" href="{{ route('admin.dashboard.iam.users.show', $user) }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-view-partner-detail"></use></svg></a><button class="act-btn" title="Send message" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-featured-answer-on-co-absorber"></use></svg></button><button class="act-btn danger" title="Freeze account" type="button" onclick="openFreezeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg></button></div></td>
+                        <td><div class="action-group"><a class="act-btn primary" title="View profile" href="{{ route('admin.dashboard.iam.users.show', $user) }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-view-partner-detail"></use></svg></a><button class="act-btn" title="Send message" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-featured-answer-on-co-absorber"></use></svg></button><button class="act-btn danger" title="Freeze account" type="button" onclick="openFreezeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg></button></div></td>
                     </tr>
                 @empty
                     <tr><td colspan="9"><div class="empty-state"><span>No engineer accounts match the selected filters.</span></div></td></tr>
@@ -230,9 +214,9 @@
         <div class="pagination">
             <span class="page-info">Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ number_format($users->total()) }} results</span>
             @if ($users->onFirstPage())
-                <button class="page-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg></button>
+                <button class="page-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-account-penalty"></use></svg></button>
             @else
-                <a class="page-btn" href="{{ $users->previousPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg></a>
+                <a class="page-btn" href="{{ $users->previousPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-account-penalty"></use></svg></a>
             @endif
             @foreach ($users->getUrlRange(max(1, $users->currentPage() - 1), min($users->lastPage(), $users->currentPage() + 1)) as $page => $url)
                 <a class="page-btn {{ $page === $users->currentPage() ? 'active' : '' }}" href="{{ $url }}">{{ $page }}</a>
@@ -242,16 +226,16 @@
                 <a class="page-btn" href="{{ $users->url($users->lastPage()) }}">{{ $users->lastPage() }}</a>
             @endif
             @if ($users->hasMorePages())
-                <a class="page-btn" href="{{ $users->nextPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg></a>
+                <a class="page-btn" href="{{ $users->nextPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg></a>
             @else
-                <button class="page-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg></button>
+                <button class="page-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg></button>
             @endif
         </div>
     </div>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-    <div class="drawer" id="detailDrawer"><div class="drawer-head"><div><div class="drawer-title" id="drawerName">User Details</div><div class="drawer-sub" id="drawerEmail">-</div></div><button class="drawer-close" type="button" onclick="closeDrawer()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-button-class-btn-btn-ghost-style-flex-1-onclick-"></use></svg></button></div><div class="drawer-body" id="drawerBody"><div class="profile-hero"><div class="profile-avatar-lg">U</div><div class="profile-hero-info"><div class="user-name">User Details</div><div class="user-email">Select a row action to review profile context.</div></div></div></div><div class="drawer-footer" id="drawerFooter"><button class="drawer-act-btn success" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>Approve Verification</button><button class="drawer-act-btn danger" type="button" onclick="openFreezeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>Freeze Account</button><button class="drawer-act-btn" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-featured-answer-on-co-absorber"></use></svg>Message</button></div></div>
-    <div class="modal-overlay" id="freezeModal"><div class="modal"><div class="modal-title">Freeze this account?</div><div class="modal-desc">The user will immediately lose access to all platform features. They will receive an email notification. You can unfreeze the account at any time from Account Penalty &amp; Freeze.</div><textarea class="note-area" placeholder="Reason for freeze (optional, included in notification email)..."></textarea><div class="modal-actions"><button class="btn-cancel" type="button" onclick="closeFreezeModal()">Cancel</button><button class="btn-danger" type="button" onclick="confirmFreeze()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>Freeze Account</button></div></div></div>
+    <div class="drawer" id="detailDrawer"><div class="drawer-head"><div><div class="drawer-title" id="drawerName">User Details</div><div class="drawer-sub" id="drawerEmail">-</div></div><button class="drawer-close" type="button" onclick="closeDrawer()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-x"></use></svg></button></div><div class="drawer-body" id="drawerBody"><div class="profile-hero"><div class="profile-avatar-lg">U</div><div class="profile-hero-info"><div class="user-name">User Details</div><div class="user-email">Select a row action to review profile context.</div></div></div></div><div class="drawer-footer" id="drawerFooter"><button class="drawer-act-btn success" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg>Approve Verification</button><button class="drawer-act-btn danger" type="button" onclick="openFreezeModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg>Freeze Account</button><button class="drawer-act-btn" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-featured-answer-on-co-absorber"></use></svg>Message</button></div></div>
+    <div class="modal-overlay" id="freezeModal"><div class="modal"><div class="modal-title">Freeze this account?</div><div class="modal-desc">The user will immediately lose access to all platform features. They will receive an email notification. You can unfreeze the account at any time from Account Penalty &amp; Freeze.</div><textarea class="note-area" placeholder="Reason for freeze (optional, included in notification email)..."></textarea><div class="modal-actions"><button class="btn-cancel" type="button" onclick="closeFreezeModal()">Cancel</button><button class="btn-danger" type="button" onclick="confirmFreeze()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg>Freeze Account</button></div></div></div>
 @endsection
 
 @push('scripts')

@@ -22,6 +22,12 @@
     $slug = fn ($value) => Str::slug((string) $value) ?: 'general';
     $statusToUi = fn ($status, $answers = 0) => $status === 'published' && (int) $answers > 0 ? 'answered' : (($status === 'published') ? 'open' : $status);
     $authorType = fn ($question) => ($question['is_anonymous'] ?? false) ? 'anonymous' : (($question['author'] ?? '') === 'Charley Admin' ? 'admin' : 'verified');
+    $qaStatCards = [
+        ['label' => 'Total Questions', 'value' => number_format($totalQuestions), 'sub' => 'Across current filters', 'icon_class' => 'qa-stat-icon blue', 'icon_wrap' => 'stat-card-top', 'icon' => 'icon-qa'],
+        ['label' => 'Unanswered', 'value' => number_format($unansweredCount), 'sub' => 'Needs expert response', 'icon_class' => 'qa-stat-icon amber', 'icon_wrap' => 'stat-card-top', 'icon' => 'icon-clock'],
+        ['label' => 'Pending Review / Approval', 'value' => number_format($pendingCount), 'sub' => 'Awaiting moderation', 'icon_class' => 'qa-stat-icon slate', 'icon_wrap' => 'stat-card-top', 'icon' => 'icon-pending-review-approval'],
+        ['label' => 'Posted Anonymously', 'value' => $anonymousPercent . '%', 'sub' => 'Identity visible to admins', 'icon_class' => 'qa-stat-icon slate', 'icon_wrap' => 'stat-card-top', 'icon' => 'icon-anonymous-identity-visible'],
+    ];
 @endphp
 
     @include('templates.components.alert-session')
@@ -33,41 +39,23 @@
         </div>
         <div class="header-actions">
             <button class="btn-ghost" type="button" onclick="showToast('Export is pending a confirmed backend workflow','blue')">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-download-pdf-div-class-modal-head-ico"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-download-pdf"></use></svg>
                 <span>Export</span>
             </button>
             <button class="btn-primary" type="button" onclick="showToast('Seed question form is waiting for the confirmed create contract','blue')">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-note"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg>
                 Add Seed Question
             </button>
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3 qa-stat-row">
-        @foreach ([
-            ['label' => 'Total Questions', 'value' => number_format($totalQuestions), 'sub' => 'Across current filters', 'tone' => 'blue', 'icon' => 'icon-qanda-management-rect-x-3-y-4'],
-            ['label' => 'Unanswered', 'value' => number_format($unansweredCount), 'sub' => 'Needs expert response', 'tone' => 'amber', 'icon' => 'icon-9-verifications-exceeded-the-48h'],
-            ['label' => 'Pending Review / Approval', 'value' => number_format($pendingCount), 'sub' => 'Awaiting moderation', 'tone' => 'slate', 'icon' => 'icon-14-pending-review-approval'],
-            ['label' => 'Posted Anonymously', 'value' => $anonymousPercent.'%', 'sub' => 'Identity visible to admins', 'tone' => 'slate', 'icon' => 'icon-34-posted-anonymously-div-class-filte'],
-        ] as $stat)
-            <div class="col">
-                <div class="stat-card">
-                    <div class="stat-card-top">
-                        <div class="stat-icon qa-stat-icon {{ $stat['tone'] }}"><svg class="icon"><use href="/assets/icons/sprite.svg#{{ $stat['icon'] }}"></use></svg></div>
-                    </div>
-                    <div class="stat-value">{{ $stat['value'] }}</div>
-                    <div class="stat-label">{{ $stat['label'] }}</div>
-                    <div class="stat-sub">{{ $stat['sub'] }}</div>
-                </div>
-            </div>
-        @endforeach
-    </div>
+    {{ \App\Support\AdminStatCards::render(['row_class' => 'row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3 qa-stat-row', 'cards' => $qaStatCards]) }}
 
     <div class="filter-bar">
         <form id="qaFilterForm" method="GET" action="{{ route('admin.dashboard.qa.index') }}" class="search-form">
             <input type="hidden" name="tab" value="{{ $activeTab }}">
             <div class="filter-search">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-search-2"></use></svg>
                 <input type="text" name="keyword" id="qaSearch" placeholder="Search questions, authors, keywords..." value="{{ $filters['keyword'] ?? '' }}">
             </div>
             <select class="filter-select" name="plant_type_id" id="fPlant" onchange="this.form.submit()">
@@ -90,7 +78,7 @@
                 <option value="hidden" @selected(($filters['status'] ?? 'all') === 'hidden')>Blocked</option>
             </select>
             <button class="btn-primary qa-filter-btn" type="submit">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter"></use></svg>
                 Filter
             </button>
             <a class="filter-reset" href="{{ route('admin.dashboard.qa.index') }}">
@@ -114,8 +102,8 @@
     <div class="bulk-bar" id="bulkBar">
         <div class="bulk-bar-text"><strong id="bulkCount">0</strong> question(s) selected</div>
         <div class="bulk-actions">
-            <button class="bulk-btn" type="button" onclick="showToast('Bulk approve waits for a confirmed backend contract','green')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-create-user-svg-viewbox-0-0"></use></svg>Approve &amp; Publish</button>
-            <button class="bulk-btn" type="button" onclick="showToast('Bulk review waits for a confirmed backend contract','blue')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-14-pending-review-approval"></use></svg>Mark Reviewed</button>
+            <button class="bulk-btn" type="button" onclick="showToast('Bulk approve waits for a confirmed backend contract','green')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-check-2"></use></svg>Approve &amp; Publish</button>
+            <button class="bulk-btn" type="button" onclick="showToast('Bulk review waits for a confirmed backend contract','blue')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-pending-review-approval"></use></svg>Mark Reviewed</button>
             <button class="bulk-btn danger" type="button" onclick="showToast('Delete is UI-only until behavior is confirmed','red')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-delete"></use></svg>Delete</button>
         </div>
     </div>
@@ -178,7 +166,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="empty-state" id="emptyState"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg><div class="empty-state-title">No questions match these filters</div><div class="empty-state-sub">Try a different plant type, topic, or reset filters to see all questions.</div></div>
+        <div class="empty-state" id="emptyState"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-search-2"></use></svg><div class="empty-state-title">No questions match these filters</div><div class="empty-state-sub">Try a different plant type, topic, or reset filters to see all questions.</div></div>
         <div class="pagination"><div class="page-info">Showing <strong id="visibleCount">{{ $questions->count() }}</strong> of {{ number_format($totalQuestions) }} questions</div><div class="qa-pagination-btns"><button class="page-btn" type="button" disabled>&lt;</button><button class="page-btn active" type="button">1</button><button class="page-btn" type="button" disabled>&gt;</button></div></div>
     </div>
 

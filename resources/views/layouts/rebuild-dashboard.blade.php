@@ -19,11 +19,11 @@
             <div class="topbar">
                 <div class="topbar-left">
                     <button class="hamburger-btn" id="hamburgerBtn" type="button" onclick="toggleSidebar()" aria-label="Toggle navigation">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-charley-path"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-menu"></use></svg>
                     </button>
                     <div class="breadcrumb">
                         <span>Charley</span>
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg>
                         <span class="current">@yield('title', $title ?? 'Dashboard')</span>
                     </div>
                 </div>
@@ -37,11 +37,11 @@
                         <div class="dropdown-menu notif-menu" id="notifMenu">
                             <div class="dropdown-head"><span>Notifications</span><span class="dropdown-head-action">Mark all read</span></div>
                             <div class="notif-item">
-                                <div class="notif-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg></div>
+                                <div class="notif-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg></div>
                                 <div><div class="notif-text">9 verifications exceeded the 48h SLA</div><div class="notif-time">12 minutes ago</div></div>
                             </div>
                             <div class="notif-item">
-                                <div class="notif-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-user-k-habib-flagged-for"></use></svg></div>
+                                <div class="notif-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-user-k-habib-flagged"></use></svg></div>
                                 <div><div class="notif-text">New answer flagged in &quot;Reformer tube failure&quot;</div><div class="notif-time">38 minutes ago</div></div>
                             </div>
                             <div class="dropdown-foot">View all notifications</div>
@@ -50,12 +50,12 @@
 
                     <div class="dropdown-wrap">
                         <button class="icon-btn" type="button" onclick="toggleDropdown('settingsMenu', this)" aria-label="Settings" aria-expanded="false">
-                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-platform-settings-ai-assistant"></use></svg>
+                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-settings-2"></use></svg>
                         </button>
                         <div class="dropdown-menu" id="settingsMenu">
                             <div class="dropdown-head"><span>Settings</span></div>
-                            <a class="settings-item" href="{{ route('admin.dashboard.iam.users.admin-profile') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-my-profile-path-d-m"></use></svg>Account settings</a>
-                            <a class="settings-item" href="{{ route('admin.dashboard.iam.users.admin-profile', ['section' => 'security']) }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>Security &amp; access</a>
+                            <a class="settings-item" href="{{ route('admin.dashboard.iam.users.admin-profile') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-users-3"></use></svg>Account settings</a>
+                            <a class="settings-item" href="{{ route('admin.dashboard.iam.users.admin-profile', ['section' => 'security']) }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg>Security &amp; access</a>
                         </div>
                     </div>
 
@@ -78,8 +78,8 @@
                                 <div class="admin-avatar">{{ $adminInitials }}</div>
                                 <div><div class="admin-name">{{ $adminName }}</div><div class="admin-role">{{ $adminEmail }}</div></div>
                             </div>
-                            <a class="settings-item" href="{{ route('admin.dashboard.iam.users.admin-profile') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-my-profile-path-d-m"></use></svg>My Profile</a>
-                            <a class="settings-item" href="{{ route('admin.dashboard.platform-settings.index') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-platform-settings-ai-assistant"></use></svg>Platform Settings</a>
+                            <a class="settings-item" href="{{ route('admin.dashboard.iam.users.admin-profile') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-users-3"></use></svg>My Profile</a>
+                            <a class="settings-item" href="{{ route('admin.dashboard.platform-settings.index') }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-settings-2"></use></svg>Platform Settings</a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

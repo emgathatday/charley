@@ -31,6 +31,12 @@
     $adminOnlyPlans = $totalPlans - $publicPlans;
     $activeAvg = $allTiers->where('is_active', true)->avg('monthly_price') ?? 0;
     $showingTo = $filteredTiers->count();
+    $subscriptionStatCards = [
+        ['class' => 'blue', 'label' => 'Total Plans', 'value' => number_format($totalPlans), 'sub' => number_format($publicPlans) . ' public · ' . number_format($adminOnlyPlans) . ' admin-only'],
+        ['class' => 'green', 'label' => 'Active Plans', 'value' => number_format($activePlans), 'sub' => 'Có thể chọn khi đăng ký'],
+        ['class' => 'amber', 'label' => 'Avg Monthly Price', 'value' => $formatMoney($activeAvg), 'sub' => 'Tính từ active plans'],
+        ['class' => 'blue2', 'label' => 'Permission Keys', 'value' => number_format(($subscriptionPermissions ?? collect())->count()), 'sub' => 'boolean, integer, string, json'],
+    ];
 @endphp
 
 @section('content')
@@ -52,12 +58,7 @@
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3">
-        <div class="col"><div class="stat-card blue"><div class="stat-label">Total Plans</div><div class="stat-value">{{ number_format($totalPlans) }}</div><div class="stat-sub">{{ number_format($publicPlans) }} public · {{ number_format($adminOnlyPlans) }} admin-only</div></div></div>
-        <div class="col"><div class="stat-card green"><div class="stat-label">Active Plans</div><div class="stat-value">{{ number_format($activePlans) }}</div><div class="stat-sub">Có thể chọn khi đăng ký</div></div></div>
-        <div class="col"><div class="stat-card amber"><div class="stat-label">Avg Monthly Price</div><div class="stat-value">{{ $formatMoney($activeAvg) }}</div><div class="stat-sub">Tính từ active plans</div></div></div>
-        <div class="col"><div class="stat-card blue2"><div class="stat-label">Permission Keys</div><div class="stat-value">{{ number_format(($subscriptionPermissions ?? collect())->count()) }}</div><div class="stat-sub">boolean, integer, string, json</div></div></div>
-    </div>
+    {{ \App\Support\AdminStatCards::render($subscriptionStatCards) }}
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12">

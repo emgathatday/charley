@@ -15,10 +15,17 @@
     ];
     $statusSummary = [
         ['class' => 'amber', 'label' => 'Pending Review', 'value' => $queueStats['pending'] ?? 0, 'sub' => 'Awaiting admin decision', 'icon' => 'icon-14-pending-review-approval'],
-        ['class' => 'blue', 'label' => 'Info Requested', 'value' => $queueStats['more_info_required'] ?? 0, 'sub' => 'Waiting on applicant', 'icon' => 'icon-3-questions-attached'],
-        ['class' => 'indigo', 'label' => 'Approved', 'value' => $queueStats['approved'] ?? 0, 'sub' => 'Completed applications', 'icon' => 'icon-create-user-svg-viewbox-0-0'],
-        ['class' => '', 'label' => 'Rejected', 'value' => $queueStats['rejected'] ?? 0, 'sub' => 'Closed after review', 'icon' => 'icon-reject-application-internal-reviewer-note'],
+        ['class' => 'blue', 'label' => 'Info Requested', 'value' => $queueStats['more_info_required'] ?? 0, 'sub' => 'Waiting on applicant', 'icon' => 'icon-questions-attached'],
+        ['class' => 'indigo', 'label' => 'Approved', 'value' => $queueStats['approved'] ?? 0, 'sub' => 'Completed applications', 'icon' => 'icon-check-2'],
+        ['class' => '', 'label' => 'Rejected', 'value' => $queueStats['rejected'] ?? 0, 'sub' => 'Closed after review', 'icon' => 'icon-reject-application-internal-revi'],
     ];
+    $verificationStatCards = collect($statusSummary)->map(fn ($summary) => [
+        'class' => $summary['class'],
+        'label' => $summary['label'],
+        'value' => number_format($summary['value']),
+        'sub' => $summary['sub'],
+        'chip' => ['class' => $summary['class'] === '' ? 'red' : 'up', 'icon' => $summary['icon'], 'label' => number_format($summary['value']) . ' applications'],
+    ])->all();
 @endphp
 
 @section('content')
@@ -29,7 +36,7 @@
         </div>
         <div class="page-actions">
             <a class="btn-outline" href="{{ route('admin.dashboard.iam.users') }}">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions-button-class-btn-btn-danger"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions"></use></svg>
                 User Management
             </a>
         </div>
@@ -45,21 +52,7 @@
         </div>
     @endif
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3">
-        @foreach ($statusSummary as $summary)
-            <div class="col">
-                <div class="stat-card {{ $summary['class'] }}" >
-                    <div class="stat-label">{{ $summary['label'] }}</div>
-                    <div class="stat-value">{{ number_format($summary['value']) }}</div>
-                    <div class="stat-sub">{{ $summary['sub'] }}</div>
-                    <div class="stat-chip {{ $summary['class'] === '' ? 'red' : 'up' }}">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#{{ $summary['icon'] }}"></use></svg>
-                        {{ number_format($summary['value']) }} applications
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
+    {{ \App\Support\AdminStatCards::render($verificationStatCards) }}
 
     <div class="filter-bar">
         <div class="tab-group">
@@ -87,7 +80,7 @@
 
             <form class="search-form" method="GET" action="{{ route('admin.dashboard.iam.verification-queue') }}">
                 <div class="search-box">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-search-2"></use></svg>
                     <input type="text" name="search" value="{{ $searchValue }}" placeholder="Search applicants...">
                 </div>
                 <select class="filter-select" name="method" onchange="this.form.submit()">
@@ -103,7 +96,7 @@
                     @endforeach
                 </select>
                 <button class="btn-outline btn-filter" type="submit">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter"></use></svg>
                     Filter
                 </button>
             </form>
@@ -170,9 +163,9 @@
                             <td onclick="event.stopPropagation()">
                                 <div class="row-actions">
                                     <a class="row-btn view" title="View verification detail" href="{{ route('admin.dashboard.iam.verification-queue.show', $verificationRequest) }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-input-type-checkbox-id"></use></svg></a>
-                                    <button class="row-btn" type="button" title="Approve" onclick="openReviewPanel('approve-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-create-user-svg-viewbox-0-0"></use></svg></button>
-                                    <button class="row-btn" type="button" title="More info" onclick="openReviewPanel('more-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-3-questions-attached"></use></svg></button>
-                                    <button class="row-btn" type="button" title="Reject" onclick="openReviewPanel('reject-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-reject-application-internal-reviewer-note"></use></svg></button>
+                                    <button class="row-btn" type="button" title="Approve" onclick="openReviewPanel('approve-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-check-2"></use></svg></button>
+                                    <button class="row-btn" type="button" title="More info" onclick="openReviewPanel('more-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-questions-attached"></use></svg></button>
+                                    <button class="row-btn" type="button" title="Reject" onclick="openReviewPanel('reject-{{ $verificationRequest->id }}')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-reject-application-internal-revi"></use></svg></button>
                                 </div>
                                 <div class="review-panel" id="approve-{{ $verificationRequest->id }}" hidden>
                                     <form method="POST" action="{{ route('admin.dashboard.iam.verification-queue.approve', $verificationRequest) }}">
@@ -210,17 +203,17 @@
             <div class="foot-info">Showing <b>{{ $verificationRequests->firstItem() ?? 0 }}-{{ $verificationRequests->lastItem() ?? 0 }}</b> of <b>{{ number_format($verificationRequests->total()) }}</b> applications</div>
             <div class="pager">
                 @if ($verificationRequests->onFirstPage())
-                    <button class="pager-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg></button>
+                    <button class="pager-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-account-penalty"></use></svg></button>
                 @else
-                    <a class="pager-btn" href="{{ $verificationRequests->previousPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg></a>
+                    <a class="pager-btn" href="{{ $verificationRequests->previousPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-account-penalty"></use></svg></a>
                 @endif
                 @foreach ($verificationRequests->getUrlRange(max(1, $verificationRequests->currentPage() - 1), min($verificationRequests->lastPage(), $verificationRequests->currentPage() + 1)) as $page => $url)
                     <a class="pager-btn {{ $page === $verificationRequests->currentPage() ? 'active' : '' }}" href="{{ $url }}">{{ $page }}</a>
                 @endforeach
                 @if ($verificationRequests->hasMorePages())
-                    <a class="pager-btn" href="{{ $verificationRequests->nextPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg></a>
+                    <a class="pager-btn" href="{{ $verificationRequests->nextPageUrl() }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg></a>
                 @else
-                    <button class="pager-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg></button>
+                    <button class="pager-btn" type="button" disabled><svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg></button>
                 @endif
             </div>
         </div>

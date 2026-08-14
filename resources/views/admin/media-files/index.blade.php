@@ -27,19 +27,19 @@
             $extension = strtoupper(pathinfo((string) $mediaFile->original_name, PATHINFO_EXTENSION));
 
             if ($category === 'image' || str_starts_with($mime, 'image/')) {
-                return [$extension ?: 'IMG', 'image', 'icon-platform-settings-ai-assistant'];
+                return [$extension ?: 'IMG', 'image', 'icon-settings-2'];
             }
             if ($category === 'video' || str_starts_with($mime, 'video/')) {
                 return [$extension ?: 'VID', 'video', 'icon-quiz-and-question-bank'];
             }
             if ($category === 'presentation' || in_array($extension, ['PPT', 'PPTX'], true)) {
-                return [$extension ?: 'DECK', 'deck', 'icon-library-and-pfd-content-path'];
+                return [$extension ?: 'DECK', 'deck', 'icon-library'];
             }
             if ($extension === 'PDF' || str_contains($mime, 'pdf')) {
-                return ['PDF', 'pdf', 'icon-library-and-pfd-content-path'];
+                return ['PDF', 'pdf', 'icon-library'];
             }
 
-            return [$extension ?: strtoupper((string) ($category ?: 'FILE')), 'pdf', 'icon-library-and-pfd-content-path'];
+            return [$extension ?: strtoupper((string) ($category ?: 'FILE')), 'pdf', 'icon-library'];
         };
         $sourceLabel = function ($mediaFile) use ($formatLabel): string {
             return match ($mediaFile->upload_context) {
@@ -71,6 +71,12 @@
         };
         $showingFrom = $mediaFiles->total() ? $mediaFiles->firstItem() : 0;
         $showingTo = $mediaFiles->total() ? $mediaFiles->lastItem() : 0;
+        $mediaStatCards = [
+            ['label' => 'Total Files', 'value' => number_format($totalUploads), 'sub' => 'media_files'],
+            ['label' => 'Library Sources', 'value' => number_format($librarySources ?? 0), 'sub' => 'Library item links'],
+            ['label' => 'Quiz Images', 'value' => number_format($quizImages ?? 0), 'sub' => 'Question media refs'],
+            ['label' => 'Storage Used', 'value' => $formatBytes($storageUsedBytes ?? 0), 'sub' => 'Stored upload size'],
+        ];
     @endphp
 
     @include('templates.components.alert-session')
@@ -82,16 +88,11 @@
         </div>
         <div class="page-head-actions">
             <button class="btn btn-outline" type="button">Sync metadata</button>
-            <button class="btn btn-primary" type="button" id="mediaUploadShortcut"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>Upload media</button>
+            <button class="btn btn-primary" type="button" id="mediaUploadShortcut"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-2"></use></svg>Upload media</button>
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 media-stat-row">
-        <div class="col"><div class="stat-card"><div class="stat-label">Total Files</div><div class="stat-value">{{ number_format($totalUploads) }}</div><div class="stat-sub">media_files</div></div></div>
-        <div class="col"><div class="stat-card"><div class="stat-label">Library Sources</div><div class="stat-value">{{ number_format($librarySources ?? 0) }}</div><div class="stat-sub">Library item links</div></div></div>
-        <div class="col"><div class="stat-card"><div class="stat-label">Quiz Images</div><div class="stat-value">{{ number_format($quizImages ?? 0) }}</div><div class="stat-sub">Question media refs</div></div></div>
-        <div class="col"><div class="stat-card"><div class="stat-label">Storage Used</div><div class="stat-value">{{ $formatBytes($storageUsedBytes ?? 0) }}</div><div class="stat-sub">Stored upload size</div></div></div>
-    </div>
+    {{ \App\Support\AdminStatCards::render(['row_class' => 'row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 media-stat-row', 'cards' => $mediaStatCards]) }}
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12 col-xl">
@@ -134,7 +135,7 @@
                     <option>All Plants</option>
                 </select>
                 <label class="media-orphan-filter"><input type="checkbox" name="orphans_only" value="1" @checked(request()->boolean('orphans_only'))> Orphans</label>
-                <button class="btn-outline btn-filter" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>Filter</button>
+                <button class="btn-outline btn-filter" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter"></use></svg>Filter</button>
                 <div class="view-toggle" aria-label="Toggle media view">
                     <button class="view-btn active" type="button" id="mediaListBtn" aria-label="List view" onclick="setMediaView('list')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-view-list"></use></svg></button>
                     <button class="view-btn" type="button" id="mediaGridBtn" aria-label="Grid view" onclick="setMediaView('grid')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-view-grid"></use></svg></button>
@@ -185,9 +186,9 @@
                                     <td>{{ optional($mediaFile->created_at)->format('d M Y') ?? 'Not recorded' }}</td>
                                     <td>
                                         <div class="action-cell">
-                                            <a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}" class="action-btn primary" aria-label="View file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-1-204-views-svg-viewbox-0-0"></use></svg></a>
-                                            <a href="#" class="action-btn" aria-label="Edit file" onclick="event.preventDefault();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-note"></use></svg></a>
-                                            <button class="action-btn danger" type="button" aria-label="Delete file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions-button-class-btn-btn-danger"></use></svg></button>
+                                            <a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}" class="action-btn primary" aria-label="View file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-views"></use></svg></a>
+                                            <a href="#" class="action-btn" aria-label="Edit file" onclick="event.preventDefault();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg></a>
+                                            <button class="action-btn danger" type="button" aria-label="Delete file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions"></use></svg></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -207,8 +208,8 @@
                             $selected = $selectedMediaFile && (int) $selectedMediaFile->id === (int) $mediaFile->id;
                         @endphp
                         <div @class(['media-card', 'selected' => $selected]) role="button" tabindex="0" onclick="toggleMediaCard(this)">
-                            <span class="media-card-check"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg></span>
-                            <div class="media-card-actions"><div class="action-cell media-card-action-cell"><a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}" class="action-btn primary" aria-label="View file" onclick="event.stopPropagation();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-1-204-views-svg-viewbox-0-0"></use></svg></a><a href="#" class="action-btn" aria-label="Edit file" onclick="event.preventDefault(); event.stopPropagation();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-note"></use></svg></a><button class="action-btn danger" type="button" aria-label="Delete file" onclick="event.stopPropagation();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions-button-class-btn-btn-danger"></use></svg></button></div></div>
+                            <span class="media-card-check"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-2"></use></svg></span>
+                            <div class="media-card-actions"><div class="action-cell media-card-action-cell"><a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}" class="action-btn primary" aria-label="View file" onclick="event.stopPropagation();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-views"></use></svg></a><a href="#" class="action-btn" aria-label="Edit file" onclick="event.preventDefault(); event.stopPropagation();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg></a><button class="action-btn danger" type="button" aria-label="Delete file" onclick="event.stopPropagation();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions"></use></svg></button></div></div>
                             <div class="media-card-thumb media-file-{{ $typeClass }}"><svg class="icon"><use href="/assets/icons/sprite.svg#{{ $iconName }}"></use></svg><span>{{ $typeLabel }}</span></div>
                             <div class="media-card-body"><strong>{{ $mediaFile->original_name }}</strong><div><span>{{ $formatBytes($mediaFile->size) }}</span><span>{{ $formatLabel($mediaFile->file_category) }}</span></div><small>{{ $sourceLabel($mediaFile) }}</small></div>
                         </div>
@@ -231,7 +232,7 @@
         <div class="col-main">
             <div class="card card-padded" id="mediaUploadPanel">
                 <div class="verification-detail-head">
-                    <div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>Upload media</div>
+                    <div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-2"></use></svg>Upload media</div>
                     <span class="card-title-count">StoreMediaFileRequest</span>
                 </div>
                 <form method="post" action="{{ route('admin.dashboard.media-files.store') }}" enctype="multipart/form-data" class="row row-cols-1 row-cols-md-2 g-3">

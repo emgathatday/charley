@@ -10,6 +10,12 @@
         $statusTab = request()->query('is_active');
         $statusTabBaseQuery = request()->except(['is_active', 'page']);
         $statusTabRoute = fn (array $query = []) => route('admin.dashboard.library.knowledge-domains.index', array_merge($statusTabBaseQuery, $query));
+        $knowledgeStatCards = [
+            ['label' => 'Active Domains', 'value' => $stats['active'] ?? 0, 'sub' => 'is_active = true'],
+            ['label' => 'Quiz Questions', 'value' => number_format($stats['questions'] ?? 0), 'sub' => 'quiz_questions total'],
+            ['label' => 'Mandatory Domains', 'value' => 0, 'sub' => 'rank promotion core set'],
+            ['label' => 'Below Target', 'value' => $belowTargetCount, 'sub' => 'active count below quiz setting'],
+        ];
     @endphp
 
     @include('templates.components.alert-session')
@@ -23,12 +29,7 @@
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 knowledge-stat-row">
-        <div class="col"><div class="stat-card"><div class="stat-label">Active Domains</div><div class="stat-value">{{ $stats['active'] ?? 0 }}</div><div class="stat-sub">is_active = true</div></div></div>
-        <div class="col"><div class="stat-card"><div class="stat-label">Quiz Questions</div><div class="stat-value">{{ number_format($stats['questions'] ?? 0) }}</div><div class="stat-sub">quiz_questions total</div></div></div>
-        <div class="col"><div class="stat-card"><div class="stat-label">Mandatory Domains</div><div class="stat-value">0</div><div class="stat-sub">rank promotion core set</div></div></div>
-        <div class="col"><div class="stat-card"><div class="stat-label">Below Target</div><div class="stat-value">{{ $belowTargetCount }}</div><div class="stat-sub">active count below quiz setting</div></div></div>
-    </div>
+    {{ \App\Support\AdminStatCards::render(['row_class' => 'row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 knowledge-stat-row', 'cards' => $knowledgeStatCards]) }}
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12 col-xl">
@@ -57,7 +58,7 @@
                     <input type="hidden" name="is_active" value="{{ request('is_active') }}">
                 @endif
                 <button class="btn-outline btn-filter" type="submit">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter"></use></svg>
                     Filter
                 </button>
                 <a href="{{ route('admin.dashboard.library.knowledge-domains.create') }}" class="btn btn-primary btn-sm">Add Domain</a>
@@ -94,8 +95,8 @@
                             <td><span @class(['badge', $domain->is_active ? 'knowledge-badge-active' : 'knowledge-badge-muted'])>{{ $domain->is_active ? 'Active' : 'Inactive' }}</span></td>
                             <td>
                                 <div class="action-cell">
-                                    <a href="{{ route('admin.dashboard.library.knowledge-domains.edit', $domain) }}" class="action-btn primary" aria-label="View domain"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-1-204-views-svg-viewbox-0-0"></use></svg></a>
-                                    <a href="{{ route('admin.dashboard.library.knowledge-domains.edit', $domain) }}" class="action-btn" aria-label="Edit domain"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-note"></use></svg></a>
+                                    <a href="{{ route('admin.dashboard.library.knowledge-domains.edit', $domain) }}" class="action-btn primary" aria-label="View domain"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-views"></use></svg></a>
+                                    <a href="{{ route('admin.dashboard.library.knowledge-domains.edit', $domain) }}" class="action-btn" aria-label="Edit domain"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg></a>
                                 </div>
                             </td>
                         </tr>
