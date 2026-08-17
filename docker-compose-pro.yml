@@ -10,6 +10,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
+      - .:/var/www/html
       - composer-cache:/tmp/composer
     depends_on:
       postgres:
@@ -21,15 +22,13 @@ services:
 
   nginx:
     build:
-        context: ./docker/nginx
-        dockerfile: Dockerfile
+        context: .
+        dockerfile: docker/nginx/Dockerfile
     restart: unless-stopped
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: "1"
     ports:
       - "127.0.0.1:${APP_PORT:-8088}:80"
-    volumes:
-      - .:/var/www/html:ro
     depends_on:
       - app
     networks:
