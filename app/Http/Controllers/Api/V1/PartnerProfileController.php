@@ -6,16 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PartnerProfileRequest;
 use App\Http\Resources\PartnerProfileResource;
 use App\Models\PartnerProfile;
+use App\Services\PartnerProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class PartnerProfileController extends Controller
 {
+    public function __construct(private readonly PartnerProfileService $partnerProfileService) {}
+
     public function index(Request $request): AnonymousResourceCollection
     {
         $query = PartnerProfile::query()
-            ->with(['plantType'])
+            ->with(['logoMedia', 'plantType', 'plantTypes', 'activePartnerSubscription.tier'])
             ->withCount(['products', 'presentations', 'members'])
             ->latest();
 
@@ -26,11 +29,19 @@ class PartnerProfileController extends Controller
         }
 
         if ($request->filled('plant_type_id')) {
-            $query->where('plant_type_id', (int) $request->integer('plant_type_id'));
+            $query->forPlantType((int) $request->integer('plant_type_id'));
+        }
+
+        if ($request->filled('company_type')) {
+            $query->where('company_type', $request->string('company_type')->toString());
         }
 
         if ($request->filled('partner_tier')) {
             $query->where('partner_tier', $request->string('partner_tier')->toString());
+        }
+
+        if ($request->filled('subscription_status')) {
+            $query->where('subscription_status', $request->string('subscription_status')->toString());
         }
 
         if ($request->filled('search')) {
@@ -39,6 +50,7 @@ class PartnerProfileController extends Controller
                 $builder
                     ->where('company_name', 'like', $search)
                     ->orWhere('overview', 'like', $search)
+                    ->orWhere('company_type', 'like', $search)
                     ->orWhere('country', 'like', $search);
             });
         }
@@ -48,9 +60,7 @@ class PartnerProfileController extends Controller
 
     public function store(PartnerProfileRequest $request): PartnerProfileResource
     {
-        $partnerProfile = PartnerProfile::query()->create($request->validated());
-
-        return PartnerProfileResource::make($partnerProfile->load(['plantType']));
+        return PartnerProfileResource::make($this->partnerProfileService->createProfile($request->validated()));
     }
 
     public function show(Request $request, PartnerProfile $partnerProfile): PartnerProfileResource
@@ -59,17 +69,18 @@ class PartnerProfileController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        $this->partnerProfileService->refreshSubscriptionCache($partnerProfile);
+
         return PartnerProfileResource::make(
-            $partnerProfile->load(['plantType', 'products', 'presentations', 'members'])
+            $partnerProfile->load($this->partnerProfileService->profileRelations())
         );
     }
 
     public function update(PartnerProfileRequest $request, PartnerProfile $partnerProfile): PartnerProfileResource
     {
-        $partnerProfile->fill($request->validated());
-        $partnerProfile->save();
-
-        return PartnerProfileResource::make($partnerProfile->load(['plantType']));
+        return PartnerProfileResource::make(
+            $this->partnerProfileService->updateProfile($partnerProfile, $request->validated())
+        );
     }
 
     public function destroy(Request $request, PartnerProfile $partnerProfile): Response
@@ -91,7 +102,7 @@ class PartnerProfileController extends Controller
         ]);
         $partnerProfile->save();
 
-        return PartnerProfileResource::make($partnerProfile);
+        return PartnerProfileResource::make($partnerProfile->load($this->partnerProfileService->profileRelations()));
     }
 
     public function reject(Request $request, PartnerProfile $partnerProfile): PartnerProfileResource
@@ -104,7 +115,7 @@ class PartnerProfileController extends Controller
         ]);
         $partnerProfile->save();
 
-        return PartnerProfileResource::make($partnerProfile);
+        return PartnerProfileResource::make($partnerProfile->load($this->partnerProfileService->profileRelations()));
     }
 
     public function suspend(Request $request, PartnerProfile $partnerProfile): PartnerProfileResource
@@ -114,7 +125,7 @@ class PartnerProfileController extends Controller
         $partnerProfile->fill(['approval_status' => 'suspended']);
         $partnerProfile->save();
 
-        return PartnerProfileResource::make($partnerProfile);
+        return PartnerProfileResource::make($partnerProfile->load($this->partnerProfileService->profileRelations()));
     }
 
     private function ensureAdmin(Request $request): void

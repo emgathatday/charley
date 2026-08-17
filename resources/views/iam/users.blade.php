@@ -1,71 +1,114 @@
-@extends('layouts.master')
+@extends('layouts.rebuild-dashboard')
 
-@section('title', 'IAM Users')
-
-@section('content_header')
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6"><h3 class="mb-0">IAM Users</h3></div>
-                <div class="col-sm-6"><ol class="breadcrumb float-sm-end"><li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li><li class="breadcrumb-item active">Users</li></ol></div>
-            </div>
-        </div>
-    </div>
-@endsection
+@section('title', 'Administrator Management')
 
 @section('content')
-    <div class="app-content">
-        <div class="container-fluid">
-            @if (session('status'))
-                <div class="alert alert-success">{{ session('status') }}</div>
-            @endif
-
-            <div class="row">
-                <div class="col-lg-3 col-6"><div class="small-box text-bg-primary"><div class="inner"><h3>{{ number_format($stats['total_users']) }}</h3><p>Total users</p></div><i class="small-box-icon bi bi-people"></i></div></div>
-                <div class="col-lg-3 col-6"><div class="small-box text-bg-success"><div class="inner"><h3>{{ number_format($stats['verified_professionals']) }}</h3><p>Verified professionals</p></div><i class="small-box-icon bi bi-patch-check"></i></div></div>
-                <div class="col-lg-3 col-6"><div class="small-box text-bg-warning"><div class="inner"><h3>{{ number_format($stats['pending_reviews']) }}</h3><p>Pending reviews</p></div><i class="small-box-icon bi bi-hourglass-split"></i></div></div>
-                <div class="col-lg-3 col-6"><div class="small-box text-bg-danger"><div class="inner"><h3>{{ number_format($stats['security_flags']) }}</h3><p>Security flags</p></div><i class="small-box-icon bi bi-shield-exclamation"></i></div></div>
-            </div>
-
-            <div class="card mb-3">
-                <div class="card-header"><h3 class="card-title">Filters</h3></div>
-                <form class="card-body" method="GET" action="{{ route('admin.dashboard.iam.users') }}">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-4"><label class="form-label" for="search">Search</label><input class="form-control" id="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Name, username or email"></div>
-                        <div class="col-md-2"><label class="form-label" for="role">Role</label><select class="form-select" id="role" name="role"><option value="">All</option>@foreach (['admin', 'unverified_member', 'professional', 'partner'] as $role)<option value="{{ $role }}" @selected(($filters['role'] ?? '') === $role)>{{ $role }}</option>@endforeach</select></div>
-                        <div class="col-md-2"><label class="form-label" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All</option>@foreach (['active', 'suspended', 'frozen'] as $status)<option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ $status }}</option>@endforeach</select></div>
-                        <div class="col-md-2"><label class="form-label" for="verified">Verification</label><select class="form-select" id="verified" name="verified"><option value="">All</option><option value="1" @selected(($filters['verified'] ?? '') === '1')>Verified</option><option value="0" @selected(($filters['verified'] ?? '') === '0')>Pending</option></select></div>
-                        <div class="col-md-2"><button class="btn btn-primary w-100" type="submit"><i class="bi bi-funnel me-1"></i>Apply</button></div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="card">
-                <div class="card-header"><h3 class="card-title">User directory</h3><div class="card-tools"><span class="badge text-bg-secondary">{{ $users->total() }} results</span></div></div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table align-middle mb-0">
-                            <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Verification</th><th>Requests</th><th>Last login</th><th class="text-end">Actions</th></tr></thead>
-                            <tbody>
-                                @forelse ($users as $user)
-                                    <tr>
-                                        <td><a href="{{ route('admin.dashboard.iam.user-security', $user) }}" class="fw-semibold text-decoration-none">{{ trim($user->first_name . ' ' . $user->last_name) ?: $user->username ?: $user->email }}</a><div class="small text-secondary">{{ $user->email }}</div></td>
-                                        <td><span class="badge text-bg-info">{{ $user->role }}</span></td>
-                                        <td><span class="badge {{ $user->status === 'active' ? 'text-bg-success' : 'text-bg-danger' }}">{{ $user->status }}</span></td>
-                                        <td><span class="badge {{ $user->is_verified ? 'text-bg-success' : 'text-bg-warning' }}">{{ $user->is_verified ? 'Verified' : 'Pending' }}</span></td>
-                                        <td>{{ $user->verification_requests_count }}</td>
-                                        <td class="text-nowrap">{{ $user->last_login_at?->format('Y-m-d H:i') ?? 'Never' }}</td>
-                                        <td class="text-end"><div class="btn-group btn-group-sm"><a href="{{ route('admin.dashboard.iam.user-security', $user) }}" class="btn btn-outline-secondary" title="View security"><i class="bi bi-eye" aria-hidden="true"></i></a></div></td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="7" class="text-center text-secondary py-4">No users found.</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer">{{ $users->links() }}</div>
-            </div>
+    <div class="page-head">
+        <div>
+            <h1>Administrator Management</h1>
+            <p>Manage internal admin and moderator accounts, review security posture, and monitor operator access.</p>
         </div>
     </div>
+
+    <x-admin.stat-cards :items="$adminStatCards" />
+
+    <div class="row g-3 align-items-center mb-3">
+        <div class="col-12 col-xl">
+            <x-admin.tab-bar :items="$adminTabBar" />
+        </div>
+        <div class="col-12 col-xl-auto d-flex justify-content-xl-end">
+            <a class="btn-primary" href="{{ route('admin.dashboard.iam.users.create-admin') }}">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-user"></use></svg>
+                Add Administrator
+            </a>
+        </div>
+    </div>
+
+    <div class="bulk-bar" id="bulkBar">
+        <span class="bulk-count" id="bulkCount">0 operators selected</span>
+        <div class="bulk-actions">
+            <button class="bulk-btn suspend" type="button">Suspend</button>
+            <button class="bulk-btn export" type="button">Export Selected</button>
+        </div>
+        <button type="button" data-clear-selection>Clear</button>
+    </div>
+
+    <div class="table-wrap">
+        <form id="adminFilterForm" method="GET" action="{{ route('admin.dashboard.iam.users') }}">
+            <input type="hidden" name="tab" value="{{ $activeTab }}">
+        </form>
+        <div class="table-header">
+            <div>
+                <select class="filter-select" id="bulkActionSelect">
+                    <option value="">Bulk Actions</option>
+                    <option value="suspend">Suspend</option>
+                    <option value="freeze">Freeze</option>
+                    <option value="export">Export</option>
+                </select>
+            </div>
+            <div><button class="btn-apply" type="button" data-bulk-apply>Apply</button></div>
+            <div class="search-form">
+                <div class="search-box">
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-k-overview-a-href-admin-d"></use></svg>
+                    <input form="adminFilterForm" type="text" name="keyword" value="{{ $filters['keyword'] ?? '' }}" placeholder="Search administrators...">
+                </div>
+                <select form="adminFilterForm" class="filter-select js-auto-submit" name="status">
+                    <option value="all" @selected(($filters['status'] ?? 'all') === 'all')>All Statuses</option>
+                    <option value="active" @selected(($filters['status'] ?? 'all') === 'active')>Active</option>
+                    <option value="pending" @selected(($filters['status'] ?? 'all') === 'pending')>Pending Review</option>
+                    <option value="suspended" @selected(($filters['status'] ?? 'all') === 'suspended')>Suspended</option>
+                    <option value="frozen" @selected(($filters['status'] ?? 'all') === 'frozen')>Frozen</option>
+                </select>
+                <button form="adminFilterForm" class="btn-outline btn-filter" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-filter-account-acc"></use></svg>Filter</button>
+            </div>
+            <div class="table-title-block"><div class="table-title">Administrator List</div><div class="table-meta">Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ number_format($users->total()) }} operators</div></div>
+        </div>
+
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>Operator</th>
+                        <th>Account Type</th>
+                        <th>Security</th>
+                        <th>Last Login</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    @forelse ($users as $user)
+                        <tr>
+                            <td><input class="row-check" type="checkbox"></td>
+                            <td><div class="user-cell"><div class="user-avatar"><div class="avatar">{{ $user->initials }}</div></div><div><a class="user-name" href="{{ route('admin.dashboard.iam.users.show', $user) }}">{{ $user->display_name }}</a><div class="user-email">{{ $user->email }}</div></div></div></td>
+                            <td><span class="role-badge {{ $user->role_badge['class'] }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-check"></use></svg>{{ $user->role_badge['label'] }}</span></td>
+                            <td><span class="exp-badge {{ $user->security_class }}">{{ $user->security_label }}</span></td>
+                            <td>{{ $user->last_login_label }}</td>
+                            <td>{{ $user->role_label }}</td>
+                            <td><span class="status-dot {{ $user->status_class }}">{{ $user->status_label }}</span></td>
+                            <td>{{ $user->created_at?->format('d M Y') ?? '-' }}</td>
+                            <td><div class="action-group"><a class="act-btn primary" title="View profile" href="{{ route('admin.dashboard.iam.users.show', $user) }}"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-view-partner-detail"></use></svg></a><button class="act-btn danger" title="Freeze account" type="button" data-freeze-open><svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg></button></div></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="9"><div class="empty-state"><span>No administrator accounts match the selected filters.</span></div></td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <span class="page-info">Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ number_format($users->total()) }} results</span>
+            @if ($users->onFirstPage())<button class="page-btn" type="button" disabled>&lt;</button>@else<a class="page-btn" href="{{ $users->previousPageUrl() }}">&lt;</a>@endif
+            @foreach ($users->getUrlRange(max(1, $users->currentPage() - 1), min($users->lastPage(), $users->currentPage() + 1)) as $page => $url)<a class="page-btn {{ $page === $users->currentPage() ? 'active' : '' }}" href="{{ $url }}">{{ $page }}</a>@endforeach
+            @if ($users->hasMorePages())<a class="page-btn" href="{{ $users->nextPageUrl() }}">&gt;</a>@else<button class="page-btn" type="button" disabled>&gt;</button>@endif
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="freezeModal"><div class="modal"><div class="modal-title">Freeze this account?</div><div class="modal-desc">The operator will immediately lose access to dashboard features. You can unfreeze the account from Account Penalty &amp; Freeze.</div><textarea class="note-area" placeholder="Reason for freeze..."></textarea><div class="modal-actions"><button class="btn-cancel" type="button" data-freeze-close>Cancel</button><button class="btn-danger" type="button" data-freeze-confirm>Freeze Account</button></div></div></div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('assets/js/pages/administrator-management.js') }}"></script>
+@endpush

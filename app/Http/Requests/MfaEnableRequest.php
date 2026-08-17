@@ -14,7 +14,8 @@ class MfaEnableRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'secret' => ['required', 'string', 'min:16', 'max:255'],
+            'secret' => ['nullable', 'string', 'min:16', 'max:255'],
+            'code' => ['required_with:secret', 'string', 'size:6'],
         ];
     }
 }

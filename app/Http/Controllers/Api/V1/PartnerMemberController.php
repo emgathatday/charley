@@ -7,39 +7,45 @@ use App\Http\Requests\PartnerMemberRequest;
 use App\Http\Resources\PartnerMemberResource;
 use App\Models\PartnerMember;
 use App\Models\PartnerProfile;
-use Illuminate\Http\Request;
+use App\Services\PartnerProfileService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class PartnerMemberController extends Controller
 {
+    public function __construct(private readonly PartnerProfileService $partnerProfileService) {}
+
     public function index(PartnerProfile $partnerProfile): AnonymousResourceCollection
     {
-        return PartnerMemberResource::collection($partnerProfile->members()->latest('joined_at')->paginate(20));
+        return PartnerMemberResource::collection(
+            $partnerProfile->members()->with(['user'])->latest('joined_at')->paginate(20)
+        );
     }
 
     public function store(PartnerMemberRequest $request, PartnerProfile $partnerProfile): PartnerMemberResource
     {
-        return PartnerMemberResource::make($partnerProfile->members()->create($request->validated()));
+        return PartnerMemberResource::make(
+            $this->partnerProfileService->createMember($partnerProfile, $request->validated())
+        );
     }
 
     public function show(PartnerProfile $partnerProfile, PartnerMember $partnerMember): PartnerMemberResource
     {
         $this->ensureBelongsToPartner($partnerProfile, $partnerMember);
 
-        return PartnerMemberResource::make($partnerMember);
+        return PartnerMemberResource::make($partnerMember->load(['user']));
     }
 
     public function update(PartnerMemberRequest $request, PartnerProfile $partnerProfile, PartnerMember $partnerMember): PartnerMemberResource
     {
         $this->ensureBelongsToPartner($partnerProfile, $partnerMember);
-        $partnerMember->fill($request->validated());
-        $partnerMember->save();
 
-        return PartnerMemberResource::make($partnerMember);
+        return PartnerMemberResource::make(
+            $this->partnerProfileService->updateMember($partnerMember, $request->validated())
+        );
     }
 
-    public function destroy(Request $request, PartnerProfile $partnerProfile, PartnerMember $partnerMember): Response
+    public function destroy(PartnerProfile $partnerProfile, PartnerMember $partnerMember): Response
     {
         if ($request->user()?->role !== 'admin') {
             abort(Response::HTTP_FORBIDDEN);

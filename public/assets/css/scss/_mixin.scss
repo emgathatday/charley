@@ -1,0 +1,30 @@
+@use 'vars';
+
+$breakpoints: (
+  "desktop": '(max-width: 1367px)',
+  "tablet" : '(max-width: 1200px)',
+  "mobile" : '(max-width: 767px)',
+  "small"  : '(max-width: 480px)'
+);
+
+@mixin respond-to($breakpoint) {
+  @each $key, $value in $breakpoints {
+    @if $key == $breakpoint {
+      @media only screen and #{$value} { @content; }
+    }
+  }
+}
+
+@function color($group, $tone: default) {
+  @if map-has-key(vars.$colors, $group) {
+    $group-value: map-get(vars.$colors, $group);
+
+    @if type-of($group-value) == 'map' {
+      @return map-get($group-value, $tone);
+    } @else {
+      @return $group-value;
+    }
+  }
+
+  @return null;
+}

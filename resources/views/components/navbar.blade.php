@@ -43,7 +43,7 @@
                     </li>
                     <li class="user-footer">
                         @if ($currentUser)
-                            <a href="{{ route('admin.dashboard.iam.user-security', $currentUser) }}" class="btn btn-outline-secondary">Profile</a>
+                            <a href="{{ route('admin.dashboard.iam.account-penalty-freeze.show', $currentUser) }}" class="btn btn-outline-secondary">Profile</a>
                         @else
                             <a href="#" class="btn btn-outline-secondary disabled" aria-disabled="true">Profile</a>
                         @endif

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\EngineerProfile;
 use App\Models\SearchIndexEntry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,7 +15,6 @@ class SearchIndexEntryFactory extends Factory
 
     public function definition(): array
     {
-        $context = $this->faker->randomElement(['expert_directory', 'partner_directory', 'global']);
         $tags = $this->faker->randomElements([
             'process safety',
             'maintenance',
@@ -26,8 +26,8 @@ class SearchIndexEntryFactory extends Factory
         ], $this->faker->numberBetween(2, 4));
 
         return [
-            'indexable_type' => \App\Models\EngineerProfile::class,
-            'indexable_id' => EngineerProfileFactory::new(),
+            'indexable_type' => EngineerProfile::class,
+            'indexable_id' => EngineerProfile::factory(),
             'searchable_text' => implode(' ', [
                 $this->faker->jobTitle(),
                 $this->faker->company(),
@@ -35,13 +35,17 @@ class SearchIndexEntryFactory extends Factory
                 $this->faker->sentence(),
             ]),
             'structured_data' => [
-                'tags' => $tags,
-                'company' => $this->faker->company(),
-                'position' => $this->faker->jobTitle(),
-                'experience_years' => $this->faker->numberBetween(1, 35),
+                'profile_type' => EngineerProfile::class,
+                'experience_years' => $this->faker->numberBetween(0, 35),
+                'expertise_tags' => $tags,
+                'searchable_keywords' => $this->faker->randomElements(['turnaround', 'operator training', 'asset integrity'], 2),
                 'job_availability' => $this->faker->randomElement(['open', 'not_looking', 'open_to_opportunities']),
+                'is_discoverable' => true,
+                'plant_type_ids' => [],
+                'plant_types' => [],
+                'primary_plant_type_id' => null,
             ],
-            'search_context' => $context,
+            'search_context' => 'expert_directory',
             'is_discoverable' => true,
             'last_indexed_at' => $this->faker->dateTimeBetween('-1 month'),
         ];
@@ -51,6 +55,7 @@ class SearchIndexEntryFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'is_discoverable' => true,
+            'structured_data' => array_merge($attributes['structured_data'] ?? [], ['is_discoverable' => true]),
         ]);
     }
 
@@ -58,6 +63,7 @@ class SearchIndexEntryFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'is_discoverable' => false,
+            'structured_data' => array_merge($attributes['structured_data'] ?? [], ['is_discoverable' => false]),
         ]);
     }
 
@@ -65,13 +71,7 @@ class SearchIndexEntryFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'search_context' => 'expert_directory',
-        ]);
-    }
-
-    public function partnerDirectory(): static
-    {
-        return $this->state(fn (array $attributes): array => [
-            'search_context' => 'partner_directory',
+            'indexable_type' => EngineerProfile::class,
         ]);
     }
 

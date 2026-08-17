@@ -6,9 +6,10 @@ use App\Jobs\DispatchLibraryItemProcessingJob;
 use App\Jobs\DispatchLibraryRankPromotionSweepJob;
 use App\Jobs\DispatchVerificationReminderNotifications;
 use App\Jobs\ExpireStaleFeedCacheJob;
+use App\Jobs\Qa\GenerateMonthlyLeaderboardSnapshot;
 use App\Jobs\RebuildPersonalizedFeedCachesJob;
-use App\Jobs\RefreshHomepageFeedPriorityEffectsJob;
 use App\Jobs\RebuildProfileSearchIndexJob;
+use App\Jobs\RefreshHomepageFeedPriorityEffectsJob;
 use App\Jobs\SyncHandbookArticleVectors;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -125,3 +126,13 @@ Schedule::call(function (): void {
         ]);
     }
 })->daily()->name('library-quiz-cooldown-cleanup')->withoutOverlapping();
+// Generate the previous month's QA leaderboard snapshot from point transactions.
+Schedule::call(function (): void {
+    try {
+        GenerateMonthlyLeaderboardSnapshot::dispatch(now()->subMonthNoOverflow()->format('Y-m'))->onQueue('qa');
+    } catch (Throwable $exception) {
+        Log::error('Unable to dispatch QA monthly leaderboard snapshot schedule.', [
+            'message' => $exception->getMessage(),
+        ]);
+    }
+})->monthlyOn(1, '00:30')->name('qa-monthly-leaderboard-snapshot')->withoutOverlapping();

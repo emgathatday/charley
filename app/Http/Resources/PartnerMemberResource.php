@@ -16,6 +16,7 @@ class PartnerMemberResource extends JsonResource
             'member_role' => $this->member_role,
             'joined_at' => $this->joined_at,
             'status' => $this->status,
+            'user' => $this->whenLoaded('user'),
         ];
     }
 }

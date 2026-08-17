@@ -17,6 +17,7 @@ class ConnectionResource extends JsonResource
             'receiver' => new UserResource($this->whenLoaded('receiver')),
             'status' => $this->status,
             'initiated_context' => $this->initiated_context,
+            'can_message' => $this->status === 'accepted',
             'declined_at' => $this->declined_at,
             'accepted_at' => $this->accepted_at,
             'blocked_at' => $this->blocked_at,

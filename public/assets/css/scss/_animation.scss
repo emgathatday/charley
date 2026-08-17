@@ -1,0 +1,19 @@
+@mixin animate($name, $duration: .2s, $timing: ease, $delay: 0s, $iteration: 1, $direction: normal, $fill: both) {
+  animation: $name $duration $timing $delay $iteration $direction $fill;
+}
+
+@mixin pulse($duration: 2s) {
+  animation: pulse $duration infinite;
+}
+
+@mixin fade-in($duration: .15s) {
+  animation: fadeIn $duration ease both;
+}
+
+@mixin dropdown-in($duration: .15s) {
+  animation: dropdownIn $duration ease both;
+}
+
+@mixin spin($duration: .8s) {
+  animation: spin $duration linear infinite;
+}

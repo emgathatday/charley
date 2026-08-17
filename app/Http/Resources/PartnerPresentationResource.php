@@ -26,6 +26,9 @@ class PartnerPresentationResource extends JsonResource
             'rejection_reason' => $this->rejection_reason,
             'is_ai_trainable' => $this->is_ai_trainable,
             'file_media_id' => $this->file_media_id,
+            'plant_type' => PlantTypeResource::make($this->whenLoaded('plantType')),
+            'file_media' => MediaFileResource::make($this->whenLoaded('fileMedia')),
+            'approver' => $this->whenLoaded('approver'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

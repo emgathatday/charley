@@ -24,6 +24,8 @@ class PartnerMember extends Model
     protected function casts(): array
     {
         return [
+            'partner_id' => 'integer',
+            'user_id' => 'integer',
             'joined_at' => 'datetime',
         ];
     }

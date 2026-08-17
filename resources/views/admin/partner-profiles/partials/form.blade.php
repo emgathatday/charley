@@ -1,147 +1,46 @@
 @php
     $selectedUser = old('user_id', $partnerProfile?->user_id);
-    $selectedPlantType = old('plant_type_id', $partnerProfile?->plant_type_id);
     $selectedLogo = old('logo_media_id', $partnerProfile?->logo_media_id);
+    $selectedPlantTypes = collect(old('plant_type_ids', $partnerProfile?->plantTypes?->pluck('id')->all() ?? []))->map(fn ($id) => (string) $id)->all();
+    $primaryPlantType = old('primary_plant_type_id', $partnerProfile?->plantTypes?->firstWhere('pivot.is_primary', true)?->id);
+    $keywords = collect(old('keywords', $partnerProfile?->keywords ?? []))->values();
+    $references = collect(old('references', $partnerProfile?->references ?? []))->values();
 @endphp
 
-<div class="row g-3">
-    <div class="col-md-6">
-        <label for="user_id" class="form-label">User</label>
-        <select id="user_id" class="form-select @error('user_id') is-invalid @enderror" name="user_id" required>
-            <option value="">Select user</option>
-            @foreach ($users as $user)
-                <option value="{{ $user->id }}" @selected((string) $selectedUser === (string) $user->id)>
-                    {{ trim($user->first_name.' '.$user->last_name) ?: $user->username }} ({{ $user->email }})
-                </option>
-            @endforeach
-        </select>
-        @error('user_id')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-        @if ($users->isEmpty())
-            <div class="form-text text-warning">No available users without a partner profile.</div>
-        @endif
+<div class="form-card" data-scope="partner-profile-static-smockup">
+    <div class="form-card-header"><div class="form-card-icon indigo"><i class="bi bi-diagram-3"></i></div><div><div class="form-card-title">Company Type & Plant Coverage</div><div class="form-card-sub">Controls for the latest Partner Profile spec. TODO: bind subscription-tier permissions after Module 04 UI contract is confirmed.</div></div></div>
+    <div class="form-card-body">
+        <div class="row g-3">
+            <div class="col-md-4"><label for="company_type" class="form-label">Company Type</label><select id="company_type" class="form-select @error('company_type') is-invalid @enderror" name="company_type"><option value="">Select type</option>@foreach ($companyTypes as $companyType)<option value="{{ $companyType }}" @selected(old('company_type', $partnerProfile?->company_type) === $companyType)>{{ $companyType }}</option>@endforeach</select>@error('company_type')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-md-4"><label for="primary_plant_type_id" class="form-label">Primary Plant Type</label><select id="primary_plant_type_id" class="form-select @error('primary_plant_type_id') is-invalid @enderror" name="primary_plant_type_id"><option value="">None</option>@foreach ($plantTypes as $plantType)<option value="{{ $plantType->id }}" @selected((string) $primaryPlantType === (string) $plantType->id)>{{ $plantType->name }}</option>@endforeach</select>@error('primary_plant_type_id')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-md-4"><label for="logo_media_id" class="form-label">Logo Media</label><select id="logo_media_id" class="form-select @error('logo_media_id') is-invalid @enderror" name="logo_media_id"><option value="">None</option>@foreach ($mediaFiles as $mediaFile)<option value="{{ $mediaFile->id }}" @selected((string) $selectedLogo === (string) $mediaFile->id)>#{{ $mediaFile->id }} {{ $mediaFile->original_name }}</option>@endforeach</select>@error('logo_media_id')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-12"><div class="form-label">Plant Type Multi-Selection</div><div class="tier-strip columns-3" id="plant-type-picker" data-hook="partner-profile-plant-type-pivot">@foreach ($plantTypes as $plantType)<label class="tier-info-card"><div class="tier-info-head"><span class="name">{{ $plantType->name }}</span><input type="checkbox" name="plant_type_ids[]" value="{{ $plantType->id }}" @checked(in_array((string) $plantType->id, $selectedPlantTypes, true))></div><ul><li>Saved through partner_profile_plant_type</li><li>Supports primary and sort_order metadata</li></ul></label>@endforeach</div>@error('plant_type_ids')<div class="text-danger small mt-2">{{ $message }}</div>@enderror</div>
+        </div>
     </div>
+</div>
 
-    <div class="col-md-6">
-        <label for="company_name" class="form-label">Company Name</label>
-        <input id="company_name" class="form-control @error('company_name') is-invalid @enderror" name="company_name" value="{{ old('company_name', $partnerProfile?->company_name) }}" required>
-        @error('company_name')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
+<div class="form-card">
+    <div class="form-card-header"><div class="form-card-icon blue"><i class="bi bi-building"></i></div><div><div class="form-card-title">Company Information</div><div class="form-card-sub">Partner identity fields from create-new-partner and partner-edit staging</div></div></div>
+    <div class="form-card-body">
+        <div class="row g-3">
+            <div class="col-md-6"><label for="user_id" class="form-label">Owner User</label><select id="user_id" class="form-select @error('user_id') is-invalid @enderror" name="user_id" required><option value="">Select user</option>@foreach ($users as $user)<option value="{{ $user->id }}" @selected((string) $selectedUser === (string) $user->id)>{{ trim($user->first_name.' '.$user->last_name) ?: $user->username }} ({{ $user->email }})</option>@endforeach</select>@error('user_id')<div class="invalid-feedback">{{ $message }}</div>@enderror @if ($users->isEmpty())<div class="form-text text-warning">No available users without a partner profile.</div>@endif</div>
+            <div class="col-md-6"><label for="company_name" class="form-label">Company Name</label><input id="company_name" class="form-control @error('company_name') is-invalid @enderror" name="company_name" value="{{ old('company_name', $partnerProfile?->company_name ?? 'Blue Harbor Process Technologies') }}" required>@error('company_name')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-md-4"><label for="approval_status" class="form-label">Approval Status</label><select id="approval_status" class="form-select @error('approval_status') is-invalid @enderror" name="approval_status" required>@foreach (['pending','approved','rejected','suspended'] as $status)<option value="{{ $status }}" @selected(old('approval_status', $partnerProfile?->approval_status ?? 'pending') === $status)>{{ ucfirst($status) }}</option>@endforeach</select>@error('approval_status')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-md-4"><label for="layout_template" class="form-label">Landing Layout</label><select id="layout_template" class="form-select @error('layout_template') is-invalid @enderror" name="layout_template" required>@foreach (['layout_1','layout_2','layout_3'] as $layout)<option value="{{ $layout }}" @selected(old('layout_template', $partnerProfile?->layout_template ?? 'layout_1') === $layout)>{{ $layout }}</option>@endforeach</select>@error('layout_template')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-md-4"><label for="feed_highlight_enabled" class="form-label">Feed Highlight</label><select id="feed_highlight_enabled" class="form-select @error('feed_highlight_enabled') is-invalid @enderror" name="feed_highlight_enabled" required><option value="1" @selected((string) old('feed_highlight_enabled', (int) ($partnerProfile?->feed_highlight_enabled ?? true)) === '1')>Enabled</option><option value="0" @selected((string) old('feed_highlight_enabled', (int) ($partnerProfile?->feed_highlight_enabled ?? true)) === '0')>Disabled</option></select>@error('feed_highlight_enabled')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-12"><label for="overview" class="form-label">Overview</label><textarea id="overview" class="form-control @error('overview') is-invalid @enderror" name="overview" rows="4">{{ old('overview', $partnerProfile?->overview ?? 'Static demo partner profile for process technologies, catalyst packages, and technical presentations.') }}</textarea>@error('overview')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+        </div>
     </div>
+</div>
 
-    <div class="col-md-4">
-        <label for="partner_tier" class="form-label">Partner Tier</label>
-        <select id="partner_tier" class="form-select @error('partner_tier') is-invalid @enderror" name="partner_tier">
-            <option value="">None</option>
-            @foreach (['gold','diamond','platinum'] as $tier)
-                <option value="{{ $tier }}" @selected(old('partner_tier', $partnerProfile?->partner_tier) === $tier)>{{ ucfirst($tier) }}</option>
-            @endforeach
-        </select>
-        @error('partner_tier')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="plant_type_id" class="form-label">Plant Type</label>
-        <select id="plant_type_id" class="form-select @error('plant_type_id') is-invalid @enderror" name="plant_type_id">
-            <option value="">None</option>
-            @foreach ($plantTypes as $plantType)
-                <option value="{{ $plantType->id }}" @selected((string) $selectedPlantType === (string) $plantType->id)>{{ $plantType->name }}</option>
-            @endforeach
-        </select>
-        @error('plant_type_id')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="logo_media_id" class="form-label">Logo Media</label>
-        <select id="logo_media_id" class="form-select @error('logo_media_id') is-invalid @enderror" name="logo_media_id">
-            <option value="">None</option>
-            @foreach ($mediaFiles as $mediaFile)
-                <option value="{{ $mediaFile->id }}" @selected((string) $selectedLogo === (string) $mediaFile->id)>#{{ $mediaFile->id }} {{ $mediaFile->original_name }}</option>
-            @endforeach
-        </select>
-        @error('logo_media_id')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-12">
-        <label for="overview" class="form-label">Overview</label>
-        <textarea id="overview" class="form-control @error('overview') is-invalid @enderror" name="overview" rows="4">{{ old('overview', $partnerProfile?->overview) }}</textarea>
-        @error('overview')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="contact_email" class="form-label">Contact Email</label>
-        <input id="contact_email" type="email" class="form-control @error('contact_email') is-invalid @enderror" name="contact_email" value="{{ old('contact_email', $partnerProfile?->contact_email) }}">
-        @error('contact_email')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="phone" class="form-label">Phone</label>
-        <input id="phone" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone', $partnerProfile?->phone) }}">
-        @error('phone')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="country" class="form-label">Country</label>
-        <input id="country" class="form-control @error('country') is-invalid @enderror" name="country" value="{{ old('country', $partnerProfile?->country) }}">
-        @error('country')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="website" class="form-label">Website</label>
-        <input id="website" type="url" class="form-control @error('website') is-invalid @enderror" name="website" value="{{ old('website', $partnerProfile?->website) }}" placeholder="https://example.com">
-        @error('website')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="layout_template" class="form-label">Layout</label>
-        <select id="layout_template" class="form-select @error('layout_template') is-invalid @enderror" name="layout_template" required>
-            @foreach (['layout_1','layout_2','layout_3'] as $layout)
-                <option value="{{ $layout }}" @selected(old('layout_template', $partnerProfile?->layout_template ?? 'layout_1') === $layout)>{{ $layout }}</option>
-            @endforeach
-        </select>
-        @error('layout_template')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="approval_status" class="form-label">Status</label>
-        <select id="approval_status" class="form-select @error('approval_status') is-invalid @enderror" name="approval_status" required>
-            @foreach (['pending','approved','rejected','suspended'] as $status)
-                <option value="{{ $status }}" @selected(old('approval_status', $partnerProfile?->approval_status ?? 'pending') === $status)>{{ ucfirst($status) }}</option>
-            @endforeach
-        </select>
-        @error('approval_status')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-4">
-        <label for="feed_highlight_enabled" class="form-label">Feed Highlight</label>
-        <select id="feed_highlight_enabled" class="form-select @error('feed_highlight_enabled') is-invalid @enderror" name="feed_highlight_enabled" required>
-            <option value="1" @selected((string) old('feed_highlight_enabled', (int) ($partnerProfile?->feed_highlight_enabled ?? true)) === '1')>Enabled</option>
-            <option value="0" @selected((string) old('feed_highlight_enabled', (int) ($partnerProfile?->feed_highlight_enabled ?? true)) === '0')>Disabled</option>
-        </select>
-        @error('feed_highlight_enabled')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
+<div class="form-card">
+    <div class="form-card-header"><div class="form-card-icon emerald"><i class="bi bi-envelope"></i></div><div><div class="form-card-title">Contact & Display</div><div class="form-card-sub">Public contact fields and confirmed JSON arrays. TODO: replace simple inputs with chip editor when component contract is finalized.</div></div></div>
+    <div class="form-card-body"><div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Keywords</label><div class="row g-2">@for ($i = 0; $i < 3; $i++)<div class="col-md-4"><input class="form-control @error('keywords.'.$i) is-invalid @enderror" name="keywords[]" value="{{ $keywords[$i] ?? '' }}" placeholder="Keyword {{ $i + 1 }}">@error('keywords.'.$i)<div class="invalid-feedback">{{ $message }}</div>@enderror</div>@endfor</div></div>
+        <div class="col-md-6"><label class="form-label">References</label><div class="row g-2">@for ($i = 0; $i < 2; $i++)<div class="col-md-8"><input class="form-control @error('references.'.$i.'.project') is-invalid @enderror" name="references[{{ $i }}][project]" value="{{ data_get($references[$i] ?? [], 'project') }}" placeholder="Project"></div><div class="col-md-4"><input class="form-control @error('references.'.$i.'.year') is-invalid @enderror" name="references[{{ $i }}][year]" value="{{ data_get($references[$i] ?? [], 'year') }}" placeholder="Year"></div>@endfor</div></div>
+        <div class="col-md-3"><label for="contact_email" class="form-label">Contact Email</label><input id="contact_email" type="email" class="form-control @error('contact_email') is-invalid @enderror" name="contact_email" value="{{ old('contact_email', $partnerProfile?->contact_email ?? 'partner@example.com') }}">@error('contact_email')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+        <div class="col-md-3"><label for="phone" class="form-label">Phone</label><input id="phone" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone', $partnerProfile?->phone ?? '+84 28 5555 0101') }}">@error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+        <div class="col-md-3"><label for="country" class="form-label">Country</label><input id="country" class="form-control @error('country') is-invalid @enderror" name="country" value="{{ old('country', $partnerProfile?->country ?? 'Vietnam') }}">@error('country')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+        <div class="col-md-3"><label for="website" class="form-label">Website</label><input id="website" type="url" class="form-control @error('website') is-invalid @enderror" name="website" value="{{ old('website', $partnerProfile?->website ?? 'https://example.com') }}">@error('website')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+    </div></div>
 </div>

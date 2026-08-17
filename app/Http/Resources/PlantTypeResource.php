@@ -12,6 +12,8 @@ class PlantTypeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $pivot = $this->resource->getRelationValue('pivot');
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -19,6 +21,10 @@ class PlantTypeResource extends JsonResource
             'description' => $this->description,
             'is_active' => $this->is_active,
             'sort_order' => $this->sort_order,
+            'profile_pivot' => $this->when($pivot !== null, fn (): array => [
+                'is_primary' => (bool) $pivot->is_primary,
+                'sort_order' => (int) $pivot->sort_order,
+            ]),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

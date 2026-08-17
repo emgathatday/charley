@@ -26,6 +26,9 @@ class PartnerProduct extends Model
     protected function casts(): array
     {
         return [
+            'partner_id' => 'integer',
+            'image_media_id' => 'integer',
+            'datasheet_media_id' => 'integer',
             'keywords' => 'array',
             'is_active' => 'boolean',
         ];

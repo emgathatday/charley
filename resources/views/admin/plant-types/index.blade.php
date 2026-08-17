@@ -1,104 +1,105 @@
-﻿@extends('layouts.master')
+@extends('layouts.rebuild-dashboard')
 
 @section('title', 'Plant Types')
 
-@section('content_header')
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-sm-6">
-                    <h1 class="mb-0">Plant Types</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.iam.users') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Plant Types</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
 @section('content')
-    <div class="app-content">
-        <div class="container-fluid">
-            @include('templates.components.alert-session')
+    @include('templates.components.alert-session')
 
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-                <div>
-                    <p class="text-body-secondary mb-0">Manage shared plant taxonomy for partner profiles and platform content.</p>
-                </div>
-                <a href="{{ route('admin.dashboard.plant-types.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i>
-                    Create Plant Type
-                </a>
-            </div>
+    @php
+        $plantTypeRows = $plantTypes->getCollection();
+        $plantTypeStatCards = [
+            ['class' => 'blue', 'label' => 'Total Plant Types', 'value' => number_format($plantTypes->total()), 'sub' => 'Catalog records'],
+            ['class' => 'green', 'label' => 'Active', 'value' => number_format($plantTypeRows->where('is_active', true)->count()), 'sub' => 'Visible on this page'],
+            ['class' => 'amber', 'label' => 'Lib. Items', 'value' => number_format($plantTypeRows->sum('library_items_count')), 'sub' => 'Current page links'],
+            ['label' => 'K. Domains', 'value' => number_format($plantTypeRows->sum('knowledge_domains_count')), 'sub' => 'Current page links'],
+        ];
+    @endphp
 
-            <div class="card card-outline card-primary">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h3 class="card-title mb-0">Plant Type List</h3>
-                    <span class="badge text-bg-light">{{ $plantTypes->total() }} total</span>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Slug</th>
-                                    <th>Description</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Sort</th>
-                                    <th class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($plantTypes as $plantType)
-                                    <tr>
-                                        <td class="fw-semibold">{{ $plantType->name }}</td>
-                                        <td><code>{{ $plantType->slug }}</code></td>
-                                        <td class="text-body-secondary">
-                                            {{ $plantType->description ? Str::limit($plantType->description, 90) : 'No description' }}
-                                        </td>
-                                        <td>
-                                            <span class="badge {{ $plantType->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">
-                                                {{ $plantType->is_active ? 'Active' : 'Inactive' }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">{{ $plantType->sort_order }}</td>
-                                        <td class="text-end">
-                                            <a href="{{ route('admin.dashboard.plant-types.edit', $plantType) }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-pencil-square me-1"></i>
-                                                Edit
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            <div class="text-center py-5">
-                                                <i class="bi bi-diagram-3 display-6 text-body-secondary"></i>
-                                                <h2 class="h5 mt-3 mb-1">No plant types yet</h2>
-                                                <p class="text-body-secondary mb-3">Create the first plant category to enable shared taxonomy.</p>
-                                                <a href="{{ route('admin.dashboard.plant-types.create') }}" class="btn btn-primary">
-                                                    <i class="bi bi-plus-circle me-1"></i>
-                                                    Create Plant Type
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                @if ($plantTypes->hasPages())
-                    <div class="card-footer">
-                        {{ $plantTypes->links() }}
-                    </div>
-                @endif
-            </div>
+    <div class="page-head">
+        <div>
+            <div class="page-title">Plant Types &amp; PFD Configuration</div>
+            <div class="page-subtitle">Manage the Plant Type catalog used by library content, questions, services, partner profiles and AI workflows.</div>
+        </div>
+        <div class="page-head-actions">
+            <button class="btn btn-outline" type="button">Export</button>
+            <a href="{{ route('admin.dashboard.plant-types.create') }}" class="btn btn-primary">
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-2"></use></svg>
+                Add Plant Type
+            </a>
         </div>
     </div>
+
+    <x-admin.stat-cards :items="$plantTypeStatCards" />
+
+    @php
+        $plantTypeTabBar = [
+            'bar_class' => 'tab-bar plant-type-tab-bar mb-3',
+            'tabs' => [
+                ['type' => 'button', 'label' => 'Plant Types', 'active' => true],
+                ['type' => 'button', 'label' => 'Linked Content'],
+                ['type' => 'button', 'label' => 'PFD Usage'],
+                ['type' => 'button', 'label' => 'Audit'],
+            ],
+        ];
+    @endphp
+    <x-admin.tab-bar :items="$plantTypeTabBar" />
+
+    <div class="plant-type-grid">
+        @forelse ($plantTypes as $plantType)
+            @php
+                $toneClass = ['plant-type-tone-amber', 'plant-type-tone-green', 'plant-type-tone-blue'][$loop->index % 3];
+                $updatedLabel = optional($plantType->updated_at)->format('Y-m-d') ?? optional($plantType->created_at)->format('Y-m-d') ?? 'Not recorded';
+            @endphp
+            <div @class(['plant-type-card', 'plant-type-card-inactive' => ! $plantType->is_active])>
+                <div class="plant-type-card-top">
+                    <div @class(['plant-type-icon', $plantType->is_active ? $toneClass : 'plant-type-tone-muted'])>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library"></use></svg>
+                    </div>
+                    <div>
+                        <div class="plant-type-name">{{ $plantType->name }}</div>
+                        <div class="plant-type-slug">Slug: {{ $plantType->slug }}</div>
+                        <span @class(['badge', $plantType->is_active ? 'plant-type-badge-active' : 'plant-type-badge-muted'])>
+                            {{ $plantType->is_active ? 'Active' : 'Inactive' }}
+                        </span>
+                    </div>
+                </div>
+                <p class="plant-type-desc">{{ $plantType->description ?: 'No description has been added for this plant type yet.' }}</p>
+                <div class="plant-type-meta">
+                    <span>Sort order: {{ $plantType->sort_order }}</span>
+                    <span>Updated: {{ $updatedLabel }}</span>
+                </div>
+                <div class="plant-type-metrics">
+                    <div><strong>{{ $plantType->library_items_count ?? 0 }}</strong><span>Lib. Items</span></div>
+                    <div><strong>{{ $plantType->questions_count ?? 0 }}</strong><span>Q&amp;A</span></div>
+                    <div><strong>{{ $plantType->knowledge_domains_count ?? 0 }}</strong><span>K. Domains</span></div>
+                </div>
+                <div class="plant-type-actions">
+                    <a href="{{ route('admin.dashboard.plant-types.edit', $plantType) }}" class="btn btn-ghost btn-sm">View/Edit</a>
+                </div>
+            </div>
+        @empty
+            <div class="plant-type-card">
+                <div class="plant-type-card-top">
+                    <div class="plant-type-icon plant-type-tone-muted">
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-library"></use></svg>
+                    </div>
+                    <div>
+                        <div class="plant-type-name">No plant types yet</div>
+                        <div class="plant-type-slug">Create the first Plant Type catalog record.</div>
+                        <span class="badge plant-type-badge-muted">Empty</span>
+                    </div>
+                </div>
+                <p class="plant-type-desc">Plant types connect library content, questions, services, partner profiles and AI workflows.</p>
+                <div class="plant-type-actions">
+                    <a href="{{ route('admin.dashboard.plant-types.create') }}" class="btn btn-primary btn-sm">Add Plant Type</a>
+                </div>
+            </div>
+        @endforelse
+    </div>
+
+    @if ($plantTypes->hasPages())
+        <div class="table-foot">
+            {{ $plantTypes->links() }}
+        </div>
+    @endif
 @endsection

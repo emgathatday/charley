@@ -27,8 +27,12 @@ class PartnerProfileRequest extends FormRequest
             'company_name' => [$required, 'string', 'max:255'],
             'logo_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'overview' => ['nullable', 'string'],
-            'partner_tier' => ['nullable', 'in:gold,diamond,platinum'],
+            'partner_tier' => ['nullable', 'in:free,silver,gold,platinum,diamond'],
             'plant_type_id' => ['nullable', 'integer', 'exists:plant_types,id'],
+            'company_type' => ['nullable', 'string', 'max:255'],
+            'plant_type_ids' => ['nullable', 'array'],
+            'plant_type_ids.*' => ['integer', 'exists:plant_types,id'],
+            'primary_plant_type_id' => ['nullable', 'integer', 'exists:plant_types,id'],
             'keywords' => ['nullable', 'array'],
             'references' => ['nullable', 'array'],
             'contact_email' => ['nullable', 'email', 'max:255'],
@@ -40,8 +44,7 @@ class PartnerProfileRequest extends FormRequest
             'social_links' => ['nullable', 'array'],
             'layout_template' => ['sometimes', 'in:layout_1,layout_2,layout_3'],
             'feed_highlight_enabled' => ['sometimes', 'boolean'],
-            'subscription_status' => ['sometimes', 'string', 'max:255'],
-            'subscription_expires_at' => ['nullable', 'date'],
+
             'approval_status' => ['sometimes', 'in:pending,approved,rejected,suspended'],
             'verified_at' => ['nullable', 'date'],
         ];

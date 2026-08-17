@@ -19,6 +19,8 @@ class KnowledgeDomainRequest extends FormRequest
             'description' => ['sometimes', 'nullable', 'string'],
             'status' => ['sometimes', 'in:active,archived'],
             'plant_type_id' => ['sometimes', 'nullable', 'integer', 'exists:plant_types,id'],
+            'plant_type_ids' => ['sometimes', 'nullable', 'array'],
+            'plant_type_ids.*' => ['integer', 'distinct', 'exists:plant_types,id'],
             'icon' => ['sometimes', 'nullable', 'string', 'max:255'],
             'is_active' => ['sometimes', 'boolean'],
             'sort_order' => ['sometimes', 'integer'],

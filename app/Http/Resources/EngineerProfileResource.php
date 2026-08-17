@@ -16,7 +16,9 @@ class EngineerProfileResource extends JsonResource
             'photo_media_id' => $this->photo_media_id,
             'bio' => $this->bio,
             'current_company' => $this->current_company,
+            'current_institution' => $this->current_institution,
             'position' => $this->position,
+            'field_of_study' => $this->field_of_study,
             'plant_name' => $this->plant_name,
             'experience_years' => $this->experience_years,
             'education' => $this->education,
@@ -33,11 +35,21 @@ class EngineerProfileResource extends JsonResource
             'is_discoverable' => $this->is_discoverable,
             'privacy_settings' => $this->privacy_settings,
             'notification_preferences' => $this->notification_preferences,
+            'verification_intent' => $this->verification_intent,
             'verification_document_media_id' => $this->verification_document_media_id,
             'verification_renewed_at' => $this->verification_renewed_at,
             'renewal_reminder_sent_at' => $this->renewal_reminder_sent_at,
+            'plant_types' => PlantTypeResource::collection($this->whenLoaded('plantTypes')),
+            'primary_plant_type_id' => $this->whenLoaded('plantTypes', fn () => $this->primaryPlantTypeId()),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
+    }
+
+    private function primaryPlantTypeId(): ?int
+    {
+        return $this->plantTypes
+            ->first(fn ($plantType): bool => (bool) $plantType->pivot?->is_primary)
+            ?->id;
     }
 }

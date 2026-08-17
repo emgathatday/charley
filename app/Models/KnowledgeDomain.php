@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KnowledgeDomain extends Model
@@ -35,6 +36,15 @@ class KnowledgeDomain extends Model
     public function plantType(): BelongsTo
     {
         return $this->belongsTo(PlantType::class);
+    }
+
+    public function plantTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(PlantType::class, 'knowledge_domain_plant_type')
+            ->withPivot(['is_primary', 'sort_order'])
+            ->withTimestamps()
+            ->orderByPivot('sort_order')
+            ->orderBy('plant_types.name');
     }
 
     public function createdBy(): BelongsTo

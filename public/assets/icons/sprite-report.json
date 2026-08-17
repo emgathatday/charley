@@ -1,0 +1,742 @@
+{
+  "source": [
+    "rebuild/assets/icons/svg-source"
+  ],
+  "mode": "repair-and-rename",
+  "output": "rebuild/assets/icons",
+  "svgSourceCount": 195,
+  "symbolCount": 195,
+  "renamedIconCount": 173,
+  "renamedIcons": [
+    {
+      "from": "icon-div-class-file-name-oncl-2",
+      "to": "icon-div-class-file-name-oncl"
+    },
+    {
+      "from": "icon-div-class-file-name-oncl",
+      "to": "icon-div-class-file-name-oncl-2"
+    },
+    {
+      "from": "icon-admin-actions-button-class-btn-btn-danger",
+      "to": "icon-actions-button"
+    },
+    {
+      "from": "icon-active-sessions-svg-viewbox-0-0",
+      "to": "icon-active-sessions"
+    },
+    {
+      "from": "icon-activity-log-svg-viewbox-0-0",
+      "to": "icon-activity-log"
+    },
+    {
+      "from": "icon-add-another-document-div-clas",
+      "to": "icon-add-another-document-clas"
+    },
+    {
+      "from": "icon-add-partner-manually-div-class-stat-icon",
+      "to": "icon-add-partner-manually"
+    },
+    {
+      "from": "icon-ahmed-al-rashidi-ahmed-r-sabic-ops-sa",
+      "to": "icon-ahmed-al-rashidi-ahmed-r-sabic-o"
+    },
+    {
+      "from": "icon-ai-dataset-review-path",
+      "to": "icon-ai-dataset"
+    },
+    {
+      "from": "icon-ai-usage-monitor-charley-calculator",
+      "to": "icon-ai-usage"
+    },
+    {
+      "from": "icon-ammonex-plant-services-admin-ammonexplants-in-di",
+      "to": "icon-ammonex-plant-services-ammonexpl"
+    },
+    {
+      "from": "icon-announcement-management-charley-library-svg",
+      "to": "icon-announcements"
+    },
+    {
+      "from": "icon-anonymous-identity-visible-to-admin",
+      "to": "icon-anonymous-identity-visible"
+    },
+    {
+      "from": "icon-approved-3-library-articles",
+      "to": "icon-approved-library-articles"
+    },
+    {
+      "from": "icon-33-archived-div-class-hero-live",
+      "to": "icon-archive"
+    },
+    {
+      "from": "icon-archive",
+      "to": "icon-archive-2"
+    },
+    {
+      "from": "icon-assign-to-library",
+      "to": "icon-assign-library"
+    },
+    {
+      "from": "icon-audit-trail-all-admin-actions",
+      "to": "icon-audit-trail"
+    },
+    {
+      "from": "icon-back-to-account-penalty-and",
+      "to": "icon-back-account-penalty"
+    },
+    {
+      "from": "icon-back-to-sign-in-having",
+      "to": "icon-back-sign-in-having"
+    },
+    {
+      "from": "icon-basf-catalysts-published-a-new",
+      "to": "icon-basf-catalysts-published-new"
+    },
+    {
+      "from": "icon-subscription-and-billing",
+      "to": "icon-billing"
+    },
+    {
+      "from": "icon-business-email-domain-verification-confirmed",
+      "to": "icon-business-email-domain-verificati"
+    },
+    {
+      "from": "icon-charley-calculator-tools-charley-services",
+      "to": "icon-calculator"
+    },
+    {
+      "from": "icon-carbonsim-solutions-info-carbonsim-io",
+      "to": "icon-carbonsim-solutions-info-carbons"
+    },
+    {
+      "from": "icon-certification-authenticity-pe-license-number",
+      "to": "icon-certification-authenticity-pe-li"
+    },
+    {
+      "from": "icon-change-password-choose-a-strong",
+      "to": "icon-change-password-choose-strong"
+    },
+    {
+      "from": "icon-charley-admin-console-svg-viewbox-0",
+      "to": "icon-charley-logo"
+    },
+    {
+      "from": "icon-apply",
+      "to": "icon-check"
+    },
+    {
+      "from": "icon-create-user-svg-viewbox-0-0",
+      "to": "icon-check-2"
+    },
+    {
+      "from": "icon-account-penalty-and-freeze-pa",
+      "to": "icon-chevron-right"
+    },
+    {
+      "from": "icon-chrome-macos-ventura-this",
+      "to": "icon-chrome-macos-ventura"
+    },
+    {
+      "from": "icon-click-to-upload-or-drag",
+      "to": "icon-click-upload-drag"
+    },
+    {
+      "from": "icon-9-verifications-exceeded-the-48h",
+      "to": "icon-clock"
+    },
+    {
+      "from": "icon-company-work-email-verified-ops-cobalt-compressi",
+      "to": "icon-company-work-email-verified-ops"
+    },
+    {
+      "from": "icon-connections-28-connected-professionals",
+      "to": "icon-connections-connected-profession"
+    },
+    {
+      "from": "icon-content-approval-queue-24-svg",
+      "to": "icon-content-approval"
+    },
+    {
+      "from": "icon-danger-zone-div-class-set",
+      "to": "icon-danger-zone"
+    },
+    {
+      "from": "icon-dashboard-path-d-m14-5-17h9-5a2-2",
+      "to": "icon-dashboard"
+    },
+    {
+      "from": "icon-diamond-diamond-partner-licensors",
+      "to": "icon-diamond-diamond-partner-licensor"
+    },
+    {
+      "from": "icon-diamond-and-gold-partner-posts",
+      "to": "icon-diamond-gold-partner-posts"
+    },
+    {
+      "from": "icon-diamond-verified-div-class-profile-meta-i",
+      "to": "icon-diamond-verified"
+    },
+    {
+      "from": "icon-div-class-file-name-onclick-openpreview-video-primary-",
+      "to": "icon-div-class-file-name-oncl"
+    },
+    {
+      "from": "icon-div-class-file-name-onclick-openpreview-other-catalyst",
+      "to": "icon-div-class-file-name-oncl-2"
+    },
+    {
+      "from": "icon-document-getelementbyid-popuptitle-textcontent-name-do",
+      "to": "icon-document"
+    },
+    {
+      "from": "icon-download-pdf-div-class-modal-head-ico",
+      "to": "icon-download-pdf"
+    },
+    {
+      "from": "icon-edit-profile-display-name",
+      "to": "icon-edit"
+    },
+    {
+      "from": "icon-edit-profile-div-c",
+      "to": "icon-edit-2"
+    },
+    {
+      "from": "icon-edit-profile-r",
+      "to": "icon-edit-3"
+    },
+    {
+      "from": "icon-edit-user",
+      "to": "icon-edit-4"
+    },
+    {
+      "from": "icon-internal-admin-notes-not-visible",
+      "to": "icon-edit-5"
+    },
+    {
+      "from": "icon-send-email-svg-viewbox-0-0",
+      "to": "icon-email"
+    },
+    {
+      "from": "icon-send-email",
+      "to": "icon-email-2"
+    },
+    {
+      "from": "icon-monthly-expert-recognition-svg-viewbox-0",
+      "to": "icon-expert-recognition"
+    },
+    {
+      "from": "icon-expertise-and-plant-focus-svg",
+      "to": "icon-expertise-plant-focus"
+    },
+    {
+      "from": "icon-input-type-checkbox-id",
+      "to": "icon-eye"
+    },
+    {
+      "from": "icon-feed-preview-how-this-will",
+      "to": "icon-feed-preview-how-will"
+    },
+    {
+      "from": "icon-ferticore-equipment-ltd-verify-ferticore-uk",
+      "to": "icon-ferticore-equipment-ltd-verify-f"
+    },
+    {
+      "from": "icon-audit-log-pat",
+      "to": "icon-file"
+    },
+    {
+      "from": "icon-company-registration-certificate-verified-10",
+      "to": "icon-file-2"
+    },
+    {
+      "from": "icon-disable-copy-paste-block-text-selection-in",
+      "to": "icon-file-3"
+    },
+    {
+      "from": "icon-2-files-svg-viewbox-0-0",
+      "to": "icon-files"
+    },
+    {
+      "from": "icon-filter-account-acc",
+      "to": "icon-filter"
+    },
+    {
+      "from": "icon-filter-all-partners-div-class-toolbar-meta-sub",
+      "to": "icon-filter-2"
+    },
+    {
+      "from": "icon-general-svg-viewbox-0-0-24",
+      "to": "icon-general"
+    },
+    {
+      "from": "icon-generate-share-this-with-the",
+      "to": "icon-generate-share"
+    },
+    {
+      "from": "icon-31-gold-partners-mid-tier-vendors",
+      "to": "icon-gold-partners-mid-tier-vendors"
+    },
+    {
+      "from": "icon-grid-view",
+      "to": "icon-grid"
+    },
+    {
+      "from": "icon-view-grid",
+      "to": "icon-grid-2"
+    },
+    {
+      "from": "icon-gulf-syngas-consulting-apply-gulfsyngas-ae",
+      "to": "icon-gulf-syngas-consulting-apply-gul"
+    },
+    {
+      "from": "icon-haldor-technologies-as-info-haldortech-no",
+      "to": "icon-haldor-technologies-as-info-hald"
+    },
+    {
+      "from": "icon-host-webinars-or-events-line",
+      "to": "icon-host-webinars-events-line"
+    },
+    {
+      "from": "icon-catalyst-loading-diagram-png-div-style-f",
+      "to": "icon-image"
+    },
+    {
+      "from": "icon-company-logo-and-branding-displayed",
+      "to": "icon-image-2"
+    },
+    {
+      "from": "icon-indocat-group-pte-ltd-partners-indocatgroup-com",
+      "to": "icon-indocat-group-pte-ltd-partners-i"
+    },
+    {
+      "from": "icon-james-carter-petrotechvn-com-path-d-m22-16-92v3a",
+      "to": "icon-james-carter-petrotechvn-com"
+    },
+    {
+      "from": "icon-5-jul-2026-14-32-circle",
+      "to": "icon-jul"
+    },
+    {
+      "from": "icon-library-and-pfd-content-path",
+      "to": "icon-library"
+    },
+    {
+      "from": "icon-library-and-pfd-content",
+      "to": "icon-library-2"
+    },
+    {
+      "from": "icon-linkedin-company-profile-linkedin-com-company-co",
+      "to": "icon-linkedin-company-profile-linkedi"
+    },
+    {
+      "from": "icon-linkedin-company-profile-matched-3",
+      "to": "icon-linkedin-company-profile-matched"
+    },
+    {
+      "from": "icon-list-view",
+      "to": "icon-list"
+    },
+    {
+      "from": "icon-account-penalty-and-freeze-3",
+      "to": "icon-lock"
+    },
+    {
+      "from": "icon-mark-for-review-svg-viewbox-0",
+      "to": "icon-mark-review"
+    },
+    {
+      "from": "icon-marking-as-safe-removes-this",
+      "to": "icon-marking-as-safe-removes"
+    },
+    {
+      "from": "icon-message-partner-svg-viewbox-0-0",
+      "to": "icon-message-partner"
+    },
+    {
+      "from": "icon-mila-kessler-business-development-manager",
+      "to": "icon-mila-kessler-business-developmen"
+    },
+    {
+      "from": "icon-mila-kessler-synvexcatalysts-com-svg-viewbox-0-0",
+      "to": "icon-mila-kessler-synvexcatalysts-com"
+    },
+    {
+      "from": "icon-div-class-stat-strip-style-grid-template-columns",
+      "to": "icon-minus"
+    },
+    {
+      "from": "icon-secured-access",
+      "to": "icon-minus-2"
+    },
+    {
+      "from": "icon-moderation-and-reports-path-d-m14",
+      "to": "icon-moderation"
+    },
+    {
+      "from": "icon-5-this-month-svg-viewbox-0",
+      "to": "icon-month"
+    },
+    {
+      "from": "icon-38-this-month-professionals-847",
+      "to": "icon-month-professionals"
+    },
+    {
+      "from": "icon-new-low-chrome-shift-catalyst-now",
+      "to": "icon-new-low-chrome-shift-catalyst-no"
+    },
+    {
+      "from": "icon-new-support-ticket-user-or",
+      "to": "icon-new-support-ticket-user"
+    },
+    {
+      "from": "icon-3-new-this-week-div",
+      "to": "icon-new-week"
+    },
+    {
+      "from": "icon-3-new-this-week-all",
+      "to": "icon-new-week-all"
+    },
+    {
+      "from": "icon-nitrochem-polska-s-a-registration-nitrochem-pl",
+      "to": "icon-nitrochem-polska-s-registration"
+    },
+    {
+      "from": "icon-admin-notes",
+      "to": "icon-notes"
+    },
+    {
+      "from": "icon-open-support-thread-svg-viewbox-0",
+      "to": "icon-open-support-thread"
+    },
+    {
+      "from": "icon-order-and-quotation-request-3",
+      "to": "icon-orders"
+    },
+    {
+      "from": "icon-partner-management-path-d-m9-12",
+      "to": "icon-partners"
+    },
+    {
+      "from": "icon-14-pending-review-approval",
+      "to": "icon-pending-review-approval"
+    },
+    {
+      "from": "icon-31-10-555-0142-pa",
+      "to": "icon-phone"
+    },
+    {
+      "from": "icon-84-90-123-4567-svg",
+      "to": "icon-phone-2"
+    },
+    {
+      "from": "icon-plant-focus-hydrogen-svg-viewbox-0",
+      "to": "icon-plant-focus-hydrogen"
+    },
+    {
+      "from": "icon-23-platinum-partners-manufacturing-plants",
+      "to": "icon-platinum-partners-manufacturing"
+    },
+    {
+      "from": "icon-add-note",
+      "to": "icon-plus"
+    },
+    {
+      "from": "icon-34-posted-anonymously-div-class-filte",
+      "to": "icon-posted-anonymously"
+    },
+    {
+      "from": "icon-publish-now-div-cl",
+      "to": "icon-publish-now-cl"
+    },
+    {
+      "from": "icon-qanda-management-rect-x-3-y-4",
+      "to": "icon-qa"
+    },
+    {
+      "from": "icon-3-questions-attached",
+      "to": "icon-questions-attached"
+    },
+    {
+      "from": "icon-quick-links-a-href-class-btn",
+      "to": "icon-quick-links-btn"
+    },
+    {
+      "from": "icon-quiz-and-question-bank-charley",
+      "to": "icon-quiz-bank"
+    },
+    {
+      "from": "icon-quiz-and-question-bank",
+      "to": "icon-quiz-bank-2"
+    },
+    {
+      "from": "icon-record-manual-payment-log-an",
+      "to": "icon-record-manual-payment-log"
+    },
+    {
+      "from": "icon-reject-application-internal-reviewer-note",
+      "to": "icon-reject-application-internal-revi"
+    },
+    {
+      "from": "icon-rejected-partner-announcement-techgas",
+      "to": "icon-rejected-partner-announcement-te"
+    },
+    {
+      "from": "icon-renew-subscription-extend-current-term",
+      "to": "icon-renew-subscription-extend-curren"
+    },
+    {
+      "from": "icon-replace-pfd",
+      "to": "icon-replace-pdf"
+    },
+    {
+      "from": "icon-reply-to-answer",
+      "to": "icon-reply-answer"
+    },
+    {
+      "from": "icon-rotterdam-netherlands-svg-viewbox-0-0",
+      "to": "icon-rotterdam-netherlands"
+    },
+    {
+      "from": "icon-save-as-draft-keep-it",
+      "to": "icon-save"
+    },
+    {
+      "from": "icon-save-as-draft-svg-viewbox-0",
+      "to": "icon-save-2"
+    },
+    {
+      "from": "icon-save-changes-div-class-modal-overlay-id-modalove",
+      "to": "icon-save-changes"
+    },
+    {
+      "from": "icon-schedule-publish-automatically-at-a",
+      "to": "icon-schedule-publish-automatically"
+    },
+    {
+      "from": "icon-schedule-publish-automatically-a",
+      "to": "icon-schedule-publish-automatically"
+    },
+    {
+      "from": "icon-input-id-connsearchinput-type-text-placeholder-s",
+      "to": "icon-search"
+    },
+    {
+      "from": "icon-k-overview-a-href-admin-d",
+      "to": "icon-search-2"
+    },
+    {
+      "from": "icon-search-keywords-and-specializations-help",
+      "to": "icon-search-3"
+    },
+    {
+      "from": "icon-searchable-keywords-used-by-the",
+      "to": "icon-search-4"
+    },
+    {
+      "from": "icon-section-name-is-required-technical-sub-title",
+      "to": "icon-section-name-is-required-technic"
+    },
+    {
+      "from": "icon-security-and-access-svg-viewbox-0",
+      "to": "icon-security-access"
+    },
+    {
+      "from": "icon-send-invoice-email-invoice-to",
+      "to": "icon-send-invoice-email-invoice"
+    },
+    {
+      "from": "icon-send-and-request-info",
+      "to": "icon-send-request-info"
+    },
+    {
+      "from": "icon-service-management-circle-cx-9-cy-21",
+      "to": "icon-service"
+    },
+    {
+      "from": "icon-set-years-of-industry-experience",
+      "to": "icon-set-years-industry-experience"
+    },
+    {
+      "from": "icon-platform-settings-ai-assistant-operational",
+      "to": "icon-settings"
+    },
+    {
+      "from": "icon-platform-settings-ai-assistant",
+      "to": "icon-settings-2"
+    },
+    {
+      "from": "icon-platform-settings",
+      "to": "icon-settings-3"
+    },
+    {
+      "from": "icon-penalty-history-3-actions-recorded",
+      "to": "icon-shield"
+    },
+    {
+      "from": "icon-admin-featured-star",
+      "to": "icon-star"
+    },
+    {
+      "from": "icon-support-inbox-5-users-and",
+      "to": "icon-support-inbox"
+    },
+    {
+      "from": "icon-suspend-svg-viewbox-0-0-24",
+      "to": "icon-suspend"
+    },
+    {
+      "from": "icon-synvex-catalysts-svg-viewbox-0-0",
+      "to": "icon-synvex-catalysts"
+    },
+    {
+      "from": "icon-synvex-catalysts-com-manufactures-and-supplies-s",
+      "to": "icon-synvex-catalysts-com-manufacture"
+    },
+    {
+      "from": "icon-synvex-catalysts-gmbh-registration-synvexcatalys",
+      "to": "icon-synvex-catalysts-gmbh-registrati"
+    },
+    {
+      "from": "icon-temporary-suspension-7",
+      "to": "icon-temporary-suspension"
+    },
+    {
+      "from": "icon-tier-permission-comparison-selected-tier",
+      "to": "icon-tier-permission-comparison-selec"
+    },
+    {
+      "from": "icon-top-expertise-areas-svg-viewbox-0",
+      "to": "icon-top-expertise-areas"
+    },
+    {
+      "from": "icon-delete",
+      "to": "icon-trash"
+    },
+    {
+      "from": "icon-remove-partner-account",
+      "to": "icon-trash-2"
+    },
+    {
+      "from": "icon-tube-integrity-catalyst-performance-and",
+      "to": "icon-tube-integrity-catalyst-performa"
+    },
+    {
+      "from": "icon-un-publish-question-svg-viewbox-0-0",
+      "to": "icon-un-publish-question"
+    },
+    {
+      "from": "icon-unnamed-1",
+      "to": "icon-unnamed"
+    },
+    {
+      "from": "icon-click-to-upload-cv-company",
+      "to": "icon-upload"
+    },
+    {
+      "from": "icon-primary-contact-the-main-point",
+      "to": "icon-user"
+    },
+    {
+      "from": "icon-user-k-habib-flagged-for",
+      "to": "icon-user-k-habib-flagged"
+    },
+    {
+      "from": "icon-add-user-3-users-sel",
+      "to": "icon-users"
+    },
+    {
+      "from": "icon-add-user",
+      "to": "icon-users-2"
+    },
+    {
+      "from": "icon-my-profile-path-d-m",
+      "to": "icon-users-3"
+    },
+    {
+      "from": "icon-user-management-12-rect-x-2",
+      "to": "icon-users-4"
+    },
+    {
+      "from": "icon-user-management-12-svg-viewbox-0",
+      "to": "icon-users-5"
+    },
+    {
+      "from": "icon-profile-verification-queue-5-svg",
+      "to": "icon-verification-queue"
+    },
+    {
+      "from": "icon-preview-approve-reject",
+      "to": "icon-video"
+    },
+    {
+      "from": "icon-96-videos-webinar-recordings-div-class-stat-icon",
+      "to": "icon-videos-webinar-recordings"
+    },
+    {
+      "from": "icon-view-profile-svg-viewbox-0-0",
+      "to": "icon-view-profile"
+    },
+    {
+      "from": "icon-1-204-views-svg-viewbox-0-0",
+      "to": "icon-views"
+    },
+    {
+      "from": "icon-apply-watermark-user-name-on-pdf",
+      "to": "icon-watermark"
+    },
+    {
+      "from": "icon-weekly-theme-management-path-d-m3",
+      "to": "icon-weekly-theme"
+    },
+    {
+      "from": "icon-button-class-btn-btn-ghost-style-flex-1-onclick-",
+      "to": "icon-x"
+    },
+    {
+      "from": "icon-move-to-trash-d",
+      "to": "icon-x-2"
+    },
+    {
+      "from": "icon-14-yrs-experience-p",
+      "to": "icon-yrs-experience-p"
+    }
+  ],
+  "filesUpdated": 45,
+  "mapMissingInSprite": [],
+  "spriteExtraVsMap": [],
+  "idMappings": [
+    {
+      "slug": "icon-replace-pdf",
+      "oldId": "grid",
+      "newId": "icon-replace-pdf-grid"
+    }
+  ],
+  "specialIconsNotCurrentColor": [],
+  "needReview": [
+    "Review generated icon name: icon-unnamed"
+  ],
+  "finalReadableRename": [
+    {
+      "from": "icon-charley-path",
+      "to": "icon-menu"
+    },
+    {
+      "from": "icon-div-class-file-name-oncl",
+      "to": "icon-layout"
+    },
+    {
+      "from": "icon-div-class-file-name-oncl-2",
+      "to": "icon-play"
+    },
+    {
+      "from": "icon-path-d-m11-4h4a2-2-0",
+      "to": "icon-eye"
+    },
+    {
+      "from": "icon-svg-viewbox-0-0-24-24",
+      "to": "icon-network"
+    }
+  ],
+  "filesUpdatedByReadableRename": 73,
+  "filesUpdatedByMapConsistency": 41
+}

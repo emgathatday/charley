@@ -15,6 +15,7 @@ class SearchIndexEntryResource extends JsonResource
             'indexable_id' => $this->indexable_id,
             'searchable_text' => $this->searchable_text,
             'structured_data' => $this->structured_data,
+            'profile' => new EngineerProfileResource($this->whenLoaded('indexable')),
             'search_context' => $this->search_context,
             'is_discoverable' => $this->is_discoverable,
             'last_indexed_at' => $this->last_indexed_at,

@@ -17,6 +17,8 @@ class KnowledgeDomainResource extends JsonResource
             'status' => $this->status,
             'created_by' => $this->created_by,
             'plant_type_id' => $this->plant_type_id,
+            'plant_type_ids' => $this->whenLoaded('plantTypes', fn () => $this->plantTypes->pluck('id')->values()),
+            'plant_types' => PlantTypeResource::collection($this->whenLoaded('plantTypes')),
             'icon' => $this->icon,
             'total_question_count' => $this->total_question_count,
             'is_active' => $this->is_active,

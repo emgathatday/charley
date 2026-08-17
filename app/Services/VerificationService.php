@@ -31,19 +31,38 @@ class VerificationService
     public function approve(VerificationRequest $request, User $reviewer, ?string $adminNotes = null): VerificationRequest
     {
         return DB::transaction(function () use ($request, $reviewer, $adminNotes): VerificationRequest {
+            $request->loadMissing('user');
+            $now = now();
+
             $request->forceFill([
                 'status' => 'approved',
                 'admin_notes' => $adminNotes,
                 'reviewed_by' => $reviewer->id,
-                'reviewed_at' => now(),
+                'reviewed_at' => $now,
             ])->save();
 
-            $request->user->forceFill([
-                'role' => 'professional',
-                'is_verified' => true,
-                'verified_at' => now(),
-                'verification_expires_at' => now()->addYear(),
-            ])->save();
+            if ($request->user->role === 'partner') {
+                $request->user->forceFill([
+                    'is_verified' => true,
+                    'verified_at' => $now,
+                    'verification_expires_at' => null,
+                ])->save();
+
+                DB::table('partner_profiles')
+                    ->where('user_id', $request->user_id)
+                    ->update([
+                        'approval_status' => 'approved',
+                        'verified_at' => $now,
+                        'updated_at' => $now,
+                    ]);
+            } else {
+                $request->user->forceFill([
+                    'role' => 'professional',
+                    'is_verified' => true,
+                    'verified_at' => $now,
+                    'verification_expires_at' => $now->copy()->addYear(),
+                ])->save();
+            }
 
             UserActivityFeed::create([
                 'user_id' => $request->user_id,
@@ -51,10 +70,12 @@ class VerificationService
                 'subject_type' => VerificationRequest::class,
                 'subject_id' => $request->id,
                 'is_public' => false,
-                'created_at' => now(),
+                'created_at' => $now,
             ]);
 
-            $this->scheduleRenewalReminders($request->user);
+            if ($request->user->role === 'professional') {
+                $this->scheduleRenewalReminders($request->user);
+            }
 
             return $request;
         });

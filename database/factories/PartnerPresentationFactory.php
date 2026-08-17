@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\MediaFile;
 use App\Models\PartnerPresentation;
 use App\Models\PartnerProfile;
 use App\Models\PlantType;
@@ -45,5 +46,20 @@ class PartnerPresentationFactory extends Factory
             'approved_at' => now(),
             'rejection_reason' => null,
         ]);
+    }
+
+    public function rejected(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => 'rejected',
+            'approved_at' => null,
+            'rejection_reason' => fake()->sentence(),
+            'is_ai_trainable' => false,
+        ]);
+    }
+
+    public function withFile(MediaFile $mediaFile): static
+    {
+        return $this->state(fn (): array => ['file_media_id' => $mediaFile->id]);
     }
 }

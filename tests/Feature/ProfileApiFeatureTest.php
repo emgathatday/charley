@@ -3,11 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\EngineerProfile;
-use App\Models\SearchIndexEntry;
-use App\Models\UnverifiedMemberProfile;
 use App\Models\User;
 use Database\Factories\EngineerProfileFactory;
-use Database\Factories\UnverifiedMemberProfileFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -101,7 +98,7 @@ class ProfileApiFeatureTest extends TestCase
             ->assertJsonPath('data.user_id', $user->id)
             ->assertJsonPath('data.verification_intent', true);
 
-        $this->assertDatabaseHas('unverified_member_profiles', [
+        $this->assertDatabaseHas('engineer_profiles', [
             'user_id' => $user->id,
             'current_institution' => 'Technical College',
         ]);
@@ -161,7 +158,7 @@ class ProfileApiFeatureTest extends TestCase
     public function test_hidden_profile_returns_forbidden_to_other_user(): void
     {
         $viewer = User::factory()->professional()->create();
-        $profile = UnverifiedMemberProfileFactory::new()->hiddenFromDirectory()->create();
+        $profile = EngineerProfileFactory::new()->forUnverifiedMember()->hiddenFromDirectory()->create();
 
         $this->actingAs($viewer)
             ->getJson("/api/v1/profiles/unverified-members/{$profile->id}")

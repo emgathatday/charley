@@ -19,12 +19,14 @@ class DatabaseSeeder extends Seeder
             IamSeeder::class,
             PlantTypeSeeder::class,
             ProfileSeeder::class,
-            PartnerProfileSeeder::class,
             SubscriptionSeeder::class,
+            PartnerProfileSeeder::class,
             AdminOperationsSeeder::class,
             TaxonomySeeder::class,
             FeedCmsSeeder::class,
             LibrarySeeder::class,
+            QaReputationSeeder::class,
+            QaBackendDashboardSeeder::class,
             DemoPartnerDashboardSeeder::class,
         ]);
     }

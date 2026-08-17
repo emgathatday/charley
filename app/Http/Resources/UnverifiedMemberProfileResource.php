@@ -28,8 +28,17 @@ class UnverifiedMemberProfileResource extends JsonResource
             'linkedin_url' => $this->linkedin_url,
             'job_availability' => $this->job_availability,
             'verification_intent' => $this->verification_intent,
+            'plant_types' => PlantTypeResource::collection($this->whenLoaded('plantTypes')),
+            'primary_plant_type_id' => $this->whenLoaded('plantTypes', fn () => $this->primaryPlantTypeId()),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
+    }
+
+    private function primaryPlantTypeId(): ?int
+    {
+        return $this->plantTypes
+            ->first(fn ($plantType): bool => (bool) $plantType->pivot?->is_primary)
+            ?->id;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class EngineerProfile extends Model
 {
@@ -13,7 +14,9 @@ class EngineerProfile extends Model
         'photo_media_id',
         'bio',
         'current_company',
+        'current_institution',
         'position',
+        'field_of_study',
         'plant_name',
         'experience_years',
         'education',
@@ -30,6 +33,7 @@ class EngineerProfile extends Model
         'is_discoverable',
         'privacy_settings',
         'notification_preferences',
+        'verification_intent',
         'verification_document_media_id',
         'verification_renewed_at',
         'renewal_reminder_sent_at',
@@ -49,6 +53,7 @@ class EngineerProfile extends Model
             'is_discoverable' => 'boolean',
             'privacy_settings' => 'array',
             'notification_preferences' => 'array',
+            'verification_intent' => 'boolean',
             'verification_renewed_at' => 'datetime',
             'renewal_reminder_sent_at' => 'datetime',
         ];
@@ -69,6 +74,20 @@ class EngineerProfile extends Model
         return $this->belongsTo(MediaFile::class, 'verification_document_media_id');
     }
 
+    public function plantTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(PlantType::class, 'engineer_profile_plant_type')
+            ->withPivot(['is_primary', 'sort_order'])
+            ->withTimestamps()
+            ->orderByPivot('sort_order')
+            ->orderBy('plant_types.name');
+    }
+
+    public function primaryPlantTypes(): BelongsToMany
+    {
+        return $this->plantTypes()->wherePivot('is_primary', true);
+    }
+
     public function scopeDiscoverable(Builder $query): Builder
     {
         return $query->where('is_discoverable', true);
@@ -77,5 +96,10 @@ class EngineerProfile extends Model
     public function scopeOpenToWork(Builder $query): Builder
     {
         return $query->whereIn('job_availability', ['open', 'open_to_opportunities']);
+    }
+
+    public function scopeForPlantType(Builder $query, int|string $plantTypeId): Builder
+    {
+        return $query->whereHas('plantTypes', fn (Builder $query) => $query->where('plant_types.id', $plantTypeId));
     }
 }
