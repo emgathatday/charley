@@ -80,11 +80,17 @@
         </div>
     @endif
 
-    <div class="tab-bar qa-tab-bar weekly-theme-tab-bar">
-        <button type="button" class="tab-btn qa-tab active" data-tab="upcoming" onclick="switchThemeTab(this)">Upcoming <span class="tab-count qa-tab-count">{{ $upcomingThemes->count() }}</span></button>
-        <button type="button" class="tab-btn qa-tab" data-tab="active" onclick="switchThemeTab(this)">Active <span class="tab-count qa-tab-count">{{ $activeThemes->count() }}</span></button>
-        <button type="button" class="tab-btn qa-tab" data-tab="archived" onclick="switchThemeTab(this)">Archived <span class="tab-count qa-tab-count">{{ $archivedThemes->count() }}</span></button>
-    </div>
+    @php
+        $weeklyThemeTabBar = [
+            'bar_class' => 'tab-bar qa-tab-bar weekly-theme-tab-bar',
+            'tabs' => [
+                ['type' => 'button', 'class' => 'tab-btn qa-tab', 'count_class' => 'tab-count qa-tab-count', 'label' => 'Upcoming', 'count' => $upcomingThemes->count(), 'active' => true, 'attributes' => ['data-tab' => 'upcoming', 'onclick' => 'switchThemeTab(this)']],
+                ['type' => 'button', 'class' => 'tab-btn qa-tab', 'count_class' => 'tab-count qa-tab-count', 'label' => 'Active', 'count' => $activeThemes->count(), 'attributes' => ['data-tab' => 'active', 'onclick' => 'switchThemeTab(this)']],
+                ['type' => 'button', 'class' => 'tab-btn qa-tab', 'count_class' => 'tab-count qa-tab-count', 'label' => 'Archived', 'count' => $archivedThemes->count(), 'attributes' => ['data-tab' => 'archived', 'onclick' => 'switchThemeTab(this)']],
+            ],
+        ];
+    @endphp
+    <x-admin.tab-bar :items="$weeklyThemeTabBar" />
 
     <div class="theme-list-wrap" id="upcomingList">
         @forelse ($upcomingThemes as $theme)

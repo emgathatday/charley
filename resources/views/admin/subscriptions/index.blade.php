@@ -58,17 +58,23 @@
         </div>
     </div>
 
-    {{ \App\Support\AdminStatCards::render($subscriptionStatCards) }}
+    <x-admin.stat-cards :items="$subscriptionStatCards" />
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12">
-            <div class="tab-bar subscription-tab-bar">
-                <a class="tab-btn {{ empty($filters['status']) && empty($filters['visibility']) ? 'active' : '' }}" href="{{ route('admin.dashboard.subscriptions.index') }}">Tất cả <span class="tab-count">{{ number_format($totalPlans) }}</span></a>
-                <a class="tab-btn {{ ($filters['status'] ?? '') === 'active' ? 'active' : '' }}" href="{{ route('admin.dashboard.subscriptions.index', ['status' => 'active']) }}">Active <span class="tab-count">{{ number_format($activePlans) }}</span></a>
-                <a class="tab-btn {{ ($filters['status'] ?? '') === 'inactive' ? 'active' : '' }}" href="{{ route('admin.dashboard.subscriptions.index', ['status' => 'inactive']) }}">Inactive <span class="tab-count">{{ number_format($totalPlans - $activePlans) }}</span></a>
-                <a class="tab-btn {{ ($filters['visibility'] ?? '') === 'public' ? 'active' : '' }}" href="{{ route('admin.dashboard.subscriptions.index', ['visibility' => 'public']) }}">Public <span class="tab-count">{{ number_format($publicPlans) }}</span></a>
-                <a class="tab-btn {{ ($filters['visibility'] ?? '') === 'admin_only' ? 'active' : '' }}" href="{{ route('admin.dashboard.subscriptions.index', ['visibility' => 'admin_only']) }}">Admin-only <span class="tab-count">{{ number_format($adminOnlyPlans) }}</span></a>
-            </div>
+            @php
+                $subscriptionTabBar = [
+                    'bar_class' => 'tab-bar subscription-tab-bar',
+                    'tabs' => [
+                        ['label' => 'Tất cả', 'count' => $totalPlans, 'active' => empty($filters['status']) && empty($filters['visibility']), 'href' => route('admin.dashboard.subscriptions.index')],
+                        ['label' => 'Active', 'count' => $activePlans, 'active' => ($filters['status'] ?? '') === 'active', 'href' => route('admin.dashboard.subscriptions.index', ['status' => 'active'])],
+                        ['label' => 'Inactive', 'count' => $totalPlans - $activePlans, 'active' => ($filters['status'] ?? '') === 'inactive', 'href' => route('admin.dashboard.subscriptions.index', ['status' => 'inactive'])],
+                        ['label' => 'Public', 'count' => $publicPlans, 'active' => ($filters['visibility'] ?? '') === 'public', 'href' => route('admin.dashboard.subscriptions.index', ['visibility' => 'public'])],
+                        ['label' => 'Admin-only', 'count' => $adminOnlyPlans, 'active' => ($filters['visibility'] ?? '') === 'admin_only', 'href' => route('admin.dashboard.subscriptions.index', ['visibility' => 'admin_only'])],
+                    ],
+                ];
+            @endphp
+            <x-admin.tab-bar :items="$subscriptionTabBar" />
         </div>
     </div>
 

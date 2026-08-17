@@ -1,36 +1,56 @@
-/* ===== Page-specific source: pages/partner-management.html ===== */
-function setTab(el){
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+function partnerManagementReady(callback) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback);
+    return;
   }
 
-  function openDrawer(btn){
-    const row = btn.closest('tr');
-    const name = row.querySelector('.company-name').textContent;
-    const meta = row.querySelector('.company-meta').textContent;
-    const logo = row.querySelector('.company-logo');
-    document.getElementById('drawerCompanyName').textContent = name;
-    document.getElementById('drawerCompanyMeta').textContent = meta;
-    document.getElementById('reviewDrawer').classList.add('show');
-    document.getElementById('drawerOverlay').classList.add('show');
-  }
-  function closeDrawer(){
-    document.getElementById('reviewDrawer').classList.remove('show');
-    document.getElementById('drawerOverlay').classList.remove('show');
-  }
+  callback();
+}
 
-  document.querySelectorAll('.tier-option').forEach(opt=>{
-    opt.addEventListener('click', function(){
-      this.parentElement.querySelectorAll('.tier-option').forEach(o=>o.classList.remove('selected'));
-      this.classList.add('selected');
+function openPartnerDrawer(button) {
+  const row = button.closest('tr');
+  const name = row?.querySelector('.company-name')?.textContent || 'Partner Review';
+  const meta = row?.querySelector('.company-meta')?.textContent || '-';
+
+  document.getElementById('drawerCompanyName').textContent = name;
+  document.getElementById('drawerCompanyMeta').textContent = meta;
+  document.getElementById('reviewDrawer')?.classList.add('show');
+  document.getElementById('drawerOverlay')?.classList.add('show');
+}
+
+function closePartnerDrawer() {
+  document.getElementById('reviewDrawer')?.classList.remove('show');
+  document.getElementById('drawerOverlay')?.classList.remove('show');
+}
+
+function updatePartnerSelectAllState() {
+  const selectAll = document.getElementById('selectAllCheckbox');
+  if (!selectAll) return;
+
+  const rows = Array.from(document.querySelectorAll('.row-check'));
+  selectAll.checked = rows.length > 0 && rows.every((checkbox) => checkbox.checked);
+}
+
+partnerManagementReady(() => {
+  document.querySelectorAll('.js-auto-submit').forEach((input) => {
+    input.addEventListener('change', () => input.form?.submit());
+  });
+
+  document.getElementById('selectAllCheckbox')?.addEventListener('change', (event) => {
+    document.querySelectorAll('.row-check').forEach((checkbox) => {
+      checkbox.checked = event.currentTarget.checked;
     });
   });
 
-  function toggleSidebar(){
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('show');
-  }
-  function closeSidebar(){
-    document.querySelector('.sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('show');
-  }
+  document.querySelectorAll('.row-check').forEach((checkbox) => {
+    checkbox.addEventListener('change', updatePartnerSelectAllState);
+  });
+
+  document.querySelectorAll('[data-drawer-open]').forEach((button) => {
+    button.addEventListener('click', () => openPartnerDrawer(button));
+  });
+
+  document.querySelectorAll('[data-drawer-close]').forEach((button) => {
+    button.addEventListener('click', closePartnerDrawer);
+  });
+});

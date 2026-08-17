@@ -52,16 +52,24 @@
         </div>
     @endif
 
-    {{ \App\Support\AdminStatCards::render($verificationStatCards) }}
+    <x-admin.stat-cards :items="$verificationStatCards" />
 
-    <div class="filter-bar">
-        <div class="tab-group">
-            @foreach ($statusTabs as $status => $tab)
-                <a class="tab-item {{ $activeStatus === $status ? 'active' : '' }}" href="{{ route('admin.dashboard.iam.verification-queue', array_filter(array_merge(request()->except('page'), ['status' => $status]), fn ($value) => $value !== '' && $value !== null)) }}">
-                    {{ $tab['label'] }} <span class="tab-count">{{ number_format($tab['count']) }}</span>
-                </a>
-            @endforeach
-        </div>
+    <div class="row g-3 align-items-center mb-3">
+        <div class="col-12 col-xl">
+        @php
+            $verificationTabBar = [
+                'bar_class' => 'tab-bar',
+                'tabs' => collect($statusTabs)->map(fn ($tab, $status) => [
+                    'class' => 'tab-item',
+                    'label' => $tab['label'],
+                    'count' => $tab['count'],
+                    'active' => $activeStatus === $status,
+                    'href' => route('admin.dashboard.iam.verification-queue', array_filter(array_merge(request()->except('page'), ['status' => $status]), fn ($value) => $value !== '' && $value !== null)),
+                ])->values()->all(),
+            ];
+        @endphp
+        <x-admin.tab-bar :items="$verificationTabBar" />
+        </div> 
     </div>
 
     <div class="table-card">

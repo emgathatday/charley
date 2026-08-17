@@ -69,26 +69,26 @@ Charley IAM Team",
 @endphp
 
 @section('content')
-    <a href="{{ route('admin.dashboard.iam.verification-queue') }}" class="back-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg>Back to Verification Queue</a>
+    <a href="{{ route('admin.dashboard.iam.verification-queue') }}" class="back-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-account-penalty"></use></svg>Back to Verification Queue</a>
 
     @if (session('status'))<div class="alert alert-success">{{ session('status') }}</div>@endif
     @if ($errors->any())<div class="alert alert-danger">{{ $errors->first('admin_notes') ?: $errors->first() }}</div>@endif
 
     <div class="page-head">
         <div class="page-head-left">
-            <div class="company-logo"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-synvex-catalysts-svg-viewbox-0-0"></use></svg></div>
+            <div class="company-logo"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-synvex-catalysts"></use></svg></div>
             <div>
                 <div class="page-title-row"><div class="page-title">{{ $company }}</div><span class="badge {{ $verificationRequest->status_class }}"><span class="dot-sm"></span>{{ $verificationRequest->status_label }}</span><span class="badge badge-sla"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-sla-exceeded-52h-partner"></use></svg>{{ $verificationRequest->sla['label'] }} - {{ $verificationRequest->sla['sub'] }}</span></div>
                 <div class="page-sub"><span>Partner Account - {{ $companyType }}</span><span class="sep"></span><span>Submitted {{ $submittedAt }} by {{ $contactEmail }}</span><span class="sep"></span><span>Requested tier: {{ $activeTierName }}</span></div>
             </div>
         </div>
-        <div class="header-actions"><button class="btn btn-outline" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-open-support-thread-svg-viewbox-0"></use></svg>Message Applicant</button></div>
+        <div class="header-actions"><button class="btn btn-outline" type="button"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-open-support-thread"></use></svg>Message Applicant</button></div>
     </div>
 
     <div class="detail-grid partner-verification-grid">
         <div class="col-main">
             <div class="card card-padded">
-                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-partner-management-path-d-m9-12"></use></svg>Company Overview</div></div>
+                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-partners"></use></svg>Company Overview</div></div>
                 <div class="row row-cols-1 row-cols-md-2 g-3">
                     <div class="col"><div class="kv-item"><div class="kv-label">Legal Company Name</div><div class="kv-value">{{ $company }}</div></div></div>
                     <div class="col"><div class="kv-item"><div class="kv-label">Website</div><div class="kv-value">{{ $website }}</div></div></div>
@@ -102,22 +102,22 @@ Charley IAM Team",
             </div>
 
             <div class="card card-padded">
-                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>Verification Checklist</div><span class="card-title-count">4 / 6 complete</span></div>
+                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg>Verification Checklist</div><span class="card-title-count">4 / 6 complete</span></div>
                 <div class="check-list">
-                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg></div><div class="check-text"><div class="check-title">Partner profile loaded</div><div class="check-meta">Bound from partner_profiles and users records.</div></div><span class="check-status ok">Verified</span></div>
-                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg></div><div class="check-text"><div class="check-title">Documents resolved through media files</div><div class="check-meta">IAM avoids raw upload paths.</div></div><span class="check-status ok">Verified</span></div>
-                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg></div><div class="check-text"><div class="check-title">Dynamic subscription tier loaded</div><div class="check-meta">Uses subscription_tiers instead of obsolete tier enum fields.</div></div><span class="check-status ok">Verified</span></div>
-                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg></div><div class="check-text"><div class="check-title">No duplicate partner account found</div><div class="check-meta">Static review boundary until duplicate-check contract is confirmed.</div></div><span class="check-status ok">Verified</span></div>
-                    <div class="check-item"><div class="check-icon pending"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg></div><div class="check-text"><div class="check-title">Authorized signatory letter reviewed</div><div class="check-meta">Awaiting admin sign-off - see documents below</div></div><span class="check-status pending">Pending</span></div>
-                    <div class="check-item"><div class="check-icon pending"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg></div><div class="check-text"><div class="check-title">Subscription payment confirmed</div><div class="check-meta">Billing confirmation remains static until owning module contract exists.</div></div><span class="check-status pending">Pending</span></div>
+                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg></div><div class="check-text"><div class="check-title">Partner profile loaded</div><div class="check-meta">Bound from partner_profiles and users records.</div></div><span class="check-status ok">Verified</span></div>
+                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg></div><div class="check-text"><div class="check-title">Documents resolved through media files</div><div class="check-meta">IAM avoids raw upload paths.</div></div><span class="check-status ok">Verified</span></div>
+                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg></div><div class="check-text"><div class="check-title">Dynamic subscription tier loaded</div><div class="check-meta">Uses subscription_tiers instead of obsolete tier enum fields.</div></div><span class="check-status ok">Verified</span></div>
+                    <div class="check-item"><div class="check-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg></div><div class="check-text"><div class="check-title">No duplicate partner account found</div><div class="check-meta">Static review boundary until duplicate-check contract is confirmed.</div></div><span class="check-status ok">Verified</span></div>
+                    <div class="check-item"><div class="check-icon pending"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg></div><div class="check-text"><div class="check-title">Authorized signatory letter reviewed</div><div class="check-meta">Awaiting admin sign-off - see documents below</div></div><span class="check-status pending">Pending</span></div>
+                    <div class="check-item"><div class="check-icon pending"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg></div><div class="check-text"><div class="check-title">Subscription payment confirmed</div><div class="check-meta">Billing confirmation remains static until owning module contract exists.</div></div><span class="check-status pending">Pending</span></div>
                 </div>
             </div>
 
             <div class="card card-padded">
-                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-company-registration-certificate-verified-10"></use></svg>Submitted Documents</div><span class="card-title-count">{{ count($documents) }} files</span></div>
+                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-file-2"></use></svg>Submitted Documents</div><span class="card-title-count">{{ count($documents) }} files</span></div>
                 <div class="doc-list">
                     @forelse ($documents as $document)
-                        <div class="doc-item"><div class="doc-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-company-registration-certificate-verified-10"></use></svg></div><div class="doc-info"><div class="doc-name">{{ $document['name'] }}</div><div class="doc-meta">{{ $document['mime_type'] ?? 'File' }}{{ $document['size'] ? ' - '.number_format($document['size'] / 1024, 1).' KB' : '' }}</div></div><div class="doc-actions">@if ($document['url'])<a class="btn btn-outline btn-sm" href="{{ $document['url'] }}" target="_blank" rel="noopener">View</a>@endif</div></div>
+                        <div class="doc-item"><div class="doc-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-file-2"></use></svg></div><div class="doc-info"><div class="doc-name">{{ $document['name'] }}</div><div class="doc-meta">{{ $document['mime_type'] ?? 'File' }}{{ $document['size'] ? ' - '.number_format($document['size'] / 1024, 1).' KB' : '' }}</div></div><div class="doc-actions">@if ($document['url'])<a class="btn btn-outline btn-sm" href="{{ $document['url'] }}" target="_blank" rel="noopener">View</a>@endif</div></div>
                     @empty
                         <div class="empty-state"><span>No documents attached through media files.</span></div>
                     @endforelse
@@ -125,13 +125,13 @@ Charley IAM Team",
             </div>
 
             <div class="card card-padded">
-                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-my-profile-path-d-m"></use></svg>Primary Contact Person</div></div>
-                <div class="contact-row"><div class="contact-avatar"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-mila-kessler-business-development-manager"></use></svg></div><div><div class="contact-name">{{ $profile->contact_name ?? $verificationRequest->applicant_name }}</div><div class="contact-role">{{ $profile->contact_title ?? 'Primary contact' }}, {{ $company }}</div></div></div>
-                <div class="contact-links"><div class="contact-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-mila-kessler-synvexcatalysts-com-svg-viewbox-0-0"></use></svg>{{ $contactEmail }}</div><div class="contact-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-31-10-555-0142-pa"></use></svg>{{ $phone }}</div><div class="contact-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-linkedin-company-profile-matched-3"></use></svg>{{ $profile->linkedin_url ?? $website }}</div></div>
+                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-users-3"></use></svg>Primary Contact Person</div></div>
+                <div class="contact-row"><div class="contact-avatar"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-mila-kessler-business-developmen"></use></svg></div><div><div class="contact-name">{{ $profile->contact_name ?? $verificationRequest->applicant_name }}</div><div class="contact-role">{{ $profile->contact_title ?? 'Primary contact' }}, {{ $company }}</div></div></div>
+                <div class="contact-links"><div class="contact-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-mila-kessler-synvexcatalysts-com"></use></svg>{{ $contactEmail }}</div><div class="contact-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-phone"></use></svg>{{ $phone }}</div><div class="contact-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-linkedin-company-profile-matched"></use></svg>{{ $profile->linkedin_url ?? $website }}</div></div>
             </div>
 
             <div class="card card-padded">
-                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-notes"></use></svg>Admin Notes</div></div>
+                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-notes"></use></svg>Admin Notes</div></div>
                 <textarea class="note-textarea @error('admin_notes') is-invalid @enderror" id="reviewerNote" placeholder="Add an internal note about this verification (visible to admins only)...">{{ old('admin_notes') }}</textarea>
                 <div class="note-actions"><button class="btn btn-outline btn-sm" type="button">Add Note</button></div>
                 <div class="note-log"><div class="note-entry"><div class="note-avatar">{{ $verificationRequest->reviewer_name ? strtoupper(substr($verificationRequest->reviewer_name, 0, 1)) : 'A' }}</div><div class="note-bubble"><span class="note-author">{{ $verificationRequest->reviewer_name ?? 'Admin' }}</span><span class="note-time">{{ $verificationRequest->reviewed_at?->format('M j, Y') ?? 'Not reviewed' }}</span><div class="note-body">{{ $verificationRequest->admin_notes ?? 'No admin note recorded yet.' }}</div></div></div></div>
@@ -140,7 +140,7 @@ Charley IAM Team",
 
         <div class="col-side"><div class="side-card">
             <div class="card card-padded">
-                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>Verification Decision</div></div>
+                <div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg>Verification Decision</div></div>
                 <div class="kv-label kv-label-spaced">Partner Tier</div>
                 @forelse ($subscriptionTiers as $tier)
                     <label class="verification-tier-option">
@@ -155,15 +155,15 @@ Charley IAM Team",
                     <div class="empty-state"><span>No active subscription tiers.</span></div>
                 @endforelse
                 <div class="decision-divider"></div>
-                <button class="btn btn-primary btn-block" type="button" onclick="submitPartnerVerificationAction('approve')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg>Approve &amp; Activate</button>
-                <button class="btn btn-outline btn-block btn-block-spaced" type="button" onclick="openActionModal('review')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg>Mark as In Review</button>
-                <button class="btn btn-outline btn-block btn-block-spaced" type="button" onclick="openActionModal('info')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-open-support-thread-svg-viewbox-0"></use></svg>Request More Info</button>
-                <button class="btn btn-ghost-danger btn-block btn-block-spaced" type="button" onclick="openActionModal('reject')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-rejected-partner-announcement-techgas"></use></svg>Reject Application</button>
+                <button class="btn btn-primary btn-block" type="button" onclick="submitPartnerVerificationAction('approve')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg>Approve &amp; Activate</button>
+                <button class="btn btn-outline btn-block btn-block-spaced" type="button" onclick="openActionModal('review')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg>Mark as In Review</button>
+                <button class="btn btn-outline btn-block btn-block-spaced" type="button" onclick="openActionModal('info')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-open-support-thread"></use></svg>Request More Info</button>
+                <button class="btn btn-ghost-danger btn-block btn-block-spaced" type="button" onclick="openActionModal('reject')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-rejected-partner-announcement-te"></use></svg>Reject Application</button>
             </div>
 
-            <div class="card card-padded"><div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-penalty-history-3-actions-recorded"></use></svg>Automated Risk Check</div></div><div class="risk-row"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg><span class="risk-text">Domain and blacklist checks remain static until contract exists</span></div><div class="risk-row"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensors"></use></svg><span class="risk-text">No duplicate accounts detected boundary</span></div></div>
-            <div class="card card-padded"><div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg>Verification Timeline</div></div><div class="timeline verification-timeline"><div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Application submitted</div><div class="tl-time">{{ $submittedAt }}</div></div><div class="tl-item {{ $verificationRequest->reviewed_at ? '' : 'pending' }}"><div class="tl-dot"></div><div class="tl-title">{{ $verificationRequest->reviewed_at ? 'Admin reviewed' : 'Awaiting approval decision' }}</div><div class="tl-time">{{ $verificationRequest->reviewed_at?->format('M j, Y, h:i A') ?? $verificationRequest->sla['sub'] }}</div></div></div></div>
-            <div class="card card-padded card-flush"><div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-subscription-and-billing"></use></svg>Subscription</div></div><div class="mini-kv"><span class="mini-kv-label">Requested Plan</span><span class="mini-kv-value">{{ $activeTierName }}</span></div><div class="mini-kv"><span class="mini-kv-label">Payment Method</span><span class="mini-kv-value">{{ $subscription->payment_method ?? 'Not recorded' }}</span></div><div class="mini-kv"><span class="mini-kv-label">Payment Status</span><span class="mini-kv-value mini-kv-value-warning">{{ $subscription->status ?? $profile->subscription_status ?? 'Not recorded' }}</span></div><div class="mini-kv"><span class="mini-kv-label">Reference</span><span class="mini-kv-value">{{ $subscription->payment_reference ?? 'Not recorded' }}</span></div></div>
+            <div class="card card-padded"><div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-shield"></use></svg>Automated Risk Check</div></div><div class="risk-row"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg><span class="risk-text">Domain and blacklist checks remain static until contract exists</span></div><div class="risk-row"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-diamond-diamond-partner-licensor"></use></svg><span class="risk-text">No duplicate accounts detected boundary</span></div></div>
+            <div class="card card-padded"><div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg>Verification Timeline</div></div><div class="timeline verification-timeline"><div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Application submitted</div><div class="tl-time">{{ $submittedAt }}</div></div><div class="tl-item {{ $verificationRequest->reviewed_at ? '' : 'pending' }}"><div class="tl-dot"></div><div class="tl-title">{{ $verificationRequest->reviewed_at ? 'Admin reviewed' : 'Awaiting approval decision' }}</div><div class="tl-time">{{ $verificationRequest->reviewed_at?->format('M j, Y, h:i A') ?? $verificationRequest->sla['sub'] }}</div></div></div></div>
+            <div class="card card-padded card-flush"><div class="verification-detail-head"><div class="card-title"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-billing"></use></svg>Subscription</div></div><div class="mini-kv"><span class="mini-kv-label">Requested Plan</span><span class="mini-kv-value">{{ $activeTierName }}</span></div><div class="mini-kv"><span class="mini-kv-label">Payment Method</span><span class="mini-kv-value">{{ $subscription->payment_method ?? 'Not recorded' }}</span></div><div class="mini-kv"><span class="mini-kv-label">Payment Status</span><span class="mini-kv-value mini-kv-value-warning">{{ $subscription->status ?? $profile->subscription_status ?? 'Not recorded' }}</span></div><div class="mini-kv"><span class="mini-kv-label">Reference</span><span class="mini-kv-value">{{ $subscription->payment_reference ?? 'Not recorded' }}</span></div></div>
         </div></div>
     </div>
 
@@ -181,11 +181,11 @@ Charley IAM Team",
                         <div class="modal-sub" id="modalSub">Send an update email to {{ $company }}</div>
                     </div>
                 </div>
-                <button class="modal-close" type="button" onclick="closeActionModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></button>
+                <button class="modal-close" type="button" onclick="closeActionModal()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-strong"></use></svg></button>
             </div>
             <div class="modal-body">
                 <div class="modal-note">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-set-years-of-industry-experience"></use></svg>
+                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-set-years-industry-experience"></use></svg>
                     <span id="modalNoteText">Status will be updated to "In Review" and this email will be sent to the applicant contact address.</span>
                 </div>
                 <div class="field-row">
@@ -208,10 +208,10 @@ Charley IAM Team",
                 </div>
             </div>
             <div class="modal-foot">
-                <div class="modal-foot-hint"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-mila-kessler-synvexcatalysts-com-svg-viewbox-0-0"></use></svg>This will be logged in the verification timeline</div>
+                <div class="modal-foot-hint"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-mila-kessler-synvexcatalysts-com"></use></svg>This will be logged in the verification timeline</div>
                 <div class="modal-foot-actions">
                     <button class="btn btn-outline" type="button" onclick="closeActionModal()">Cancel</button>
-                    <button class="btn btn-primary" type="button" id="modalSendBtn" onclick="submitModalAction()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-send-email"></use></svg><span id="modalSendText">Send Email</span></button>
+                    <button class="btn btn-primary" type="button" id="modalSendBtn" onclick="submitModalAction()"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-email-2"></use></svg><span id="modalSendText">Send Email</span></button>
                 </div>
             </div>
         </div>

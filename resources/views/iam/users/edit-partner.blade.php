@@ -2,35 +2,6 @@
 
 @section('title', 'Edit Partner Profile')
 
-@php
-    $profile = $profile ?? null;
-    $activeSubscription = $profile->active_subscription ?? null;
-    $company = old('company_name', $profile->company_name ?? trim(($user->first_name ?? '').' '.($user->last_name ?? '')) ?: 'Partner Company');
-    $initials = collect(explode(' ', trim($company)))->filter()->map(fn ($part) => strtoupper(substr($part, 0, 1)))->take(2)->implode('') ?: 'P';
-    $partnerId = '#PTN-'.str_pad((string) $user->id, 5, '0', STR_PAD_LEFT);
-    $rawKeywords = $profile->keywords ?? null;
-    if (is_string($rawKeywords)) {
-        $decodedKeywords = json_decode($rawKeywords, true);
-        $keywordItems = is_array($decodedKeywords) ? $decodedKeywords : explode(',', $rawKeywords);
-    } elseif (is_array($rawKeywords)) {
-        $keywordItems = $rawKeywords;
-    } else {
-        $keywordItems = [];
-    }
-    $keywordsValue = collect($keywordItems)->map(fn ($item) => trim((string) $item))->filter()->implode(', ');
-    $productItems = collect(explode(',', (string) old('products', 'Catalyst supply, loading supervision, activation support, performance monitoring')))->map(fn ($item) => trim((string) $item))->filter();
-    $keywordChipItems = collect(explode(',', (string) old('keywords', $keywordsValue)))->map(fn ($item) => trim((string) $item))->filter();
-    $selectedPlantType = old('plant_type_id', $profile->plant_type_id ?? '');
-    $selectedTier = old('subscription_tier_id', $activeSubscription->tier_id ?? '');
-    $selectedSubscriptionStatus = old('subscription_status', $activeSubscription->status ?? $profile->subscription_status ?? 'inactive');
-    $approvalStatus = old('approval_status', $profile->approval_status ?? ($user->is_verified ? 'approved' : 'pending'));
-    $layoutTemplate = old('layout_template', $profile->layout_template ?? 'layout_1');
-    $feedHighlightEnabled = old('feed_highlight_enabled', $profile->feed_highlight_enabled ?? true);
-    $joined = $user->created_at?->format('d M Y') ?? 'Unknown';
-    $tierName = $activeSubscription?->tier?->display_name ?? 'No active tier';
-    $renewalDue = $profile->subscription_expires_at ?? $activeSubscription?->ends_at ?? null;
-    $renewalLabel = $renewalDue ? \Illuminate\Support\Carbon::parse($renewalDue)->format('Y-m-d') : '';
-@endphp
 
 @section('content')
     <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -79,7 +50,7 @@
                         <div>
                             <div class="logo-upload-actions">
                                 <label class="logo-upload-btn" for="logoFileInput"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-click-to-upload-or-drag"></use></svg>Upload logo</label>
-                                <button class="logo-upload-btn remove" type="button" onclick="document.getElementById('logoFileInput').value=''">Remove</button>
+                                <button class="logo-upload-btn remove" type="button" data-clear-file="true">Remove</button>
                             </div>
                             <input class="visually-hidden @error('logo_file') is-invalid @enderror" id="logoFileInput" name="logo_file" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
                             @error('logo_file')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
@@ -178,13 +149,13 @@
                     <div class="edit-card-head"><div class="edit-card-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-ai-search-training-keywords"></use></svg></div><div><h3>Searchable Keywords</h3><div class="sub">Terms used by directory and AI matching</div></div></div>
                     <div class="form-group" style="margin-bottom:0;">
                         <label class="form-label" for="keywordsInput">Keywords</label>
-                        <div class="tag-input-box" id="keywordsBox" onclick="focusTagInput('keywordsInput')">
+                        <div class="tag-input-box" id="keywordsBox" data-tag-box="true" data-tag-target="keywords">
                             @forelse ($keywordChipItems as $keyword)
-                                <span class="tag-chip keyword">{{ $keyword }}<span class="tag-chip-remove" onclick="removeTag(event,this,'keywordsBox','keywords')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></span></span>
+                                <span class="tag-chip keyword">{{ $keyword }}<span class="tag-chip-remove" data-tag-remove="true"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></span></span>
                             @empty
-                                <span class="tag-chip keyword">catalyst<span class="tag-chip-remove" onclick="removeTag(event,this,'keywordsBox','keywords')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></span></span>
+                                <span class="tag-chip keyword">catalyst<span class="tag-chip-remove" data-tag-remove="true"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></span></span>
                             @endforelse
-                            <input type="text" id="keywordsInput" placeholder="Type and press Enter to add..." onkeydown="addTagOnEnter(event,'keywordsBox','keywords',true)">
+                            <input type="text" id="keywordsInput" placeholder="Type and press Enter to add..." data-tag-input="true">
                         </div>
                         <input id="keywords" name="keywords" type="hidden" value="{{ old('keywords', $keywordChipItems->implode(', ')) }}">
                         <div class="form-hint">Editable anytime - helps members find this partner in search.</div>
@@ -266,12 +237,5 @@
 @endsection
 
 @push('scripts')
-<script>
-function focusTagInput(id){const input=document.getElementById(id);if(input)input.focus()}
-function syncTagInput(boxId,inputId){const box=document.getElementById(boxId);const target=document.getElementById(inputId);if(!box||!target)return;target.value=Array.from(box.querySelectorAll('.tag-chip')).map((chip)=>chip.childNodes[0]?.textContent?.trim()||'').filter(Boolean).join(', ')}
-function addTagOnEnter(event,boxId,inputId,isKeyword){if(event.key!=='Enter'&&event.key!==',')return;event.preventDefault();const input=event.target;const value=input.value.trim().replace(/,$/,'');if(!value)return;const chip=document.createElement('span');chip.className='tag-chip'+(isKeyword?' keyword':'');chip.innerHTML=value+'<span class="tag-chip-remove" onclick="removeTag(event,this,\''+boxId+'\',\''+inputId+'\')"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-change-password-choose-a-strong"></use></svg></span>';document.getElementById(boxId).insertBefore(chip,input);input.value='';syncTagInput(boxId,inputId)}
-function removeTag(event,element,boxId,inputId){event.stopPropagation();element.parentElement.remove();syncTagInput(boxId,inputId)}
-document.addEventListener('DOMContentLoaded',()=>{syncTagInput('keywordsBox','keywords')});
-</script>
+    <script src="{{ asset('assets/js/pages/edit-partner.js') }}"></script>
 @endpush
-

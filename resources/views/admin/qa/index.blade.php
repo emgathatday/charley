@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    {{ \App\Support\AdminStatCards::render(['row_class' => 'row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3 qa-stat-row', 'cards' => $qaStatCards]) }}
+    <x-admin.stat-cards :items="$qaStatCards" row-class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-3 qa-stat-row" />
 
     <div class="filter-bar">
         <form id="qaFilterForm" method="GET" action="{{ route('admin.dashboard.qa.index') }}" class="search-form">
@@ -89,14 +89,20 @@
     </div>
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12 col-xl">
-            <div class="tab-bar qa-tab-bar">
-                @foreach ($tabFilters as $tab)
-                    @php $isActive = $tab['tab'] === $activeTab; @endphp
-                    <a class="tab-btn qa-tab {{ $isActive ? 'active' : '' }}" href="{{ route('admin.dashboard.qa.index', ['tab' => $tab['tab'], 'keyword' => $filters['keyword'] ?? '', 'plant_type_id' => $filters['plant_type_id'] ?? '', 'weekly_theme_id' => $filters['weekly_theme_id'] ?? '', 'status' => $filters['status'] ?? 'all']) }}">
-                        {{ $tab['label'] }} <span class="tab-count qa-tab-count">{{ number_format($tab['count']) }}</span>
-                    </a>
-                @endforeach
-            </div>
+            @php
+                $qaTabBar = [
+                    'bar_class' => 'tab-bar qa-tab-bar',
+                    'tabs' => collect($tabFilters)->map(fn ($tab) => [
+                        'class' => 'tab-btn qa-tab',
+                        'count_class' => 'tab-count qa-tab-count',
+                        'label' => $tab['label'],
+                        'count' => $tab['count'],
+                        'active' => $tab['tab'] === $activeTab,
+                        'href' => route('admin.dashboard.qa.index', ['tab' => $tab['tab'], 'keyword' => $filters['keyword'] ?? '', 'plant_type_id' => $filters['plant_type_id'] ?? '', 'weekly_theme_id' => $filters['weekly_theme_id'] ?? '', 'status' => $filters['status'] ?? 'all']),
+                    ])->all(),
+                ];
+            @endphp
+            <x-admin.tab-bar :items="$qaTabBar" />
         </div>
     </div>
     <div class="bulk-bar" id="bulkBar">

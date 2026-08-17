@@ -92,16 +92,21 @@
         </div>
     </div>
 
-    {{ \App\Support\AdminStatCards::render(['row_class' => 'row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 media-stat-row', 'cards' => $mediaStatCards]) }}
+    <x-admin.stat-cards :items="$mediaStatCards" row-class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 media-stat-row" />
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12 col-xl">
-            <div class="tab-bar">
-                <a href="{{ route('admin.dashboard.media-files.index') }}" @class(['tab-btn', 'active' => ! request()->filled('upload_context')])>All Files <span class="tab-count">{{ number_format($totalUploads) }}</span></a>
-                <a href="{{ route('admin.dashboard.media-files.index', ['upload_context' => 'library_item']) }}" @class(['tab-btn', 'active' => request('upload_context') === 'library_item'])>Library <span class="tab-count">{{ number_format($librarySources ?? 0) }}</span></a>
-                <button class="tab-btn" type="button">AI Dataset <span class="tab-count">0</span></button>
-                <a href="{{ route('admin.dashboard.media-files.index', ['upload_context' => 'question_attachment']) }}" @class(['tab-btn', 'active' => request('upload_context') === 'question_attachment'])>Q&amp;A Uploads <span class="tab-count">{{ number_format($quizImages ?? 0) }}</span></a>
-            </div>
+            @php
+                $mediaTabBar = [
+                    'tabs' => [
+                        ['label' => 'All Files', 'count' => $totalUploads, 'active' => ! request()->filled('upload_context'), 'href' => route('admin.dashboard.media-files.index')],
+                        ['label' => 'Library', 'count' => $librarySources ?? 0, 'active' => request('upload_context') === 'library_item', 'href' => route('admin.dashboard.media-files.index', ['upload_context' => 'library_item'])],
+                        ['type' => 'button', 'label' => 'AI Dataset', 'count' => 0],
+                        ['label' => 'Q&A Uploads', 'count' => $quizImages ?? 0, 'active' => request('upload_context') === 'question_attachment', 'href' => route('admin.dashboard.media-files.index', ['upload_context' => 'question_attachment'])],
+                    ],
+                ];
+            @endphp
+            <x-admin.tab-bar :items="$mediaTabBar" />
         </div>
     </div>
 
@@ -186,9 +191,9 @@
                                     <td>{{ optional($mediaFile->created_at)->format('d M Y') ?? 'Not recorded' }}</td>
                                     <td>
                                         <div class="action-cell">
-                                            <a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}" class="action-btn primary" aria-label="View file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-views"></use></svg></a>
-                                            <a href="#" class="action-btn" aria-label="Edit file" onclick="event.preventDefault();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg></a>
-                                            <button class="action-btn danger" type="button" aria-label="Delete file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions"></use></svg></button>
+                                            <a href="{{ route('admin.dashboard.media-files.show', $mediaFile) }}" class="act-btn primary" aria-label="View file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-views"></use></svg></a>
+                                            <a href="#" class="act-btn" aria-label="Edit file" onclick="event.preventDefault();"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg></a>
+                                            <button class="act-btn danger" type="button" aria-label="Delete file"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-admin-actions"></use></svg></button>
                                         </div>
                                     </td>
                                 </tr>

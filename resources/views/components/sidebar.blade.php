@@ -69,4 +69,4 @@
     ];
 @endphp
 
-{{ \App\Support\AdminSidebarMenu::render($adminSidebar) }}
+<x-admin.sidebar-menu :items="$adminSidebar" />

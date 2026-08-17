@@ -29,14 +29,20 @@
         </div>
     </div>
 
-    {{ \App\Support\AdminStatCards::render($plantTypeStatCards) }}
+    <x-admin.stat-cards :items="$plantTypeStatCards" />
 
-    <div class="tab-bar plant-type-tab-bar mb-3">
-        <button class="tab-btn active" type="button">Plant Types</button>
-        <button class="tab-btn" type="button">Linked Content</button>
-        <button class="tab-btn" type="button">PFD Usage</button>
-        <button class="tab-btn" type="button">Audit</button>
-    </div>
+    @php
+        $plantTypeTabBar = [
+            'bar_class' => 'tab-bar plant-type-tab-bar mb-3',
+            'tabs' => [
+                ['type' => 'button', 'label' => 'Plant Types', 'active' => true],
+                ['type' => 'button', 'label' => 'Linked Content'],
+                ['type' => 'button', 'label' => 'PFD Usage'],
+                ['type' => 'button', 'label' => 'Audit'],
+            ],
+        ];
+    @endphp
+    <x-admin.tab-bar :items="$plantTypeTabBar" />
 
     <div class="plant-type-grid">
         @forelse ($plantTypes as $plantType)

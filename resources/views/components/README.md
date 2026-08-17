@@ -1,7 +1,13 @@
-Dashboard Sidebar Component
+Dashboard UI Components
 
-resources/views/components/sidebar.blade.php owns the sidebar menu data and renders it with App\Support\AdminSidebarMenu::render($adminSidebar).
+Dashboard shared UI uses Blade components under resources/views/components/admin.
 
-AdminSidebarMenu is an HTML renderer only. To add or change menu entries, edit the data array in sidebar.blade.php; do not add menu items inside AdminSidebarMenu.
+Data stays in the page view. Components only render markup from props/data passed by the view.
 
-Each group supports label, visible, and items. Each item supports label, icon, route, params, url, active, badge, children, and visible. Use route plus optional params, or url for placeholder/external links. Keep icon as a sprite symbol id without the leading #.
+Examples:
+
+<x-admin.sidebar-menu :items="$adminSidebar" />
+<x-admin.stat-cards :items="$statCards" />
+<x-admin.tab-bar :items="$tabBar" />
+<x-admin.input label="First name" name="first_name" :value="old('first_name')" />
+<x-admin.icon name="billing" />

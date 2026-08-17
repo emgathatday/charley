@@ -21,7 +21,7 @@
 
 <div class="form-card">
     <div class="form-card-header">
-        <div class="form-card-icon blue"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-subscription-and-billing"></use></svg></div>
+        <div class="form-card-icon blue"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-billing"></use></svg></div>
         <div>
             <div class="form-card-title">Thông tin gói thành viên</div>
             <div class="form-card-sub">Source: `subscription_tiers`; Golden/Diamond/Platinum là data record, không phải enum hardcode.</div>
@@ -62,7 +62,7 @@
 
 <div class="form-card">
     <div class="form-card-header">
-        <div class="form-card-icon purple"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-platform-settings-ai-assistant"></use></svg></div>
+        <div class="form-card-icon purple"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-settings-2"></use></svg></div>
         <div><div class="form-card-title">Permissions</div><div class="form-card-sub">Mỗi dòng map `subscription_permissions` sang `subscription_tier_permissions.value`.</div></div>
     </div>
     <div class="form-card-body">

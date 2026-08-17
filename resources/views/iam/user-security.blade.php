@@ -56,17 +56,23 @@
         </div>
     </div>
 
-    {{ \App\Support\AdminStatCards::render($penaltyStatCards) }}
+    <x-admin.stat-cards :items="$penaltyStatCards" />
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12 col-xl">
-            <div class="tab-bar account-penalty-tab-bar">
-                <button class="tab-btn active" onclick="switchTab(this,'all')" type="button">All Accounts <span class="tab-count">{{ $rowCount ?: 28 }}</span></button>
-                <button class="tab-btn" onclick="switchTab(this,'frozen')" type="button">Frozen <span class="tab-count">{{ $statusCounts['frozen'] }}</span></button>
-                <button class="tab-btn" onclick="switchTab(this,'suspended')" type="button">Suspended <span class="tab-count">{{ $statusCounts['suspended'] }}</span></button>
-                <button class="tab-btn" onclick="switchTab(this,'warned')" type="button">Warned <span class="tab-count">{{ $statusCounts['warned'] }}</span></button>
-                <button class="tab-btn" onclick="switchTab(this,'pending')" type="button">Pending Review <span class="tab-count">{{ $statusCounts['pending'] }}</span></button>
-            </div>
+            @php
+                $penaltyTabBar = [
+                    'bar_class' => 'tab-bar account-penalty-tab-bar',
+                    'tabs' => [
+                        ['type' => 'button', 'label' => 'All Accounts', 'count' => $rowCount ?: 28, 'active' => true, 'attributes' => ['onclick' => "switchTab(this,'all')"]],
+                        ['type' => 'button', 'label' => 'Frozen', 'count' => $statusCounts['frozen'], 'attributes' => ['onclick' => "switchTab(this,'frozen')"]],
+                        ['type' => 'button', 'label' => 'Suspended', 'count' => $statusCounts['suspended'], 'attributes' => ['onclick' => "switchTab(this,'suspended')"]],
+                        ['type' => 'button', 'label' => 'Warned', 'count' => $statusCounts['warned'], 'attributes' => ['onclick' => "switchTab(this,'warned')"]],
+                        ['type' => 'button', 'label' => 'Pending Review', 'count' => $statusCounts['pending'], 'attributes' => ['onclick' => "switchTab(this,'pending')"]],
+                    ],
+                ];
+            @endphp
+            <x-admin.tab-bar :items="$penaltyTabBar" />
         </div>
     </div>
     <div class="table-wrap account-penalty-table-wrap">

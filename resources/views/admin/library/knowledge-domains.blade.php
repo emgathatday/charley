@@ -29,15 +29,20 @@
         </div>
     </div>
 
-    {{ \App\Support\AdminStatCards::render(['row_class' => 'row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 knowledge-stat-row', 'cards' => $knowledgeStatCards]) }}
+    <x-admin.stat-cards :items="$knowledgeStatCards" row-class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 knowledge-stat-row" />
 
     <div class="row g-3 align-items-center mb-3">
         <div class="col-12 col-xl">
-            <div class="tab-bar">
-                <a @class(['tab-btn', 'active' => $statusTab === null || $statusTab === '']) href="{{ $statusTabRoute() }}">All <span class="tab-count">{{ $stats['total'] ?? $domains->total() }}</span></a>
-                <a @class(['tab-btn', 'active' => $statusTab === '1']) href="{{ $statusTabRoute(['is_active' => 1]) }}">Active <span class="tab-count">{{ $stats['active'] ?? 0 }}</span></a>
-                <a @class(['tab-btn', 'active' => $statusTab === '0']) href="{{ $statusTabRoute(['is_active' => 0]) }}">Inactive <span class="tab-count">{{ $inactiveCount }}</span></a>
-            </div>
+            @php
+                $knowledgeTabBar = [
+                    'tabs' => [
+                        ['label' => 'All', 'count' => $stats['total'] ?? $domains->total(), 'active' => $statusTab === null || $statusTab === '', 'href' => $statusTabRoute()],
+                        ['label' => 'Active', 'count' => $stats['active'] ?? 0, 'active' => $statusTab === '1', 'href' => $statusTabRoute(['is_active' => 1])],
+                        ['label' => 'Inactive', 'count' => $inactiveCount, 'active' => $statusTab === '0', 'href' => $statusTabRoute(['is_active' => 0])],
+                    ],
+                ];
+            @endphp
+            <x-admin.tab-bar :items="$knowledgeTabBar" />
         </div>
     </div>
 

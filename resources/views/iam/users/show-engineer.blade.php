@@ -36,7 +36,7 @@
     <!-- Page header -->
     <div class="page-head" aria-label="Identity &amp; Professional Profile - {{ $detail['name'] }}">
         <button class="back-btn" type="button" onclick="history.back()">
-            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg>
+            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-account-penalty"></use></svg>
             Back to User Management
         </button>
         <div class="header-actions">
@@ -45,15 +45,15 @@
                 <span>Send Message</span>
             </button>
             <button class="btn-warning" type="button" onclick="openDetailModal('suspend')">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-suspend-svg-viewbox-0-0-24"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-suspend"></use></svg>
                 <span>Suspend</span>
             </button>
             <button class="btn-danger" type="button" onclick="openDetailModal('freeze')">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg>
                 <span>Freeze Account</span>
             </button>
             <button class="btn-primary" type="button" onclick="location.href='{{ route('admin.dashboard.iam.users.edit-engineer', $user) }}'">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-user"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-4"></use></svg>
                 Edit User
             </button>
         </div>
@@ -77,43 +77,43 @@
                     <div class="profile-position">{{ $position }} - {{ $company }}</div>
                     <div class="badge-row">
                         <span class="badge professional">
-                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>
+                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg>
                             {{ $profileType }}
                         </span>
                         <span class="badge senior">{{ $rankLabel }}</span>
                         <span class="badge active">
-                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg>
+                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg>
                             {{ $detail['status'] }}
                         </span>
                     </div>
                     <div class="divider"></div>
                     <div class="meta-row">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-partner-management-path-d-m9-12"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-partners"></use></svg>
                         <span>Company</span>
                         <strong>{{ $company }}</strong>
                     </div>
                     <div class="meta-row">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-send-email-svg-viewbox-0-0"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-email"></use></svg>
                         <span>Email</span>
                         <strong>{{ $detail['email'] }}</strong>
                     </div>
                     <div class="meta-row">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg>
                         <span>Experience</span>
                         <strong>{{ $detail['experience'] }}</strong>
                     </div>
                     <div class="meta-row">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-plant-focus-hydrogen-svg-viewbox-0"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-plant-focus-hydrogen"></use></svg>
                         <span>Plant Focus</span>
                         <strong>{{ $detail['plant_focus'] }}</strong>
                     </div>
                     <div class="meta-row">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-5-jul-2026-14-32-circle"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-jul"></use></svg>
                         <span>Joined</span>
                         <strong>{{ $detail['joined'] }}</strong>
                     </div>
                     <div class="meta-row">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-penalty-history-3-actions-recorded"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-shield"></use></svg>
                         <span>Verification due</span>
                         <strong class="text-amber">{{ $detail['verification_due'] }}</strong>
                     </div>
@@ -226,34 +226,34 @@
                 <div class="section-sub">Account Controls</div>
                 <div class="action-list">
                     <a class="action-btn-full primary" href="{{ route('admin.dashboard.iam.users.edit-engineer', $user) }}">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-internal-admin-notes-not-visible"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-5"></use></svg>
                         Edit Profile &amp; Role
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg>
                     </a>
                     <button class="action-btn-full success" type="button" onclick="showDetailToast('Verification renewed - user notified')">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg>
                         Re-verify Account
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg>
                     </button>
                     <button class="action-btn-full" type="button" onclick="showDetailToast('Reset password flow pending')">
                         <svg class="icon"><use href="/assets/icons/sprite.svg#icon-reset-password"></use></svg>
                         Reset Password
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg>
                     </button>
                     <button class="action-btn-full" type="button" onclick="showDetailToast('Verification reminder sent')">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-send-email-svg-viewbox-0-0"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-email"></use></svg>
                         Send Verification Reminder
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg>
                     </button>
                     <button class="action-btn-full warning" type="button" onclick="openDetailModal('suspend')">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-suspend-svg-viewbox-0-0-24"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-suspend"></use></svg>
                         Suspend Account
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg>
                     </button>
                     <button class="action-btn-full danger" type="button" onclick="openDetailModal('freeze')">
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg>
                         Freeze Account
-                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-pa"></use></svg>
+                        <svg class="icon"><use href="/assets/icons/sprite.svg#icon-chevron-right"></use></svg>
                     </button>
                 </div>
             </div>
@@ -270,7 +270,7 @@
                         <div class="section-accent blue"></div>
                         <div class="section-head-inner">
                             <div class="section-icon blue">
-                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-my-profile-path-d-m"></use></svg>
+                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-users-3"></use></svg>
                             </div>
                             <div>
                                 <div class="section-title">Professional Information</div>
@@ -335,7 +335,7 @@
                         <div class="section-accent emerald"></div>
                         <div class="section-head-inner">
                             <div class="section-icon emerald">
-                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg>
+                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg>
                             </div>
                             <div>
                                 <div class="section-title">Verification &amp; Documents</div>
@@ -348,26 +348,26 @@
                     <div class="row g-3 mb-3">
                         <div class="col">
                             <div class="verif-row">
-                                <div class="verif-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg></div>
+                                <div class="verif-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg></div>
                                 <div><div class="verif-label">Account Status</div><div class="verif-val text-green">{{ $detail['verification'] }}</div></div>
                             </div>
                         </div>
                         <div class="col">
                             <div class="verif-row">
-                                <div class="verif-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-profile-verification-queue-5-svg"></use></svg></div>
+                                <div class="verif-icon ok"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-verification-queue"></use></svg></div>
                                 <div><div class="verif-label">Company Email</div><div class="verif-val text-green">Confirmed</div></div>
                             </div>
                         </div>
                         <div class="col">
                             <div class="verif-row">
-                                <div class="verif-icon warn"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-9-verifications-exceeded-the-48h"></use></svg></div>
+                                <div class="verif-icon warn"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-clock"></use></svg></div>
                                 <div><div class="verif-label">Renewal Due</div><div class="verif-val text-amber">{{ $detail['verification_due'] }}</div></div>
                             </div>
                         </div>
                     </div>
                     <div class="doc-list">
                         <div class="doc-item">
-                            <div class="doc-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-company-registration-certificate-verified-10"></use></svg></div>
+                            <div class="doc-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-file-2"></use></svg></div>
                             <div>
                                 <div class="doc-name">LinkedIn Profile</div>
                                 <div class="doc-meta">{{ $profile->linkedin_url ?? 'TODO: bind LinkedIn URL when supplied' }} - verified {{ $detail['verified_at'] }}</div>
@@ -377,7 +377,7 @@
                             </div>
                         </div>
                         <div class="doc-item">
-                            <div class="doc-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-company-registration-certificate-verified-10"></use></svg></div>
+                            <div class="doc-icon"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-file-2"></use></svg></div>
                             <div>
                                 <div class="doc-name">CV / Resume</div>
                                 <div class="doc-meta">{{ $detail['activity']['latest_verification']?->status ?? 'Uploaded 3 Nov 2022' }} - TODO: bind document media when Media contract is exposed.</div>
@@ -397,7 +397,7 @@
                         <div class="section-accent amber"></div>
                         <div class="section-head-inner">
                             <div class="section-icon amber">
-                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-ai-dataset-review-path"></use></svg>
+                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-ai-dataset"></use></svg>
                             </div>
                             <div>
                                 <div class="section-title">Charley AI Usage</div>
@@ -439,7 +439,7 @@
                         <div class="section-accent blue"></div>
                         <div class="section-head-inner">
                             <div class="section-icon blue">
-                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-connections-28-connected-professionals"></use></svg>
+                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-connections-connected-profession"></use></svg>
                             </div>
                             <div>
                                 <div class="section-title">Connections</div>
@@ -479,7 +479,7 @@
                         <div class="section-accent rose"></div>
                         <div class="section-head-inner">
                             <div class="section-icon rose">
-                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-internal-admin-notes-not-visible"></use></svg>
+                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-edit-5"></use></svg>
                             </div>
                             <div>
                                 <div class="section-title">Admin Note</div>
@@ -494,7 +494,7 @@
                         <div class="note-footer">
                             <span class="note-hint">Known meta keys: {{ count($detail['metas']) }}</span>
                             <button class="save-note-btn" type="button" onclick="showDetailToast('Note saved')">
-                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>
+                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-2"></use></svg>
                                 Save Note
                             </button>
                         </div>
@@ -509,7 +509,7 @@
                         <div class="section-accent indigo"></div>
                         <div class="section-head-inner">
                             <div class="section-icon indigo">
-                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-ai-usage-monitor-charley-calculator"></use></svg>
+                                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-ai-usage"></use></svg>
                             </div>
                             <div>
                                 <div class="section-title">Activity Timeline</div>
