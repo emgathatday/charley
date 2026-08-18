@@ -39,6 +39,6 @@ COPY docker/php/conf.d/laravel.ini /usr/local/etc/php/conf.d/laravel.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-entrypoint
 
 RUN chmod +x /usr/local/bin/docker-entrypoint
-
+COPY . /var/www/html
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
