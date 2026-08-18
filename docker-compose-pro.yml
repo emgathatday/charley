@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
@@ -10,7 +10,6 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - .:/var/www/html
       - composer-cache:/tmp/composer
     depends_on:
       postgres:
@@ -40,7 +39,6 @@ services:
     working_dir: /var/www/html
     command: php artisan queue:work --tries=3 --timeout=90
     volumes:
-      - .:/var/www/html
       - composer-cache:/tmp/composer
     depends_on:
       app:
@@ -84,19 +82,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
-    networks:
-      - charley
-
-  node:
-    image: node:22-bullseye
-    restart: unless-stopped
-    working_dir: /var/www/html
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-    ports:
-      - "127.0.0.1:${VITE_PORT:-5173}:5173"
-    volumes:
-      - .:/var/www/html
-      - node-modules:/var/www/html/node_modules
     networks:
       - charley
 
