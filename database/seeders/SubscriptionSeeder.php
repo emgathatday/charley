@@ -11,6 +11,7 @@ use App\Models\SubscriptionTier;
 use App\Models\SubscriptionTierPermission;
 use App\Models\SubscriptionUsageCounter;
 use App\Models\User;
+use App\Support\Subscriptions\SubscriptionPermissionCatalog;
 use Illuminate\Database\Seeder;
 
 class SubscriptionSeeder extends Seeder
@@ -74,15 +75,7 @@ class SubscriptionSeeder extends Seeder
 
     private function seedPermissions(): array
     {
-        $definitions = [
-            'announcements.create' => ['name' => 'Create announcements', 'module' => 'posts', 'value_type' => 'integer', 'default_value' => 0, 'description' => 'Monthly announcement quota.'],
-            'events.publish' => ['name' => 'Publish events', 'module' => 'events', 'value_type' => 'boolean', 'default_value' => false, 'description' => 'Publish partner events.'],
-            'webinars.host' => ['name' => 'Host webinars', 'module' => 'events', 'value_type' => 'boolean', 'default_value' => false, 'description' => 'Host webinars on the platform.'],
-            'polls.create' => ['name' => 'Create polls', 'module' => 'polls', 'value_type' => 'boolean', 'default_value' => false, 'description' => 'Create technical polls.'],
-            'messages.initiate' => ['name' => 'Initiate messages', 'module' => 'messaging', 'value_type' => 'boolean', 'default_value' => false, 'description' => 'Start messages with professionals.'],
-            'jobs.create' => ['name' => 'Create jobs', 'module' => 'jobs', 'value_type' => 'integer', 'default_value' => 0, 'description' => 'Monthly job posting quota.'],
-            'ai.use' => ['name' => 'Use AI assistant', 'module' => 'ai-assistant', 'value_type' => 'integer', 'default_value' => 0, 'description' => 'Monthly AI usage quota.'],
-        ];
+        $definitions = app(SubscriptionPermissionCatalog::class)->all()->all();
 
         $permissions = [];
 

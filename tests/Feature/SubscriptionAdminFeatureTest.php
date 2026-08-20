@@ -2,11 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\AnnouncementQuota;
-use App\Models\MediaFile;
 use App\Models\MemberSubscriptionPlan;
 use App\Models\PartnerSubscription;
 use App\Models\SubscriptionPayment;
+use App\Models\SubscriptionPermission;
 use App\Models\SubscriptionTier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,89 +26,108 @@ class SubscriptionAdminFeatureTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_admin_index_renders_stats_filters_payment_proofs_and_sidebar(): void
+    public function test_admin_index_renders_english_tier_dashboard_without_secondary_sections(): void
     {
         $admin = User::factory()->admin()->create();
-        $tier = SubscriptionTier::factory()->create(['name' => 'gold', 'monthly_price' => 199]);
-        $plan = MemberSubscriptionPlan::factory()->create(['name' => 'professional', 'display_name' => 'Professional']);
-        $subscription = PartnerSubscription::factory()->create([
+        $tier = $this->createTier(['code' => 'founding', 'name' => 'founding', 'display_name' => 'Founding Partner', 'monthly_price' => 199]);
+        $this->createTier(['code' => 'private', 'name' => 'private', 'display_name' => 'Private Partner', 'is_public' => false, 'is_active' => false]);
+        PartnerSubscription::factory()->create([
             'tier_id' => $tier->id,
             'status' => 'pending_approval',
         ]);
-        $media = $this->createMediaFile($subscription->user);
-        SubscriptionPayment::factory()->create([
-            'partner_subscription_id' => $subscription->id,
-            'payment_proof_media_id' => $media->id,
-            'status' => 'pending',
-        ]);
-        AnnouncementQuota::factory()->create([
-            'user_id' => $subscription->user_id,
-            'period' => '2026-06',
-            'used_count' => 1,
-            'quota_limit' => 4,
-        ]);
 
         $this->actingAs($admin)
-            ->get('/dashboard/subscriptions?payment_status=pending&quota_period=2026-06')
+            ->get('/dashboard/subscriptions?keyword=founding')
             ->assertOk()
-            ->assertSee('Subscriptions')
-            ->assertSee('Partner tiers')
-            ->assertSee('Member plans')
-            ->assertSee('Pending approvals')
-            ->assertSee('Subscription payments')
-            ->assertSee('Announcement quotas')
-            ->assertSee('payment-proof.jpg')
-            ->assertSee('Professional')
-            ->assertSee('Quotas')
-            ->assertSee('Payments');
+            ->assertSee('Subscription Tiers')
+            ->assertSee('Partner subscription tiers')
+            ->assertSee('Create tier')
+            ->assertSee('Founding Partner')
+            ->assertDontSee('Member plans')
+            ->assertDontSee('Subscription payments')
+            ->assertDontSee('Announcement quotas')
+            ->assertDontSee('Private Partner', false);
     }
 
-    public function test_admin_can_create_update_tiers_and_member_plans(): void
+    public function test_admin_can_create_update_tiers_and_member_plans_with_dynamic_permissions(): void
     {
         $admin = User::factory()->admin()->create();
+        $quotaPermission = SubscriptionPermission::query()->create([
+            'key' => 'announcement_limit',
+            'name' => 'Announcement limit',
+            'module' => 'announcements',
+            'value_type' => 'integer',
+            'default_value' => 2,
+            'is_active' => true,
+        ]);
+        $booleanPermission = SubscriptionPermission::query()->create([
+            'key' => 'can_host_webinar',
+            'name' => 'Can host webinar',
+            'module' => 'events',
+            'value_type' => 'boolean',
+            'default_value' => false,
+            'is_active' => true,
+        ]);
 
         $this->actingAs($admin)
             ->get('/dashboard/subscriptions/tiers/create')
             ->assertOk()
-            ->assertSee('Create Subscription Tier');
+            ->assertSee('Create Subscription Tier')
+            ->assertSee('Tier details')
+            ->assertSee('Permissions');
 
         $this->actingAs($admin)
             ->post('/dashboard/subscriptions/tiers', [
-                'name' => 'gold',
+                'code' => 'founding_partner',
+                'name' => 'founding_partner',
+                'display_name' => 'Founding Partner',
+                'description' => 'Launch partner plan',
                 'monthly_price' => '199.00',
-                'ai_monthly_limit' => '500',
-                'announcement_frequency' => 'monthly',
-                'announcement_limit' => '4',
-                'can_host_webinar' => '0',
-                'can_initiate_message' => '1',
-                'can_create_poll' => '0',
-                'can_publish_events' => '0',
+                'billing_cycle' => 'monthly',
+                'duration_days' => '',
+                'sort_order' => '1',
+                'is_public' => '1',
                 'is_active' => '1',
+                'permissions' => [
+                    $quotaPermission->id => ['enabled' => '1', 'value' => '8'],
+                    $booleanPermission->id => ['enabled' => '1', 'value' => '1'],
+                ],
             ])
             ->assertRedirect('/dashboard/subscriptions');
 
-        $tier = SubscriptionTier::query()->where('name', 'gold')->firstOrFail();
+        $tier = SubscriptionTier::query()->where('code', 'founding_partner')->firstOrFail();
+        $this->assertSame(8, $tier->tierPermissions()->where('permission_id', $quotaPermission->id)->firstOrFail()->value);
+        $this->assertTrue($tier->tierPermissions()->where('permission_id', $booleanPermission->id)->exists());
 
         $this->actingAs($admin)
             ->put("/dashboard/subscriptions/tiers/{$tier->id}", [
-                'name' => 'gold',
+                'code' => 'founding_partner',
+                'name' => 'founding_partner',
+                'display_name' => 'Founding Partner Plus',
+                'description' => 'Launch partner plan',
                 'monthly_price' => '249.00',
-                'ai_monthly_limit' => '-1',
-                'announcement_frequency' => 'weekly',
-                'announcement_limit' => '8',
-                'can_host_webinar' => '1',
-                'can_initiate_message' => '1',
-                'can_create_poll' => '1',
-                'can_publish_events' => '1',
+                'billing_cycle' => 'yearly',
+                'duration_days' => '365',
+                'sort_order' => '2',
+                'is_public' => '0',
                 'is_active' => '0',
+                'permissions' => [
+                    $quotaPermission->id => ['enabled' => '1', 'value' => '12'],
+                    $booleanPermission->id => ['enabled' => '0', 'value' => '1'],
+                ],
             ])
             ->assertRedirect('/dashboard/subscriptions');
 
         $this->assertDatabaseHas('subscription_tiers', [
             'id' => $tier->id,
+            'display_name' => 'Founding Partner Plus',
             'monthly_price' => '249.00',
+            'is_public' => false,
             'is_active' => false,
         ]);
+        $tier->refresh();
+        $this->assertSame(12, $tier->tierPermissions()->where('permission_id', $quotaPermission->id)->firstOrFail()->value);
+        $this->assertFalse($tier->tierPermissions()->where('permission_id', $booleanPermission->id)->exists());
 
         $this->actingAs($admin)
             ->post('/dashboard/subscriptions/member-plans', [
@@ -130,7 +148,7 @@ class SubscriptionAdminFeatureTest extends TestCase
     public function test_admin_can_approve_cancel_and_review_payments(): void
     {
         $admin = User::factory()->admin()->create();
-        $subscription = PartnerSubscription::factory()->create(['status' => 'pending_approval']);
+        $subscription = PartnerSubscription::factory()->create(['tier_id' => $this->createTier()->id, 'status' => 'pending_approval']);
         $payment = SubscriptionPayment::factory()->create([
             'partner_subscription_id' => $subscription->id,
             'status' => 'pending',
@@ -179,34 +197,32 @@ class SubscriptionAdminFeatureTest extends TestCase
     public function test_admin_validation_rejects_invalid_subscription_payloads(): void
     {
         $admin = User::factory()->admin()->create();
-        SubscriptionTier::factory()->create(['name' => 'gold']);
+        $this->createTier(['code' => 'founding_partner', 'name' => 'founding_partner']);
         MemberSubscriptionPlan::factory()->create(['name' => 'professional']);
 
         $this->actingAs($admin)
             ->from('/dashboard/subscriptions/tiers/create')
             ->post('/dashboard/subscriptions/tiers', [
-                'name' => 'gold',
+                'code' => 'founding_partner',
+                'name' => 'founding_partner',
+                'display_name' => '',
                 'monthly_price' => '-1',
-                'ai_monthly_limit' => '-2',
-                'announcement_frequency' => 'daily',
-                'announcement_limit' => '-1',
-                'can_host_webinar' => 'bad',
-                'can_initiate_message' => 'bad',
-                'can_create_poll' => 'bad',
-                'can_publish_events' => 'bad',
+                'billing_cycle' => 'daily',
+                'duration_days' => '0',
+                'sort_order' => '-1',
+                'is_public' => 'bad',
                 'is_active' => 'bad',
             ])
             ->assertRedirect('/dashboard/subscriptions/tiers/create')
             ->assertSessionHasErrors([
+                'code',
                 'name',
+                'display_name',
                 'monthly_price',
-                'ai_monthly_limit',
-                'announcement_frequency',
-                'announcement_limit',
-                'can_host_webinar',
-                'can_initiate_message',
-                'can_create_poll',
-                'can_publish_events',
+                'billing_cycle',
+                'duration_days',
+                'sort_order',
+                'is_public',
                 'is_active',
             ]);
 
@@ -229,18 +245,47 @@ class SubscriptionAdminFeatureTest extends TestCase
             ]);
     }
 
-    private function createMediaFile(User $user): MediaFile
+    public function test_subscription_blade_views_do_not_fetch_subscription_data(): void
     {
-        return MediaFile::query()->create([
-            'uploader_id' => $user->id,
-            'disk' => 's3',
-            'path' => 'proofs/admin-payment-proof.jpg',
-            'original_name' => 'payment-proof.jpg',
-            'mime_type' => 'image/jpeg',
-            'size' => 1024,
-            'upload_context' => 'general',
-            'file_category' => 'image',
-            'is_orphan' => false,
-        ]);
+        foreach ([
+            resource_path('views/admin/subscriptions/index.blade.php'),
+            resource_path('views/admin/subscriptions/tiers/create.blade.php'),
+            resource_path('views/admin/subscriptions/tiers/edit.blade.php'),
+            resource_path('views/admin/subscriptions/tiers/_form.blade.php'),
+        ] as $view) {
+            $contents = file_get_contents($view);
+
+            $this->assertStringNotContainsString('::query(', $contents, $view);
+            $this->assertStringNotContainsString('::where(', $contents, $view);
+            $this->assertStringNotContainsString('::find', $contents, $view);
+            $this->assertStringNotContainsString('DB::', $contents, $view);
+        }
+    }
+
+    private function createTier(array $attributes = []): SubscriptionTier
+    {
+        $tier = new SubscriptionTier();
+
+        $tier->forceFill(array_merge([
+            'code' => 'partner_'.fake()->unique()->numerify('####'),
+            'name' => 'partner_'.fake()->unique()->numerify('####'),
+            'display_name' => 'Partner Plan',
+            'description' => null,
+            'monthly_price' => 99,
+            'billing_cycle' => 'monthly',
+            'duration_days' => null,
+            'sort_order' => 1,
+            'is_public' => true,
+            'is_active' => true,
+            'ai_monthly_limit' => 0,
+            'announcement_frequency' => 'monthly',
+            'announcement_limit' => 0,
+            'can_host_webinar' => false,
+            'can_initiate_message' => false,
+            'can_create_poll' => false,
+            'can_publish_events' => false,
+        ], $attributes))->save();
+
+        return $tier;
     }
 }

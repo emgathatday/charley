@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Actions\Admin\Iam;
+namespace App\Actions\Iam;
 
+use App\DataTransferObjects\Iam\PartnerAccountResult;
 use App\Models\MediaFile;
 use App\Models\PartnerProfile;
 use App\Models\PartnerSubscription;
 use App\Models\PlantType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -16,13 +16,12 @@ use Illuminate\Validation\Rule;
 
 class UpdatePartnerAction
 {
-    public function execute(Request $request, User $user): User
+    public function execute(array $data, User $user, ?UploadedFile $logoFile = null, ?int $actorId = null): PartnerAccountResult
     {
-        $data = $request->validate($this->rules($user));
+        $resultSubscription = null;
 
-        DB::transaction(function () use ($data, $request, $user): void {
+        DB::transaction(function () use ($data, $logoFile, $actorId, $user, &$resultSubscription): void {
             $isApproved = $data['approval_status'] === 'approved';
-            $logoFile = $request->file('logo_file');
 
             $user->forceFill([
                 'first_name' => $data['first_name'],
@@ -51,7 +50,7 @@ class UpdatePartnerAction
                         'user_id' => $user->id,
                         'tier_id' => (int) $data['subscription_tier_id'],
                         'status' => $subscriptionStatus === 'inactive' ? 'pending_approval' : $subscriptionStatus,
-                        'approved_by' => $isApproved ? $request->user()?->id : null,
+                        'approved_by' => $isApproved ? $actorId : null,
                         'approved_at' => $isApproved ? now() : null,
                         'starts_at' => $subscriptionStatus === 'active' ? now()->startOfDay() : null,
                         'ends_at' => null,
@@ -61,7 +60,7 @@ class UpdatePartnerAction
                     $subscription->forceFill([
                         'tier_id' => (int) $data['subscription_tier_id'],
                         'status' => $subscriptionStatus === 'inactive' ? 'pending_approval' : $subscriptionStatus,
-                        'approved_by' => $isApproved ? ($subscription->approved_by ?? $request->user()?->id) : $subscription->approved_by,
+                        'approved_by' => $isApproved ? ($subscription->approved_by ?? $actorId) : $subscription->approved_by,
                         'approved_at' => $isApproved ? ($subscription->approved_at ?? now()) : $subscription->approved_at,
                         'starts_at' => $subscriptionStatus === 'active' ? ($subscription->starts_at ?? now()->startOfDay()) : $subscription->starts_at,
                     ])->save();
@@ -79,7 +78,7 @@ class UpdatePartnerAction
                 'website' => $data['website'] ?? null,
                 'founded_year' => $data['founded_year'] ?? null,
                 'layout_template' => $data['layout_template'],
-                'feed_highlight_enabled' => $request->boolean('feed_highlight_enabled'),
+                'feed_highlight_enabled' => (bool) ($data['feed_highlight_enabled'] ?? false),
                 'subscription_status' => $subscription ? $subscription->status : 'inactive',
                 'subscription_expires_at' => $subscription?->ends_at,
                 'approval_status' => $data['approval_status'],
@@ -88,7 +87,7 @@ class UpdatePartnerAction
             ];
 
             if ($logoFile instanceof UploadedFile) {
-                $logoMedia = $this->storePartnerLogo($logoFile, $request->user()?->id);
+                $logoMedia = $this->storePartnerLogo($logoFile, $actorId);
                 $profileData['logo_media_id'] = $logoMedia?->id;
             }
 
@@ -97,6 +96,8 @@ class UpdatePartnerAction
             } else {
                 $profile = PartnerProfile::query()->create($profileData + ['user_id' => $user->id]);
             }
+
+            $resultSubscription = $subscription;
 
             if (isset($logoMedia) && $logoMedia) {
                 $logoMedia->forceFill([
@@ -107,10 +108,10 @@ class UpdatePartnerAction
             }
         });
 
-        return $user;
+        return new PartnerAccountResult($user, $resultSubscription);
     }
 
-    private function rules(User $user): array
+    public function rules(User $user): array
     {
         $plantTypeIds = Schema::hasTable('plant_types') ? PlantType::query()->active()->sorted()->pluck('id')->map(fn ($id) => (int) $id)->all() : [];
 

@@ -20,12 +20,12 @@
                 ],
             ],
             [
-                'label' => 'Users & Partners',
+                'label' => 'Member Management',
                 'items' => [
-                    ['label' => 'User Management', 'icon' => 'icon-users-5', 'route' => 'admin.dashboard.iam.users.engineers', 'active' => ['route' => 'admin.dashboard.iam.users.engineers'], 'badge' => ['label' => '12', 'class' => 'urgent']],
-                    ['label' => 'Partner Management', 'icon' => 'icon-partners', 'route' => 'admin.dashboard.iam.users.partners', 'active' => ['route' => 'admin.dashboard.iam.users.partners']],
-                    ['label' => 'Administrators', 'icon' => 'icon-edit-5', 'route' => 'admin.dashboard.iam.users', 'params' => ['member_view' => 'administrators'], 'active' => ['url' => '*member_view=administrators*']],
-                    ['label' => 'Profile Verification Queue', 'icon' => 'icon-verification-queue', 'route' => 'admin.dashboard.iam.verification-queue', 'active' => ['route' => 'admin.dashboard.iam.verification-queue'], 'badge' => ['label' => '5', 'class' => 'urgent']],
+                    ['label' => 'Engineers', 'icon' => 'icon-users-5', 'route' => 'admin.dashboard.iam.users.engineers', 'active' => ['route' => 'admin.dashboard.iam.users.engineers'], 'badge' => ['label' => '12', 'class' => 'urgent']],
+                    ['label' => 'Partners', 'icon' => 'icon-partners', 'route' => 'admin.dashboard.iam.users.partners', 'active' => ['route' => 'admin.dashboard.iam.users.partners']],
+                    ['label' => 'Administrators', 'icon' => 'icon-edit-5', 'route' => 'admin.dashboard.iam.users', 'params' => ['member_view' => 'administrators'], 'active' => ['route' => 'admin.dashboard.iam.users']],
+                    ['label' => 'Profile Verification', 'icon' => 'icon-verification-queue', 'route' => 'admin.dashboard.iam.verification-queue', 'active' => ['route' => 'admin.dashboard.iam.verification-queue'], 'badge' => ['label' => '5', 'class' => 'urgent']],
                     ['label' => 'Subscription & Billing', 'icon' => 'icon-billing', 'route' => 'admin.dashboard.subscriptions.index', 'active' => ['route' => 'admin.dashboard.subscriptions.*']],
                     ['label' => 'Monthly Expert Recognition', 'icon' => 'icon-expert-recognition', 'url' => '#'],
                     ['label' => 'Account Penalty & Freeze', 'icon' => 'icon-lock', 'route' => 'admin.dashboard.iam.account-penalty-freeze', 'active' => ['route' => 'admin.dashboard.iam.account-penalty-freeze*']],

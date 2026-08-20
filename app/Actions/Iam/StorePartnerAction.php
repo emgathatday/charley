@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Actions\Admin\Iam;
+namespace App\Actions\Iam;
 
+use App\DataTransferObjects\Iam\PartnerAccountResult;
 use App\Models\MediaFile;
 use App\Models\PartnerProfile;
 use App\Models\PartnerSubscription;
 use App\Models\SubscriptionPayment;
 use App\Models\SubscriptionTier;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -19,21 +19,15 @@ use Illuminate\Validation\ValidationException;
 
 class StorePartnerAction
 {
-    /**
-     * @return array{0: User, 1: PartnerSubscription}
-     */
-    public function execute(Request $request): array
+    public function execute(array $data, ?UploadedFile $logoFile = null, ?int $adminId = null): PartnerAccountResult
     {
-        $data = $request->validate($this->rules());
-        $data['keywords'] = $this->validatedKeywords($request, $data);
+        $data['keywords'] = $this->validatedKeywords($data);
 
         $tier = SubscriptionTier::query()->active()->findOrFail($data['subscription_tier_id']);
-        $activateAccount = $request->boolean('activate_account');
-        $requiresEmailVerification = $request->boolean('require_email_verification');
-        $adminId = $request->user()?->id;
-        $logoFile = $request->file('logo_file');
+        $activateAccount = (bool) ($data['activate_account'] ?? false);
+        $requiresEmailVerification = (bool) ($data['require_email_verification'] ?? false);
 
-        return DB::transaction(function () use ($data, $tier, $activateAccount, $requiresEmailVerification, $adminId, $logoFile): array {
+        return DB::transaction(function () use ($data, $tier, $activateAccount, $requiresEmailVerification, $adminId, $logoFile): PartnerAccountResult {
             $startsAt = $this->subscriptionStartDate($data['subscription_starts_at'] ?? null, $activateAccount);
             $endsAt = $this->subscriptionEndDate($data['subscription_ends_at'] ?? null, $startsAt, $tier);
             $isVerified = ! $requiresEmailVerification;
@@ -100,11 +94,11 @@ class StorePartnerAction
                 ]);
             }
 
-            return [$user, $subscription];
+            return new PartnerAccountResult($user, $subscription);
         });
     }
 
-    private function rules(): array
+    public function rules(): array
     {
         return [
             'company_name' => ['required', 'string', 'max:255'],
@@ -136,11 +130,14 @@ class StorePartnerAction
         ];
     }
 
-    private function validatedKeywords(Request $request, array $data): ?array
+    private function validatedKeywords(array $data): ?array
     {
-        $keywords = $request->has('keywords') ? $this->keywordList($data['keywords'] ?? null) : null;
+        if (! array_key_exists('keywords', $data)) {
+            return null;
+        }
 
-        if ($request->has('keywords') && $keywords === []) {
+        $keywords = $this->keywordList($data['keywords'] ?? null);
+        if ($keywords === []) {
             throw ValidationException::withMessages([
                 'keywords' => 'Add at least one keyword.',
             ]);

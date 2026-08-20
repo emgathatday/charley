@@ -135,10 +135,15 @@ class EngineerManagementQuery
                 ->orWhereRaw('lower(engineer_profiles.position) like ?', ["%{$keyword}%"])
                 ->orWhereRaw('lower(engineer_profiles.field_of_study) like ?', ["%{$keyword}%"])
                 ->orWhereRaw('lower(engineer_profiles.plant_name) like ?', ["%{$keyword}%"])
-                ->orWhereRaw('lower(engineer_profiles.expertise_tags::text) like ?', ["%{$keyword}%"])
-                ->orWhereRaw('lower(engineer_profiles.industry_specialization::text) like ?', ["%{$keyword}%"])
-                ->orWhereRaw('lower(engineer_profiles.searchable_keywords::text) like ?', ["%{$keyword}%"]);
+                ->orWhereRaw('lower('.$this->jsonTextColumn('engineer_profiles.expertise_tags').') like ?', ["%{$keyword}%"])
+                ->orWhereRaw('lower('.$this->jsonTextColumn('engineer_profiles.industry_specialization').') like ?', ["%{$keyword}%"])
+                ->orWhereRaw('lower('.$this->jsonTextColumn('engineer_profiles.searchable_keywords').') like ?', ["%{$keyword}%"]);
         });
+    }
+
+    private function jsonTextColumn(string $column): string
+    {
+        return DB::connection()->getDriverName() === 'pgsql' ? "{$column}::text" : $column;
     }
 
     private function applyPlantType(Builder $query, string $plantTypeId): void

@@ -18,7 +18,7 @@
         </div>
         <div class="col-12 col-xl-auto d-flex justify-content-xl-end">
             <a class="btn-primary" href="{{ route('admin.dashboard.iam.users.create-engineer') }}">
-                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-user"></use></svg>
+                <svg class="icon"><use href="/assets/icons/sprite.svg#icon-add-another-document-clas"></use></svg>
                 Add User
             </a>
         </div>
