@@ -7,79 +7,15 @@
     <title>Charley - Admin Login</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.min.css') }}">
+    <style>
+        .login-card .form-card {
+            padding: 32px;
+        }
+    </style>
 </head>
 <body>
     <div class="login-page">
-        <div class="left-panel">
-            <div class="brand">
-                <div class="brand-mark">
-                    <svg class="icon"><use href="/assets/icons/sprite.svg#icon-charley-admin-console-svg-viewbox-0"></use></svg>
-                </div>
-                <div>
-                    <div class="brand-name">Charley</div>
-                    <div class="brand-sub">Admin Console</div>
-                </div>
-            </div>
-
-            <div class="panel-body">
-                <div class="panel-eyebrow">
-                    <span class="panel-eyebrow-dot"></span>
-                    <span class="panel-eyebrow-text">Platform Operational</span>
-                </div>
-
-                <h1 class="panel-heading">
-                    Engineering<br>
-                    knowledge,<br>
-                    <span>governed right.</span>
-                </h1>
-
-                <p class="panel-desc">
-                    Manage users, moderate Q&amp;A, oversee partner activity, and keep Charley's knowledge base accurate - from one secure console.
-                </p>
-
-                <div class="stat-row">
-                    <div class="stat-pill">
-                        <div class="stat-icon" style="background:rgba(59,130,246,0.12);">
-                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-user-management-12-svg-viewbox-0"></use></svg>
-                        </div>
-                        <div>
-                            <div class="stat-value">1,248</div>
-                            <div class="stat-label">Verified professionals</div>
-                        </div>
-                        <span class="stat-meta" style="background:rgba(16,185,129,0.12);color:#34D399;">+14 this week</span>
-                    </div>
-
-                    <div class="stat-pill">
-                        <div class="stat-icon" style="background:rgba(99,102,241,0.12);">
-                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-qanda-management-rect-x-3-y-4"></use></svg>
-                        </div>
-                        <div>
-                            <div class="stat-value">342</div>
-                            <div class="stat-label">Technical Q&amp;As active</div>
-                        </div>
-                        <span class="stat-meta" style="background:rgba(244,63,94,0.1);color:#FB7185;">5 flagged</span>
-                    </div>
-
-                    <div class="stat-pill">
-                        <div class="stat-icon" style="background:rgba(6,182,212,0.1);">
-                            <svg class="icon"><use href="/assets/icons/sprite.svg#icon-partner-management-path-d-m9-12"></use></svg>
-                        </div>
-                        <div>
-                            <div class="stat-value">38</div>
-                            <div class="stat-label">Active partners</div>
-                        </div>
-                        <span class="stat-meta" style="background:rgba(6,182,212,0.1);color:#67E8F9;">12 Diamond</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel-footer">
-                <span class="panel-footer-dot"></span>
-                <span class="panel-footer-text">Charley AI - <strong>Operational</strong> &middot; 4 data sources synced</span>
-            </div>
-        </div>
-
         <div class="right-panel">
             <div class="login-card">
                 <div class="login-card-header">
@@ -158,7 +94,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="email">Email address</label>
                                 <div class="input-wrap">
-                                    <svg class="icon input-icon"><use href="/assets/icons/sprite.svg#icon-unnamed-1"></use></svg>
+                                    <svg class="icon input-icon"><use href="/assets/icons/sprite.svg#icon-email"></use></svg>
                                     <input
                                         class="form-input @error('login') is-invalid @enderror"
                                         id="email"
@@ -176,7 +112,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="password">Password</label>
                                 <div class="input-wrap">
-                                    <svg class="icon input-icon"><use href="/assets/icons/sprite.svg#icon-account-penalty-and-freeze-3"></use></svg>
+                                    <svg class="icon input-icon"><use href="/assets/icons/sprite.svg#icon-lock"></use></svg>
                                     <input
                                         class="form-input @error('password') is-invalid @enderror"
                                         id="password"
