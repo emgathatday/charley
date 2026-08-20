@@ -17,6 +17,8 @@ class SubscriptionPermissionProviderTest extends TestCase
         $catalog = app(SubscriptionPermissionCatalog::class)->all();
 
         $this->assertSame(SubscriptionPermissionCatalog::KEYS, $catalog->keys()->values()->all());
+        $this->assertSame(1, $catalog->get('announcements.create')['id']);
+        $this->assertSame(7, $catalog->get('ai.use')['id']);
         $this->assertSame('integer', $catalog->get('announcements.create')['value_type']);
         $this->assertSame(false, $catalog->get('webinars.host')['default_value']);
         $this->assertTrue($catalog->every(fn (array $permission): bool => array_key_exists('description', $permission) && $permission['is_active'] === true));
@@ -64,6 +66,7 @@ class SubscriptionPermissionProviderTest extends TestCase
         $announcement = $permissions->firstWhere('key', 'announcements.create');
 
         $this->assertSame($databasePermission->id, $announcement->id);
+        $this->assertSame(1, $announcement->id);
         $this->assertSame('Create announcements', $announcement->name);
         $this->assertFalse($permissions->contains('key', 'custom.keep'));
         $this->assertDatabaseHas('subscription_permissions', ['id' => $extraPermission->id, 'key' => 'custom.keep']);

@@ -80,8 +80,13 @@ class SubscriptionSeeder extends Seeder
         $permissions = [];
 
         foreach ($definitions as $key => $definition) {
-            $permission = SubscriptionPermission::query()->firstOrCreate(['key' => $key], $definition + ['key' => $key, 'is_active' => true]);
-            $permission->fill($definition + ['is_active' => true])->save();
+            $permission = SubscriptionPermission::query()->firstOrNew(['key' => $key]);
+
+            if (! $permission->exists && isset($definition['id'])) {
+                $permission->id = $definition['id'];
+            }
+
+            $permission->forceFill($definition + ['key' => $key, 'is_active' => true])->save();
             $permissions[$key] = $permission;
         }
 
