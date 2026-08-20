@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Actions\Admin\Iam;
+namespace App\Actions\Iam;
 
 use App\Models\EngineerProfile;
 use App\Models\PlantType;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\DataTransferObjects\Iam\EngineerAccountResult;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class StoreEngineerAction
 {
-    public function execute(Request $request): User
+    public function execute(array $data): EngineerAccountResult
     {
-        $data = $request->validate($this->rules());
-
-        return DB::transaction(function () use ($data, $request): User {
+        return DB::transaction(function () use ($data): EngineerAccountResult {
             $role = $data['account_type'] === 'professional' ? 'professional' : 'unverified_member';
             $isVerified = $role === 'professional';
 
@@ -49,16 +47,16 @@ class StoreEngineerAction
                 'searchable_keywords' => $this->commaSeparatedArray($data['searchable_keywords'] ?? null),
                 'phone' => $data['phone'] ?? null,
                 'linkedin_url' => $data['linkedin_url'] ?? null,
-                'verification_intent' => $request->boolean('verification_intent'),
+                'verification_intent' => (bool) ($data['verification_intent'] ?? false),
             ]);
 
             $this->syncEngineerPlantTypes((int) $profile->id, $data['plant_type_ids'] ?? [], $data['primary_plant_type_id'] ?? null);
 
-            return $user;
+            return new EngineerAccountResult($user);
         });
     }
 
-    private function rules(): array
+    public function rules(): array
     {
         $plantTypeIds = $this->plantTypeIds();
 

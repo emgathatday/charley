@@ -51,11 +51,11 @@
         @endforeach
     </nav>
 
-    <div class="sidebar-footer">
+    <!-- <div class="sidebar-footer">
         <div class="ai-status-pill">
             <span class="pulse-dot"></span>
             <div class="ai-status-text">{{ $footer['label'] ?? 'AI Assistant - Operational' }}<span>{{ $footer['sub_label'] ?? 'Backend console ready' }}</span></div>
         </div>
-    </div>
+    </div> -->
 </aside>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>

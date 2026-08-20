@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Actions\Admin\Iam;
+namespace App\Actions\Iam;
 
 use App\Models\EngineerProfile;
 use App\Models\MediaFile;
 use App\Models\PlantType;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\DataTransferObjects\Iam\EngineerAccountResult;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -14,13 +14,10 @@ use Illuminate\Validation\Rule;
 
 class UpdateEngineerAction
 {
-    public function execute(Request $request, User $user): User
+    public function execute(array $data, User $user, ?UploadedFile $photoFile = null, ?int $actorId = null): EngineerAccountResult
     {
-        $data = $request->validate($this->rules($user));
-
-        DB::transaction(function () use ($data, $request, $user): void {
+        DB::transaction(function () use ($data, $photoFile, $actorId, $user): void {
             $role = $data['account_type'] === 'professional' ? 'professional' : 'unverified_member';
-            $photoFile = $request->file('profile_photo');
             $verifiedAt = $role === 'professional' ? ($user->verified_at ?? now()) : null;
 
             $user->forceFill([
@@ -52,7 +49,7 @@ class UpdateEngineerAction
                 'searchable_keywords' => $this->commaSeparatedArray($data['searchable_keywords'] ?? null),
                 'linkedin_url' => $data['linkedin_url'] ?? null,
                 'job_availability' => $data['job_availability'] ?? null,
-                'is_discoverable' => $request->boolean('is_discoverable'),
+                'is_discoverable' => (bool) ($data['is_discoverable'] ?? false),
                 'updated_at' => now(),
             ];
 
@@ -66,17 +63,17 @@ class UpdateEngineerAction
             }
 
             if ($photoFile instanceof UploadedFile) {
-                $photoMedia = $this->storeProfilePhoto($photoFile, $request->user()?->id);
+                $photoMedia = $this->storeProfilePhoto($photoFile, $actorId);
                 $this->bindProfilePhoto($user, $role, $profileId, $photoMedia);
             }
 
             $this->syncPlantTypes($profileId, $data['plant_type_ids'] ?? []);
         });
 
-        return $user;
+        return new EngineerAccountResult($user);
     }
 
-    private function rules(User $user): array
+    public function rules(User $user): array
     {
         $plantTypeIds = $this->plantTypeIds();
         $plantTypeRules = $plantTypeIds === [] ? ['nullable', 'array'] : ['required', 'array', 'min:1'];

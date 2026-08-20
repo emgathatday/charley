@@ -1,31 +1,30 @@
 @extends('layouts.rebuild-dashboard')
 
-@section('title', 'Tạo Subscription mới')
+@section('title', 'Create Subscription Tier')
 
 @section('content')
     @include('templates.components.alert-session')
 
     <form method="POST" action="{{ route('admin.dashboard.subscriptions.tiers.store') }}">
         @csrf
-        <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="back-link"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-back-to-account-penalty-and"></use></svg>Back to Subscriptions</a>
+        <a href="{{ route('admin.dashboard.subscriptions.index') }}" class="back-link"><x-admin.icon name="back-to-account-penalty-and" />Back to Subscriptions</a>
 
         <div class="page-head">
-            <div class="page-title-row">
-                <div><div class="page-title">Tạo Subscription mới</div><div class="page-subtitle">Tạo gói thành viên mới và cấu hình permission theo name, module, type, value, toggle on/off.</div></div>
-                <div class="page-head-actions"><button class="btn btn-outline" type="button">Save draft</button><button class="btn btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>Create subscription</button></div>
-            </div>
+            <div><div class="page-title">Create Subscription Tier</div><div class="page-subtitle">Create a dynamic partner tier and configure permission values by name, module, type, and enabled state.</div></div>
+            <div class="page-head-actions"><button class="btn btn-primary" type="submit"><x-admin.icon name="icon-add-another-document-clas" />Create tier</button></div>
+        
         </div>
 
         <div class="tab-bar subscription-tab-bar mb-3">
-            <button class="tab-btn active" type="button">Thông tin gói</button>
-            <button class="tab-btn" type="button">Permissions</button>
+            <button class="tab-btn active" type="button"><x-admin.icon name="billing" />Tier details</button>
+            <button class="tab-btn" type="button"><x-admin.icon name="settings-2" />Permissions</button>
         </div>
 
         @include('admin.subscriptions.tiers._form', ['subscriptionTier' => null])
 
         <div class="action-bar">
-            <div class="action-bar-left">Value `-1` hiển thị là Không giới hạn; permission tắt sẽ không được gán vào gói.</div>
-            <div class="action-bar-right"><a href="{{ route('admin.dashboard.subscriptions.index') }}" class="btn btn-ghost">Cancel</a><button class="btn btn-primary" type="submit"><svg class="icon"><use href="/assets/icons/sprite.svg#icon-save-as-draft-svg-viewbox-0"></use></svg>Create plan</button></div>
+            <div class="action-bar-left">Value -1 means unlimited; disabled permissions are not assigned to the tier.</div>
+            <div class="action-bar-right"><a href="{{ route('admin.dashboard.subscriptions.index') }}" class="btn btn-ghost">Cancel</a><button class="btn btn-primary" type="submit"><x-admin.icon name="save-as-draft-svg-viewbox-0" />Create tier</button></div>
         </div>
     </form>
 @endsection

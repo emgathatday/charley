@@ -191,6 +191,8 @@
                         <span id="ceilingNoteText">Set years of industry experience above to unlock a self-rating ceiling.</span>
                     </div>
                     <div id="expertiseAreaList"></div>
+                    <template id="expertiseAreaOptionTemplate"><option value="">Select a technical area...</option></template>
+                    <div class="hint">Select an Industry background Plant Type to show active technical areas.</div>
                     <div class="ea-empty" id="eaEmptyMsg">No expertise areas added yet.</div>
                     <button type="button" class="ea-add-btn" id="addAreaBtn">
                         <svg class="icon"><use href="/assets/icons/sprite.svg#icon-plus"></use></svg>
