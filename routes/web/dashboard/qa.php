@@ -7,6 +7,8 @@ Route::middleware(['auth', 'role:admin', 'account.status:active'])->prefix('dash
     Route::prefix('qa')->name('qa.')->group(function (): void {
         Route::get('/', [QaDashboardController::class, 'index'])->name('index');
         Route::get('/questions', [QaDashboardController::class, 'questions'])->name('questions');
+        Route::get('/questions/create', [QaDashboardController::class, 'createQuestion'])->name('questions.create');
+        Route::post('/questions/create', [QaDashboardController::class, 'storeQuestion'])->name('questions.store');
         Route::get('/answers', [QaDashboardController::class, 'answers'])->name('answers');
         Route::get('/weekly-themes', [QaDashboardController::class, 'weeklyThemes'])->name('weekly-themes');
         Route::get('/reputation', [QaDashboardController::class, 'reputation'])->name('reputation');
